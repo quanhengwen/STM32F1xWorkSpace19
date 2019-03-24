@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'STM32F1xWOW' 
- * Target:  'AMPLCDV12' 
+ * Project: 'STM32F1xSample' 
+ * Target:  'USART_TEST' 
  */
 
 #ifndef RTE_COMPONENTS_H

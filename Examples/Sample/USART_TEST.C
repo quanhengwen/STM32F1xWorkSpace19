@@ -18,7 +18,7 @@
 #include	"stdlib.h"		//malloc动态申请内存空间
 
 
-#define	BufferSize 128		//DMA1缓冲大小
+#define	BufferSize 500		//DMA1缓冲大小
 
 u32	num_temp=0;
 u16	tema=0;
@@ -51,7 +51,7 @@ void Usart_test_Configuration(void)
 	
 	PWM_OUT(TIM2,PWM_OUTChannel1,1,900);						//PWM设定-20161127版本	
 	
-	USART_DMA_ConfigurationNR	(USART1,19200,BufferSize);	//USART_DMA配置--查询方式，不开中断
+	USART_DMA_ConfigurationNR	(USART2,115200,BufferSize);	//USART_DMA配置--查询方式，不开中断
   
 //  IWDG_Configuration(1000);			//独立看门狗配置---参数单位ms	
   
@@ -70,20 +70,29 @@ void Usart_test_Server(void)
 	u16 Length	=	0;
 	
 	IWDG_Feed();								//独立看门狗喂狗
-
-	Length	=	USART_ReadBufferIDLE	(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+  USART_Status(USART2);		//串口状态检查
+	Length	=	USART_ReadBufferIDLE	(USART2,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(Length)
 	{
-    USART_DMASend(USART1,rxBuffer1,Length);	//串口DMA发送程序
+    memcpy(txBuffer1,rxBuffer1,Length);
+    USART_DMASendList(USART2,txBuffer1,Length);	//串口DMA发送程序
+		memset(rxBuffer1,0xFF,Length);
 	}
-	if(USART_GetFlagStatus(USART1,USART_FLAG_TC))
-	{		
-		USART_DMAPrintf(USART1,"自定义printf串口DMA发送程序,后边的省略号就是可变参数\r\n");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
-	}
-	else
-	{
-		//SysTick_DeleymS(5000);				//SysTick延时nmS
-	}
+	tx1_tcont++;
+	if(tx1_tcont>=2000)
+  {
+    unsigned short i=0;
+		tx1_tcont=0;
+    for(i=0;i<1000;i++)
+    {
+      USART_DMAPrintfList(USART2,"%0.4d自定义printf串口DMA发送程序,后边的省略号就是可变参数\r\n",i);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
+    }    
+  }
+//  USART_TxServer(USART2);
+}
+void Usart_test(void)
+{
+
 }
 #endif
 
