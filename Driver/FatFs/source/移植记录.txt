@@ -1,0 +1,16 @@
+版本：R0.13b (April 07, 2018)
+说明：diskio为接口文件
+
+一：20180825：将如下1，2，3修改完编译可通过
+1,添加文件路径
+2，diskio.C文件中添加__weak修饰占位函数
+3，ffconf.h 中 #define FF_FS_NORTC 0修改为#define FF_FS_NORTC 1
+二：20180825
+1，添加FatFsAPI.C和FatFsAPI.H用作接口管理
+2,	将RAM_disk_initialize改为SD_disk_initialize
+	将RAM_disk_read改为SD_disk_read
+	将RAM_disk_write改为SD_disk_write
+	将RAM_disk_status改为SD_disk_status
+	并完善函数实现，将以上修改部分分别在disk_initialize，disk_read，disk_write，disk_status函数中替换
+三：20180830
+1，添加并修改bool FilSearch(FATFS *fs,DIR *dir,TCHAR *path,u8 *name,char (*p)[13])函数，可以查找SD卡内包含的文件的格式
