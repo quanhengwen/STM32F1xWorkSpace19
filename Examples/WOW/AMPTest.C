@@ -209,22 +209,22 @@ void USART_TEST(void)
       txflg = 0;
       crc16 = CRC16_MODBUS(&OpenLed[1],10);
       memcpy(&OpenLed[11],&crc16,2);
-      USART_DMASend(USART3,OpenLed,sizeof(OpenLed));
+      API_USART_DMA_Send(USART3,OpenLed,sizeof(OpenLed));
     }
     else  //¹ØLED
     {
       txflg = 1;
       crc16 = CRC16_MODBUS(&ClosLed[1],10);
       memcpy(&ClosLed[11],&crc16,2);
-      USART_DMASend(USART3,ClosLed,sizeof(ClosLed));
+      API_USART_DMA_Send(USART3,ClosLed,sizeof(ClosLed));
     }
   }
 
-  RxNum = USART_ReadBufferIDLE(USART1,u1rxbuffer);
+  RxNum = API_USART_ReadBufferIDLE(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
-    USART_DMASend(USART3,u3txbuffer,RxNum);
+    API_USART_DMA_Send(USART3,u3txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=16;
     if(u1dsp>=479)
@@ -240,11 +240,11 @@ void USART_TEST(void)
       u1dsp=32;
     }
   }
-  RxNum = USART_ReadBufferIDLE(USART3,u3rxbuffer);
+  RxNum = API_USART_ReadBufferIDLE(USART3,u3rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    USART_DMASend(USART1,u1txbuffer,RxNum);
+    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(400,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -273,7 +273,7 @@ void USART_Server(void)
   unsigned short RxNum  = 0;
 
 
-  RxNum = USART_ReadBufferIDLE(USART1,u1rxbuffer);
+  RxNum = API_USART_ReadBufferIDLE(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
@@ -282,7 +282,7 @@ void USART_Server(void)
     
     memcpy(&u3txbuffer[u3txbuffer[1]+2],&crc16mbs,2);
     
-    USART_DMASend(USART3,u3txbuffer,RxNum);
+    API_USART_DMA_Send(USART3,u3txbuffer,RxNum);
 		RS485_DMASend(&RS485B,u3txbuffer,RxNum);	//RS485-DMA·¢ËÍ³ÌÐò
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=(RxNum/33+1)*16;
@@ -301,11 +301,11 @@ void USART_Server(void)
       u3dsp=32;
     }
   }
-  RxNum = USART_ReadBufferIDLE(USART3,u3rxbuffer);
+  RxNum = API_USART_ReadBufferIDLE(USART3,u3rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    USART_DMASend(USART1,u1txbuffer,RxNum);
+    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -326,7 +326,7 @@ void USART_Server(void)
 	if(RxNum)
 	{
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    USART_DMASend(USART1,u1txbuffer,RxNum);
+    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)

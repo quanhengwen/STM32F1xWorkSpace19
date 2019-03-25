@@ -16,7 +16,7 @@
 #define arrysize        		10       		//每个发送端口待发送缓存排序个数
 #define MaxSlave        		30        	//最大从机数量(柜、层、位)
 #define ReSendWaitTime  		50 	      	//重发间隔时间单位ms
-#define SendNopTime     		10  	      	//发送等待时间单位ms---应答等待时间
+#define SendNopTime     		10  	    	//发送等待时间单位ms---应答等待时间
 #define maxresendcount  		5         	//最大发送次数
 #define unlockOuttime   		2000      	//开锁倒计时超时时间
 #define reslockdelaytime   	200   			//检测到锁已打开后延时关闭驱动时间ms
@@ -47,12 +47,7 @@ typedef enum _eSts
   AmpStsLock      = 1,    //锁状态,0--
   AmpStsComm      = 2,    //连接状态
 }eStsdef;
-typedef enum _eLockSts
-{
-  AmpLockOpen       = 0,    //锁打开  
-  AmpLockOn         = 1,    //锁关上
-  AmpLockOpenFailed = 2,    //开锁失败
-}eLockStsdef;
+
 typedef enum _eCommSts
 {
   AmpCommOK       = 0,    //连接正常 
@@ -92,6 +87,14 @@ typedef struct _stampphy
 }stampphydef;
 
 
+
+
+typedef enum _eLockSts
+{
+  AmpLockOpen       = 0,    //锁打开  
+  AmpLockOn         = 1,    //锁关上
+  AmpLockOpenFailed = 2,    //开锁失败
+}eLockStsdef;
 typedef enum  _CCPort
 {
   NonPort     = 0,

@@ -224,7 +224,7 @@ void AMPCAB_Receive(void)
   unsigned char rxd[256]={0};
   //==========================================================接收查询
   //---------------------PC接口 USART1
-  RxNum = USART_ReadBufferIDLE(USART1,rxd);
+  RxNum = API_USART_ReadBufferIDLE(USART1,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(PcPort,rxd,RxNum);                //柜消息处理
@@ -242,7 +242,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(LayPort,rxd,RxNum);              //柜消息处理
   }
   //---------------------读卡器接口 USART3
-  RxNum = USART_ReadBufferIDLE(USART3,rxd);
+  RxNum = API_USART_ReadBufferIDLE(USART3,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(CardPort,rxd,RxNum);
@@ -558,13 +558,13 @@ unsigned short AMPCAB_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned 
   switch(Port)
   {
     case  NonPort   : return 0;   //不继续执行
-    case  PcPort    : sendedlen = USART_DMASend(USART1,pBuffer,length);
+    case  PcPort    : sendedlen = API_USART_DMA_Send(USART1,pBuffer,length);
       break;
     case  CabPort   : sendedlen = RS485_DMASend(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
       break;
     case  LayPort   : sendedlen = RS485_DMASend(&stCbRS485Ly,pBuffer,length);	//RS485-DMA发送程序
       break;
-    case  CardPort  : sendedlen = USART_DMASend(USART3,pBuffer,length);
+    case  CardPort  : sendedlen = API_USART_DMA_Send(USART3,pBuffer,length);
       break;
     default :return 0;      //不继续执行
   }

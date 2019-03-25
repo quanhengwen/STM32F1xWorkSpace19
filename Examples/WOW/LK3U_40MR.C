@@ -81,7 +81,7 @@ void LK3U_40MR_Server(void)
 		{
 			temp=input_num;
 			//DMA发送
-			USART_DMASend(UART4,(u32*)&temp,4);
+			API_USART_DMA_Send(UART4,(u32*)&temp,4);
 			//常规发送
 //			for(i=0;i<4;i++)
 //			{

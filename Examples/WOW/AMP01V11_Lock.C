@@ -160,7 +160,7 @@ void AMPCAB_Receive(void)
 //  unsigned char rxd[300]={0};
   //==========================================================接收查询
   //---------------------PC接口 USART1
-  RxNum = USART_ReadBufferIDLE(CommPcPort,rxd);
+  RxNum = API_USART_ReadBufferIDLE(CommPcPort,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -516,7 +516,7 @@ unsigned short AMPCAB_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned 
   switch(Port)
   {
     case  NonPort   : return 0;   //不继续执行
-    case  PcPort    : sendedlen = USART_DMASend(CommPcPort,pBuffer,length);
+    case  PcPort    : sendedlen = API_USART_DMA_Send(CommPcPort,pBuffer,length);
       break;
     case  CabPort   : sendedlen = RS485_DMASend(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
       break;

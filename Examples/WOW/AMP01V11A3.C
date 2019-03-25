@@ -4,7 +4,7 @@
 
 
 #include "AMP_LAY.H"
-//#include "AMP_CABV11.H"
+#include "AMP_CABV11A2.H"
 
 #include	"AMP_PHY.H"
 
@@ -61,14 +61,16 @@
 #define LayPowerOn    LayPowerPort->BSRR = LayPowerPin   //启动电源
 #define LayPowerOff   LayPowerPort->BRR  = LayPowerPin   //关闭电源
 
+
 /* Private variables ---------------------------------------------------------*/
+
 static RS485Def stCbRS485Ly;   //uart4,PA15   //层板接口
 static RS485Def stCbRS485Cb;   //usart1,PA8    //副柜接口
 static RS485Def stCardRS485Ly; //usart3,PB2    //读卡器接口
 static SwitchDef stCbSwitch;
 static SPIDef stLed;
 
-
+ampdef ampsys;
 
 static unsigned char CabAddr   =0;
 static unsigned char MainFlag  =0; //0--副柜，1--主柜
@@ -99,6 +101,13 @@ static void SwitchID_Server(void);
 //-----------------------------通讯LED指示灯
 static void Led_Configuration(void);
 static void Led_Server(void);
+//-----------------------------
+static void Pc_Server(void);
+
+static ampCachedef* AmpData_Cache_GetAddr(enCCPortDef port);
+static unsigned short AmpData_Cache_Add(enCCPortDef port,unsigned char* pBuffer,unsigned short len);
+static ampCachedef* AmpData_Cache_Get(enCCPortDef port);
+static unsigned char AmpData_Cache_Releas(enCCPortDef port);
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -146,20 +155,7 @@ void AMP01V11A3_Server(void)
   Lock_Server();
   SwitchID_Server();
   Led_Server();
-  
-//  rxnum = RS485_ReadBufferIDLE(&stCbRS485Cb,rxx);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
-//  if(rxnum)
-//  {
-////    memset(rxx,0,200);
-//  }
-////	AMP_CABV11_Server();
-//  
-//  if(timee++>=2000)
-//  {
-//    timee=0;
-//    memset(rxx,0xFF,200);
-//    RS485_DMASend(&stCbRS485Cb,txx,strlen(txx));	//RS485-DMA发送程序    
-//  }
+	Pc_Server();
 }
 /*******************************************************************************
 *函数名			:	function
@@ -170,110 +166,187 @@ void AMP01V11A3_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Hardware_Configuration(void)
+static void Set_Data_PcPort(void)
 {
-	SysTick_DeleymS(200);				//SysTick延时nmS--等上电稳定
-  BackLight_Configuration();
-	Lock_Configuration();
-  SwitchID_Configuration();
-  Led_Configuration();
-//	//=======================================================拨码开关配置
-//	SwitchID_Configuration();
-//	//=======================================================常规接口配置，背光，锁，电源控制
-//	GenyGPIO_Configuration(); 
-//	//=======================================================通讯配置
-//  Communication_Configuration();
-//	
-//  SysTick_DeleymS(200);				//SysTick延时nmS--等上电稳定  
+
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static ampCachedef* AmpData_Cache_GetAddr(enCCPortDef port)
+{
+	if(NonPort	==	port)
+		return 0;
+	else if(PcPort	==	port)
+		return ampsys.CCdata.pc;
+	else if(CabPort	==	port)
+		return ampsys.CCdata.cab;
+	else if(LayPort	==	port)
+		return ampsys.CCdata.lay;
+	else
+		return 0;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short AmpData_Cache_Add(enCCPortDef port,unsigned char* pBuffer,unsigned short len)
+{
+	unsigned short	i=0;
+	unsigned short  lastarry  = 0;
+	ampCachedef* Cache	= AmpData_Cache_GetAddr(port);
+
+	if(0==Cache)	//返回空地址
+		return 0;
+	//-------------------------检查数据有无溢出
+	if(AmpFramesize<len)
+		return 0;
+	//-------------------------检查缓存中有无相同数据及查找当前最大缓存序号
+	for(i=0;i<AmpFramesize;i++)
+	{
+		if(0!=Cache[i].arry)		//缓存数据不为0
+		{			
+			if(len	==	Cache[i].size)
+			{
+				if(0  ==  memcmp(Cache[i].data,pBuffer,len)) //比较相同
+				{
+					return len;		//已有相同数据，退出，表示存储成功
+				}
+			}
+			//---------------------缓存序号增加
+			if(Cache[i].arry>=lastarry)
+				lastarry	=	Cache[i].arry+1;	//下一个缓存编号
+		}
+	}
+	//-------------------------未在缓存中找到相同的数据
+	//-------------------------判断缓存是否为满
+	if(lastarry>=AmpFramesize)	//从0开始
+	{
+		//缓存满
+		return 0;
+	}
+	//-------------------------有空缓存，存储数据
+	Cache[lastarry].arry	=	lastarry;
+	Cache[lastarry].size	=	len;
+	memcpy(Cache[lastarry].data,pBuffer,len);
+	return	len;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static ampCachedef* AmpData_Cache_Get(enCCPortDef port)
+{
+	unsigned short	i=0;
+	unsigned short	arry=AmpFramesize;
+	unsigned short  lastarry  = 0;
+	ampCachedef* Cache	= AmpData_Cache_GetAddr(port);
+	
+	if(0==Cache)	//返回空地址
+		return 0;
+	//-------------------------先发送缓存标号为1号数据
+	for(i=0;i<AmpFramesize;i++)
+	{
+		if(0!=Cache[i].arry)		//缓存数据不为0
+		{
+			if(arry>Cache[i].arry)
+			{
+				arry	=	Cache[i].arry;		//找优先序号
+			}
+			if(1==Cache[i].arry)
+			{
+				return &Cache[i];
+			}
+		}
+	}
+	//-------------------------缓存非从1开始
+	if(arry>1&&arry<AmpFramesize)
+	{
+		for(i=0;i<AmpFramesize;i++)
+		{
+			if(arry==Cache[i].arry)
+				return &Cache[i];
+		}
+	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char AmpData_Cache_Releas(enCCPortDef port)
+{
+	unsigned short	i=0;
+	unsigned short	arry=AmpFramesize;
+	unsigned short  lastarry  = 0;
+	ampCachedef* Cache	= AmpData_Cache_GetAddr(port);
+	
+	if(0==Cache)	//返回空地址
+		return 0;
+	//-------------------------先发送缓存标号为1号数据
+	for(i=0;i<AmpFramesize;i++)
+	{
+		if(0!=Cache[i].arry)		//缓存数据不为0
+		{
+			Cache[i].arry-=1;
+			if(0==Cache[i].arry)
+			{
+				Cache[i].size	=	0;
+			}
+		}
+	}
+	return 1;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void Pc_Server(void)
+{
+	//--------------------------------------
+	//主板:接收PC数据，广播数据，内部使用和转发
+	//接收到总线数据，上传到PC
+	unsigned short rxnum=0;
+	unsigned char rxd[256];
+	stampphydef* frame=0;
+	rxnum	=	API_USART_ReadBufferIDLE(CommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	if(0==rxnum)
+		return;
+	frame	=	(stampphydef*)API_Get_AmpFrame(rxd,rxnum);
+	if(0==frame)
+		return;
+	if(AmpCmdAck==frame->msg.cmd.cmd)		//应答，删除一缓存
+	{
+		AmpData_Cache_Releas(PcPort);
+		return;
+	}
 }
 
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void GenyGPIO_Configuration(void)
-{
-	//---------------------锁接口配置
-  GPIO_Configuration_OPP50(LockDrPort,LockDrPin);
-  GPIO_Configuration_IPU(LockSiPort,LockSiPin);
-  ResLock;    //释放锁驱动
-  //---------------------背光接口配置
-  BackLight_Configuration();
-  //---------------------层板供电接口配置
-  GPIO_Configuration_OPP50(LayPowerPort,LayPowerPin);
-  LayPowerOff;   //开供电，配置读卡器
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void Communication_Configuration(void)
-{
-	IOT5302Wdef IOT5302W;
-  //-----------------------------PC接口USART1
-  USART_DMA_ConfigurationNR	(CommPcPort,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
-  
-  //-----------------------------读卡器接口USART3
-  IOT5302W.Conf.IOT5302WPort.USARTx  = CommCardPort;
-  IOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT  = CommCardCTLPort;
-  IOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin   = CommCardCTLPin;
-  IOT5302W.Conf.USART_BaudRate  = CommCardBaudRate;
-	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_7);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOC,GPIO_Pin_7);
-  API_IOT5302WConfiguration(&IOT5302W);
-  //-----------------------------层板接口USART2
-  stCbRS485Ly.USARTx  = CommLayPort;
-  stCbRS485Ly.RS485_CTL_PORT  = CommLayCTLPort;
-  stCbRS485Ly.RS485_CTL_Pin   = CommLayCTLPin;
-  RS485_DMA_ConfigurationNR			(&stCbRS485Ly,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-	GPIO_Configuration_OOD50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
-  //-----------------------------副柜接口UART4
-  stCbRS485Cb.USARTx  = CommCbPort;
-  stCbRS485Cb.RS485_CTL_PORT  = CommCbCTLPort;
-  stCbRS485Cb.RS485_CTL_Pin   = CommCbCTLPin;
-  RS485_DMA_ConfigurationNR			(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_9);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOC,GPIO_Pin_9);
-}
-//=================================背光相关程序=================================
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void BackLight_Configuration(void)
-{
-  GPIO_Configuration_OPP50(BackLightPort,BackLightPin);
-  Set_BackLight_Off();
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void BackLight_Server(void)
-{
-  
-}
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -315,21 +388,7 @@ static unsigned char Get_BackLight_State(void)
   return(GPIO_ReadOutputDataBit(BackLightPort,BackLightPin));
 }
 //=================================锁相关程序=================================
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void Lock_Configuration(void)
-{
-  GPIO_Configuration_OPP50(LockDrPort,LockDrPin);
-  GPIO_Configuration_IPU(LockSiPort,LockSiPin);
-  Set_Lock_Release();
-}
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -396,56 +455,7 @@ static unsigned char Get_Lock_State(void)
   return(GPIO_ReadOutputDataBit(LockDrPort,LockDrPin));
 }
 //=======================================拨码开关===============================
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-static void SwitchID_Configuration(void)
-{
-  stCbSwitch.NumOfSW	=	8;
-  
-  stCbSwitch.SW1_PORT	=	GPIOB;
-  stCbSwitch.SW1_Pin	=	GPIO_Pin_9;
-  
-  stCbSwitch.SW2_PORT	=	GPIOB;
-  stCbSwitch.SW2_Pin	=	GPIO_Pin_8;
-  
-  stCbSwitch.SW3_PORT	=	GPIOB;
-  stCbSwitch.SW3_Pin	=	GPIO_Pin_7;
-  
-  stCbSwitch.SW4_PORT	=	GPIOB;
-  stCbSwitch.SW4_Pin	=	GPIO_Pin_6;
-  
-  stCbSwitch.SW5_PORT	=	GPIOB;
-  stCbSwitch.SW5_Pin	=	GPIO_Pin_5;
-  
-  stCbSwitch.SW6_PORT	=	GPIOB;
-  stCbSwitch.SW6_Pin	=	GPIO_Pin_4;
-  
-  stCbSwitch.SW7_PORT	=	GPIOB;
-  stCbSwitch.SW7_Pin	=	GPIO_Pin_3;
-  
-  stCbSwitch.SW8_PORT	=	GPIOD;
-  stCbSwitch.SW8_Pin	=	GPIO_Pin_2;
 
-	SwitchIdInitialize(&stCbSwitch);						//
-
-  CabAddr  = SWITCHID_ReadLeft(&stCbSwitch)&0x3F;  
-  
-  if(SWITCHID_ReadLeft(&stCbSwitch)&0x80)
-  {
-    MainFlag=1; //0--副柜，1--主柜
-  }
-  else
-  {
-    MainFlag=0; //0--副柜，1--主柜
-  }
-}
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -479,7 +489,6 @@ static void SwitchID_Server(void)
     }
   }
 }
-//=======================================通讯LED指示灯=============================
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -489,21 +498,12 @@ static void SwitchID_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Led_Configuration(void)
+static void BackLight_Server(void)
 {
-  stLed.Port.SPIx 			= SPI1;
-  stLed.Port.CS_PORT  	= GPIOA;
-  stLed.Port.CS_Pin   	= GPIO_Pin_4;
-  stLed.Port.CLK_PORT 	= GPIOA;
-  stLed.Port.CLK_Pin  	= GPIO_Pin_5;
-  stLed.Port.MISO_PORT  = GPIOA;
-  stLed.Port.MISO_Pin   = GPIO_Pin_6;
-  stLed.Port.MOSI_PORT  = GPIOA;
-  stLed.Port.MOSI_Pin   = GPIO_Pin_7;
-  stLed.Port.SPI_BaudRatePrescaler_x  = SPI_BaudRatePrescaler_64;
-	SPI_Initialize(&stLed);		//SPI接口配置
-  //SPI_InitializeSPI(&stLed);			//SPI-DMA通讯方式配置
+  
 }
+//=======================================通讯LED指示灯=============================
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -546,7 +546,6 @@ unsigned short HW_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned shor
 
   return  sendedlen;
 }
-
 
 
 
@@ -604,5 +603,164 @@ void Tim_Server(void)
   {
     AMPPro.Time.SYSLEDTime--;
   }
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void Hardware_Configuration(void)
+{
+  BackLight_Configuration();
+	Lock_Configuration();
+  SwitchID_Configuration();
+  Led_Configuration();
+  Communication_Configuration();
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void Communication_Configuration(void)
+{
+	IOT5302Wdef IOT5302W;
+  //-----------------------------PC接口USART1
+  USART_DMA_ConfigurationNR	(CommPcPort,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
+  
+  //-----------------------------读卡器接口USART3
+  IOT5302W.Conf.IOT5302WPort.USARTx  = CommCardPort;
+  IOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT  = CommCardCTLPort;
+  IOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin   = CommCardCTLPin;
+  IOT5302W.Conf.USART_BaudRate  = CommCardBaudRate;
+	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_7);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
+	GPIO_ResetBits(GPIOC,GPIO_Pin_7);
+  API_IOT5302WConfiguration(&IOT5302W);
+  //-----------------------------层板接口USART2
+  stCbRS485Ly.USARTx  = CommLayPort;
+  stCbRS485Ly.RS485_CTL_PORT  = CommLayCTLPort;
+  stCbRS485Ly.RS485_CTL_Pin   = CommLayCTLPin;
+  RS485_DMA_ConfigurationNR			(&stCbRS485Ly,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	GPIO_Configuration_OOD50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
+	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
+  //-----------------------------副柜接口UART4
+  stCbRS485Cb.USARTx  = CommCbPort;
+  stCbRS485Cb.RS485_CTL_PORT  = CommCbCTLPort;
+  stCbRS485Cb.RS485_CTL_Pin   = CommCbCTLPin;
+  RS485_DMA_ConfigurationNR			(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_9);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
+	GPIO_ResetBits(GPIOC,GPIO_Pin_9);
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+static void SwitchID_Configuration(void)
+{
+  stCbSwitch.NumOfSW	=	8;
+  
+  stCbSwitch.SW1_PORT	=	GPIOB;
+  stCbSwitch.SW1_Pin	=	GPIO_Pin_9;
+  
+  stCbSwitch.SW2_PORT	=	GPIOB;
+  stCbSwitch.SW2_Pin	=	GPIO_Pin_8;
+  
+  stCbSwitch.SW3_PORT	=	GPIOB;
+  stCbSwitch.SW3_Pin	=	GPIO_Pin_7;
+  
+  stCbSwitch.SW4_PORT	=	GPIOB;
+  stCbSwitch.SW4_Pin	=	GPIO_Pin_6;
+  
+  stCbSwitch.SW5_PORT	=	GPIOB;
+  stCbSwitch.SW5_Pin	=	GPIO_Pin_5;
+  
+  stCbSwitch.SW6_PORT	=	GPIOB;
+  stCbSwitch.SW6_Pin	=	GPIO_Pin_4;
+  
+  stCbSwitch.SW7_PORT	=	GPIOB;
+  stCbSwitch.SW7_Pin	=	GPIO_Pin_3;
+  
+  stCbSwitch.SW8_PORT	=	GPIOD;
+  stCbSwitch.SW8_Pin	=	GPIO_Pin_2;
+
+	SwitchIdInitialize(&stCbSwitch);						//
+
+  CabAddr  = SWITCHID_ReadLeft(&stCbSwitch)&0x3F;  
+  
+  if(SWITCHID_ReadLeft(&stCbSwitch)&0x80)
+  {
+    MainFlag=1; //0--副柜，1--主柜
+  }
+  else
+  {
+    MainFlag=0; //0--副柜，1--主柜
+  }
+}
+//=================================背光相关程序=================================
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void BackLight_Configuration(void)
+{
+  GPIO_Configuration_OPP50(BackLightPort,BackLightPin);
+  Set_BackLight_Off();
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void Lock_Configuration(void)
+{
+  GPIO_Configuration_OPP50(LockDrPort,LockDrPin);
+  GPIO_Configuration_IPU(LockSiPort,LockSiPin);
+  Set_Lock_Release();
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void Led_Configuration(void)
+{
+  stLed.Port.SPIx 			= SPI1;
+  stLed.Port.CS_PORT  	= GPIOA;
+  stLed.Port.CS_Pin   	= GPIO_Pin_4;
+  stLed.Port.CLK_PORT 	= GPIOA;
+  stLed.Port.CLK_Pin  	= GPIO_Pin_5;
+  stLed.Port.MISO_PORT  = GPIOA;
+  stLed.Port.MISO_Pin   = GPIO_Pin_6;
+  stLed.Port.MOSI_PORT  = GPIOA;
+  stLed.Port.MOSI_Pin   = GPIO_Pin_7;
+  stLed.Port.SPI_BaudRatePrescaler_x  = SPI_BaudRatePrescaler_64;
+	SPI_Initialize(&stLed);		//SPI接口配置
+  //SPI_InitializeSPI(&stLed);			//SPI-DMA通讯方式配置
 }
 #endif

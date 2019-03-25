@@ -74,11 +74,12 @@ void Usart_test_Server(void)
 	Length	=	USART_ReadBufferIDLE	(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(Length)
 	{
-    USART_DMASend(USART1,rxBuffer1,Length);	//串口DMA发送程序
+    API_USART_DMA_Send(USART1,rxBuffer1,Length);	//串口DMA发送程序
+		
 	}
 	if(USART_GetFlagStatus(USART1,USART_FLAG_TC))
 	{		
-		USART_DMAPrintf(USART1,"自定义printf串口DMA发送程序,后边的省略号就是可变参数\r\n");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
+		//USART_DMAPrintf(USART1,"自定义printf串口DMA发送程序,后边的省略号就是可变参数\r\n");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
 	}
 	else
 	{

@@ -41,21 +41,15 @@ typedef struct
 	GPIO_TypeDef* 	RS485_CTL_PORT;				//GPIOX
 	unsigned short 	RS485_CTL_Pin;				//GPIO_Pin_x
 }RS485Def;
-typedef struct
-{
-	unsigned char USART_IDLESTD	:1;		//bit[0] 0-串口空闲；1-串口非空闲，状态根据以下位定义
-	unsigned char USART_ReceSTD	:1;		//bit[1] 0-空闲；1-串口正在接收中
-	unsigned char USART_SendSTD	:1;		//bit[2] 0-空闲；1-串口正在发送中
-	unsigned char USART_RTSTD	  :1;		//bit[3] 0-空闲；1-串口正在收发中
-}USARTStatusDef;
+
 //#define RS485_TX_EN			(RS485_TypeDef->RS485_CTL_PORT->BSRR		= R61509V_sPinfo->R61509V_sCS_Pin)
 //#define RS485_RX_EN			(R61509V_sPinfo->R61509V_sCS_PORT->BRR 		= R61509V_sPinfo->R61509V_sCS_Pin)
 
 
 //---------------------------串口
 //*****************USART_DMA初始化
-void	USART_DMA_Initialize	(USART_TypeDef* USARTx,u16 BufferSize);	//串口DMA配置---不开中断，查询方式
-void	USART_GPIO_Initialize(USART_TypeDef* USARTx);                 	//串口GPIO配置
+
+
 void	USART_IT_Initialize(USART_TypeDef* USARTx);	                    //串口中断配置
 
 void	USART_DMA_ConfigurationNR	(USART_TypeDef* USARTx,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--查询方式，不开中断
@@ -68,19 +62,12 @@ void 	USART_DMA_ConfigurationIT	(USART_TypeDef* USARTx,u32 USART_BaudRate,u32 Bu
 void	USART_DMA_ConfigurationNRRemap	(USART_TypeDef* USARTx,u32 USART_BaudRate,u32 *RxdBuffer,u32 BufferSize);	//USART_DMA配置(映射)--查询方式，不开中断
 
 //*****************串口接收
-u16	USART_ReadBufferIDLE	(USART_TypeDef* USARTx,u8 *RevBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+u16	API_USART_ReadBufferIDLE(USART_TypeDef* USARTx,u8 *RevBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 
 //*****************串口发送
 u16	USART_DMAPrintf		  (USART_TypeDef* USARTx,const char *format,...);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
-u16	USART_DMAPrintfList (USART_TypeDef* USARTx,const char *format,...);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
-u16	USART_DMASend			  (USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-u16	USART_DMASendList   (USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize);		//串口DMA链表发送程序，如果数据已经传入到DMA，返回Buffer大小，否则数据存入链表
-USARTStatusDef	USART_Status(USART_TypeDef* USARTx);		//串口状态检查
 
-
-
-
-
+u16	API_USART_DMA_Send	(USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 
 
 //---------------------------RS485

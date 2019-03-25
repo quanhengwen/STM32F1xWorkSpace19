@@ -37,7 +37,34 @@ SPI需要配置基本内容：
 #define spiBufsize  256
 unsigned  char spiTxBuff[spiBufsize]={0};
 //SPIDef	*SPISYS	=	0;	//内部驱动使用，不可删除
-
+void SPI_CS_LOW(SPIDef *pInfo)
+{
+	pInfo->Port.CS_PORT->BRR		= pInfo->Port.CS_Pin;
+}
+void SPI_CS_HIGH(SPIDef *pInfo)
+{
+	pInfo->Port.CS_PORT->BSRR		= pInfo->Port.CS_Pin;
+}
+void SPI_CLK_LOW(SPIDef *pInfo)
+{
+	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
+}
+void SPI_CLK_HIGH(SPIDef *pInfo)
+{
+	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
+}
+void SPI_MOSI_LOW(SPIDef *pInfo)
+{
+	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
+}
+void SPI_MOSI_HIGH(SPIDef *pInfo)
+{
+	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
+}
+unsigned char SPI_MISO_In(SPIDef *pInfo)
+{
+	return(pInfo->Port.MISO_PORT->IDR 	&	pInfo->Port.MISO_Pin);
+}
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	函数功能说明 
@@ -193,7 +220,7 @@ void SPI_InitializeDMA(SPIDef *pInfo)		//SPI_FLASH_DMA方式配置
 -----------------------------------------------------------------------------------------------------**/
 	//1)**********定义相关结构体
 	SPI_InitTypeDef  SPI_InitStructure;
-	GPIO_InitTypeDef GPIO_InitStructure;
+//	GPIO_InitTypeDef GPIO_InitStructure;
 	DMA_InitTypeDef	DMA_Initstructure;
 	DMA_Channel_TypeDef* DMAx_Channeltx=0;				//DMA发送通道请求信号---当DMA串口发送数据完成时，会发起DMA中断
 	DMA_Channel_TypeDef* DMAx_Channelrx=0;				//DMA接收通道请求信号---DMA串口接收由串口发起中断，因此此处接收通道中断不使用
@@ -280,34 +307,7 @@ void SPI_InitializeDMA(SPIDef *pInfo)		//SPI_FLASH_DMA方式配置
 
 
 
-void SPI_CS_LOW(SPIDef *pInfo)
-{
-	pInfo->Port.CS_PORT->BRR		= pInfo->Port.CS_Pin;
-}
-void SPI_CS_HIGH(SPIDef *pInfo)
-{
-	pInfo->Port.CS_PORT->BSRR		= pInfo->Port.CS_Pin;
-}
-void SPI_CLK_LOW(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_CLK_HIGH(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_MOSI_LOW(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_MOSI_HIGH(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
-}
-unsigned char SPI_MISO_In(SPIDef *pInfo)
-{
-	return(pInfo->Port.MISO_PORT->IDR 	&	pInfo->Port.MISO_Pin);
-}
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -350,7 +350,8 @@ unsigned short SPI_DMASend(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned s
 //        }
       break;
     default:break;
-  }  
+  }
+	return 0;
 }
 /*******************************************************************************
 *函数名			:	function
