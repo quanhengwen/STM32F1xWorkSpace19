@@ -471,7 +471,7 @@ static unsigned short Usart_Dma_Send(USART_TypeDef* USARTx,u8 *tx_buffer,u16 Buf
 		||((DMAx_Channeltx->CCR&0x00000001)==0)				//通道未开启
 		)
 	{
-		if(SET  ==  USART_GetFlagStatus(USARTx,USART_FLAG_TC))    //发送完成
+		if(SET  ==  USART_GetFlagStatus(USARTx,USART_FLAG_TXE))    //发送完成
 		{
 			memcpy(uart_txd,tx_buffer,uart_size);
 			USART_ClearFlag(USART1, USART_FLAG_TC);
@@ -1163,7 +1163,7 @@ u16 RS485_DMASend(
 //	u32	DMA_status=0;			//DMA状态
   unsigned short sendedlen  =0;
 	USART_TypeDef* USARTx	=	pRS485->USARTx;
-	if((USART_GetITStatus(USARTx,USART_IT_IDLE)||USART_GetFlagStatus(USARTx,USART_FLAG_IDLE))&&USART_GetFlagStatus(pRS485->USARTx,USART_FLAG_TC))
+	if(USART_GetFlagStatus(USARTx,USART_FLAG_TXE))
 	{
 		RS485_TX_EN(pRS485);
 		sendedlen = Usart_Dma_Send(USARTx,(u8*)tx_buffer,BufferSize);		//串口DMA发送程序

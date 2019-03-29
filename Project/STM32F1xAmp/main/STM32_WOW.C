@@ -4,9 +4,9 @@
 #include "STM32_WDG.H"
 
 
-__weak void Hardware_Configuration(void){}
-__weak void Software_Configuration(void){}
-__weak void Data_Initialize(void){}
+//__weak void Hardware_Configuration(void){}
+//__weak void Software_Configuration(void){}
+//__weak void Data_Initialize(void){}
 	
 __weak void Data_Server(void){}
 __weak void SYS_Server(void){}
@@ -20,9 +20,9 @@ __weak void SYS_Server(void){}
 *******************************************************************************/
 void WOW_Configuration(void)
 {
-	Hardware_Configuration();
-	Software_Configuration();
-	Data_Initialize();
+//	Hardware_Configuration();
+//	Software_Configuration();
+//	Data_Initialize();
 //	GPIO_DeInit(GPIOA);
 //	GPIO_DeInit(GPIOB);
 //	GPIO_DeInit(GPIOC);
