@@ -166,7 +166,7 @@ static void Pc_Server(void)
 	unsigned short rxnum=0;
 	unsigned char rxd[256];
 	//================================================数据接收
-	rxnum	=	API_USART_ReadBufferIDLE(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_usart_dma_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 
@@ -188,7 +188,7 @@ static void Cab_Server(void)
 	unsigned short 	rxnum=0;
 	unsigned char 	rxd[256];
 	//================================================数据接收
-	rxnum	=	RS485_ReadBufferIDLE(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_dam_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 	}
@@ -208,7 +208,7 @@ static void Lay_Server(void)
 	unsigned short rxnum=0;
 	unsigned char rxd[256];
 	//================================================数据接收
-	rxnum	=	RS485_ReadBufferIDLE(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_dam_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 	
@@ -322,7 +322,7 @@ static void Communication_Configuration(void)
 {
 	IOT5302Wdef ampIOT5302W;
   //-----------------------------PC接口USART1
-  USART_DMA_ConfigurationNR	(ampCommPcPort,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR(ampCommPcPort,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断
   
   //-----------------------------读卡器接口USART3
   ampIOT5302W.Conf.IOT5302WPort.USARTx  = ampCommCardPort;
@@ -336,14 +336,14 @@ static void Communication_Configuration(void)
   ampRS485Ly.USARTx  = ampCommLayPort;
   ampRS485Ly.RS485_CTL_PORT  = ampCommLayCTLPort;
   ampRS485Ly.RS485_CTL_Pin   = ampCommLayCTLPin;
-  RS485_DMA_ConfigurationNR			(&ampRS485Ly,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&ampRS485Ly,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OOD50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
   //-----------------------------副柜接口UART4
   ampRS485Cb.USARTx  = ampCommCbPort;
   ampRS485Cb.RS485_CTL_PORT  = ampCommCbCTLPort;
   ampRS485Cb.RS485_CTL_Pin   = ampCommCbCTLPin;
-  RS485_DMA_ConfigurationNR			(&ampRS485Cb,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&ampRS485Cb,19200,AmpFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_9);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOC,GPIO_Pin_9);
 }

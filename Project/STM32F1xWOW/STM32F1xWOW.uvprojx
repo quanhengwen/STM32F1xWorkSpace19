@@ -673,11 +673,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -2285,11 +2280,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -3903,11 +3893,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -3921,6 +3906,70 @@
         </Group>
         <Group>
           <GroupName>AMP01V11A3</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>AMP01V11_PC.C</FileName>
@@ -3956,6 +4005,70 @@
         </Group>
         <Group>
           <GroupName>APP/AMP</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>AMP_CAB.C</FileName>
@@ -4158,6 +4271,70 @@
         </Group>
         <Group>
           <GroupName>Lib/WOW/USB</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>usb_core.c</FileName>
@@ -4343,6 +4520,70 @@
         </Group>
         <Group>
           <GroupName>Driver/WOW/USB</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>hw_config.c</FileName>
@@ -4555,6 +4796,53 @@
               <FileName>MX25L4006E.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\MX25L4006E.C</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>TM1616.C</FileName>
@@ -4575,6 +4863,53 @@
               <FileName>vl53l0x.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\vl53l0x\vl53l0x.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>AT24C02.C</FileName>
@@ -4625,6 +4960,70 @@
         </Group>
         <Group>
           <GroupName>Driver/FatFs</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>diskio.c</FileName>
@@ -4660,6 +5059,70 @@
         </Group>
         <Group>
           <GroupName>Driver/Protocol</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>SPI_FLASH.C</FileName>
@@ -5643,11 +6106,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -7259,11 +7717,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -8871,11 +9324,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -10487,11 +10935,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -12099,11 +12542,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -13715,11 +14153,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -15327,11 +15760,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -16943,11 +17371,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -18555,11 +18978,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -20171,11 +20589,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -21783,11 +22196,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -23399,11 +23807,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -25011,11 +25414,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -26627,11 +27025,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -28239,11 +28632,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -29855,11 +30243,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -31467,11 +31850,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -33083,11 +33461,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -34695,11 +35068,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -36311,11 +36679,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -37923,11 +38286,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -39539,11 +39897,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -41151,11 +41504,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -42767,11 +43115,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -44379,11 +44722,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -45995,11 +46333,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -47607,11 +47940,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -49223,11 +49551,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -50835,11 +51158,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -52451,11 +52769,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -54063,11 +54376,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -55679,11 +55987,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -56760,6 +57063,8 @@
       <TargetName>AMPTest</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060020::V5.06 (build 20)::ARMCC</pArmCC>
+      <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
@@ -56899,7 +57204,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -57421,11 +57726,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -57439,6 +57739,70 @@
         </Group>
         <Group>
           <GroupName>AMP01V11A3</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>AMP01V11_PC.C</FileName>
@@ -57474,6 +57838,70 @@
         </Group>
         <Group>
           <GroupName>APP/AMP</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>AMP_CAB.C</FileName>
@@ -57845,6 +58273,53 @@
               <FileName>STM32_I2C.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -58331,6 +58806,53 @@
               <FileName>AMP_PHY.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\AMP_PHY.C</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>IIC.C</FileName>
@@ -58381,6 +58903,70 @@
         </Group>
         <Group>
           <GroupName>VL53L0X_1.0.2/core</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>vl53l0x_api.c</FileName>
@@ -58411,6 +58997,70 @@
         </Group>
         <Group>
           <GroupName>VL53L0X_1.0.2/platform</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>0</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>2</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>0</vShortEn>
+                <vShortWch>0</vShortWch>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
           <Files>
             <File>
               <FileName>vl53l0x_i2c_win_serial_comms.c</FileName>
@@ -59161,11 +59811,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -60869,11 +61514,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -62786,11 +63426,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -64893,11 +65528,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -66633,11 +67263,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -68550,11 +69175,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -70721,11 +71341,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -72427,11 +73042,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -74457,11 +75067,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -76374,11 +76979,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -78434,11 +79034,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>
@@ -80560,11 +81155,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -82684,11 +83274,6 @@
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
             </File>
             <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
-            </File>
-            <File>
               <FileName>AMPLCDV11.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMPLCDV11.C</FilePath>
@@ -84759,11 +85344,6 @@
               <FileName>AMP01V11A2.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\WOW\AMP01V11A2.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01V11A3.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\WOW\AMP01V11A3.C</FilePath>
             </File>
             <File>
               <FileName>AMPLCDV11.C</FileName>

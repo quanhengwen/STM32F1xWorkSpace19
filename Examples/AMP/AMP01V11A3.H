@@ -149,9 +149,9 @@ static void set_layer_power(unsigned char flag);
 
 static void door_server(void);
 static void Led_Server(void);
-static void Pc_Server(void);
-static void Cab_Server(void);
-static void Lay_Server(void);
+void Pc_Server(void);
+void Cab_Server(void);
+void Lay_Server(void);
 
 
 

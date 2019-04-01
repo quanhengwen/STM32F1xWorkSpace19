@@ -34,7 +34,21 @@ u8 txBuffer1[BufferSize]={0};
 u8 num=0;
 int *pr=NULL;
 
+unsigned char t1[4]={0x06,0x01,0x00,0xF8};
 
+unsigned char ts1[4]={0x43,0x01,0x00,0xBB};
+unsigned char td1[5]={0x05,0x02,0x00,0x00,0xF8};
+unsigned char te1[4]={0x19,0x01,0x10,0xd5};
+
+unsigned char ts2[4]={0x43,0x01,0x30,0x8b};
+unsigned char td2[5]={0x05,0x02,0x00,0x00,0xf8};
+unsigned char te2[4]={0x19,0x01,0x10,0xd5};
+
+unsigned char ts3[4]={0x43,0x01,0x19,0xa2};
+unsigned char td3[5]={0x05,0x02,0x00,0x00,0xf8};
+unsigned char te3[4]={0x19,0x01,0x10,0xd5};
+
+static void function(void);
 //u8 itf=0;
 /*******************************************************************************
 * 函数名		:	
@@ -51,11 +65,11 @@ void Usart_test_Configuration(void)
 	
 	PWM_OUT(TIM2,PWM_OUTChannel1,1,900);						//PWM设定-20161127版本	
 	
-	USART_DMA_ConfigurationNR	(USART1,19200,BufferSize);	//USART_DMA配置--查询方式，不开中断
+	USART_DMA_ConfigurationNR	(USART1,625000,BufferSize);	//USART_DMA配置--查询方式，不开中断
   
 //  IWDG_Configuration(1000);			//独立看门狗配置---参数单位ms	
   
-  SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
+  SysTick_Configuration(100);	//系统嘀嗒时钟配置72MHz,单位为uS
   pr=(int*)0x20024300;
 }
 /*******************************************************************************
@@ -70,8 +84,11 @@ void Usart_test_Server(void)
 	u16 Length	=	0;
 	
 	IWDG_Feed();								//独立看门狗喂狗
-
-	Length	=	USART_ReadBufferIDLE	(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	
+	function();	
+	return;
+	
+	Length	=	API_USART_ReadBufferIDLE(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(Length)
 	{
     API_USART_DMA_Send(USART1,rxBuffer1,Length);	//串口DMA发送程序
@@ -85,6 +102,59 @@ void Usart_test_Server(void)
 	{
 		//SysTick_DeleymS(5000);				//SysTick延时nmS
 	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void function(void)
+{
+	static unsigned char i	=	0;
+	if(i>=10)
+	{
+		SysTick_DeleyS(1);					//SysTick延时nS
+		i=0;
+	}
+	
+	if(0==i)
+	{
+		API_USART_DMA_Send(USART1,t1,4);	//串口DMA发送程序
+		SysTick_DeleyuS(200);					//SysTick延时nuS
+	}
+	
+	else if(1==i)
+		API_USART_DMA_Send(USART1,ts1,4);	//串口DMA发送程序
+	else if(2==i)
+		API_USART_DMA_Send(USART1,td1,5);	//串口DMA发送程序
+	else if(3==i)
+	{
+		API_USART_DMA_Send(USART1,te1,4);	//串口DMA发送程序
+		SysTick_DeleyuS(800);					//SysTick延时nuS
+	}
+	
+	else if(4==i)
+		API_USART_DMA_Send(USART1,ts2,4);	//串口DMA发送程序
+	else if(5==i)
+		API_USART_DMA_Send(USART1,td2,5);	//串口DMA发送程序
+	else if(6==i)
+	{
+		API_USART_DMA_Send(USART1,te2,4);	//串口DMA发送程序
+		SysTick_DeleyuS(500);					//SysTick延时nuS
+	}
+	
+	else if(7==i)
+		API_USART_DMA_Send(USART1,ts3,4);	//串口DMA发送程序
+	else if(8==i)
+		API_USART_DMA_Send(USART1,td3,5);	//串口DMA发送程序
+	else if(9==i)
+		API_USART_DMA_Send(USART1,te3,4);	//串口DMA发送程序
+	
+	i+=1;
 }
 #endif
 

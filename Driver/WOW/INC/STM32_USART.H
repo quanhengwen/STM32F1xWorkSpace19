@@ -25,13 +25,6 @@
 #include "stm32f10x_type.h"
 #include "stm32f10x_usart.h"
 
-//typedef struct _uLink
-//{	
-//	unsigned short 	DataLen;			//存储的数据长度
-//	unsigned short	Serial;				//存储的序号
-//	unsigned char* 	DataAddr;			//数据动态存储空间
-//	struct _uLink* Next;					//下一个节点	:
-//}uLinkDef;
 
 typedef struct
 {
@@ -40,49 +33,83 @@ typedef struct
 	//RS485_CTL
 	GPIO_TypeDef* 	RS485_CTL_PORT;				//GPIOX
 	unsigned short 	RS485_CTL_Pin;				//GPIO_Pin_x
+	
+	GPIO_TypeDef* 	RS485_TxEn_PORT;			//GPIOX
+	unsigned short 	RS485_TxEn_Pin;				//GPIO_Pin_x
+	
+	GPIO_TypeDef* 	RS485_RxEn_PORT;			//GPIOX
+	unsigned short 	RS485_RxEn_Pin;				//GPIO_Pin_x
 }RS485Def;
 
-//#define RS485_TX_EN			(RS485_TypeDef->RS485_CTL_PORT->BSRR		= R61509V_sPinfo->R61509V_sCS_Pin)
-//#define RS485_RX_EN			(R61509V_sPinfo->R61509V_sCS_PORT->BRR 		= R61509V_sPinfo->R61509V_sCS_Pin)
+//------------------------------------------------------API-1
+unsigned short api_usart_dma_receive(USART_TypeDef* USARTx,unsigned char *RevBuffer);
+unsigned short api_rs485_dam_receive(RS485Def *pRS485,unsigned char *RevBuffer);
 
 
-//---------------------------串口
-//*****************USART_DMA初始化
+unsigned short api_usart_dma_send(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);
+unsigned short api_rs485_dma_send(RS485Def *pRS485,unsigned char *tx_buffer,unsigned short BufferSize);
+
+unsigned short api_usart_dma_printf(USART_TypeDef* USARTx,const char *format,...);
+unsigned short api_rs485_dma_printf(RS485Def *pRS485,const char *format,...);
+//------------------------------------------------------
 
 
-void	USART_IT_Initialize(USART_TypeDef* USARTx);	                    //串口中断配置
+//------------------------------------------------------API-configuration
+void api_usart_dma_configurationNR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断
 
-void	USART_DMA_ConfigurationNR	(USART_TypeDef* USARTx,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--查询方式，不开中断
-void	USART_DMA_ConfigurationIDLEIT	(USART_TypeDef* USARTx,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--空闲中断
-void 	USART_DMA_ConfigurationEV	(USART_TypeDef* USARTx,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--查询方式，不开中断--偶校验
-void 	USART_DMA_ConfigurationOD	(USART_TypeDef* USARTx,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--查询方式，不开中断--奇校验
+void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 
-void 	USART_DMA_ConfigurationIT	(USART_TypeDef* USARTx,u32 USART_BaudRate,u32 BufferSize);	//USART_DMA配置--中断方式
-
-void	USART_DMA_ConfigurationNRRemap	(USART_TypeDef* USARTx,u32 USART_BaudRate,u32 *RxdBuffer,u32 BufferSize);	//USART_DMA配置(映射)--查询方式，不开中断
-
-//*****************串口接收
-u16	API_USART_ReadBufferIDLE(USART_TypeDef* USARTx,u8 *RevBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
-
-//*****************串口发送
-u16	USART_DMAPrintf		  (USART_TypeDef* USARTx,const char *format,...);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
-
-u16	API_USART_DMA_Send	(USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+void api_usart_dma_configuration_even(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,偶校验
+void api_usart_dma_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,奇校验
+void api_usart_dma_configuration_idleIT(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--中断方式
+void api_usart_dma_configurationNR_Remap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射，不开中断
+void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射
+void api_usart_configuration_it(USART_TypeDef* USARTx,u32 USART_BaudRate);	//USART_中断方式配置
 
 
-//---------------------------RS485
-//*****************RS485初始化---使用DMA空闲接收，标志查询方式
-void	RS485_DMA_ConfigurationNR			(RS485Def *pRS485,u32 USART_BaudRate,u16 BufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-void	RS485_DMA_ConfigurationNRRemap(RS485Def *pRS485,u32 USART_BaudRate,u32 *RxdBuffer,u32 BufferSize);	//USART_DMA配置(映射)--查询方式，不开中断,配置完默认为接收状态
-//*****************RS485接收
-u16		RS485_ReadBufferIDLE			(RS485Def *pRS485,u8 *RevBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
+//------------------------------------------------------static1
+static void	usart_gpio_initialize(USART_TypeDef* USARTx);
+static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx);	//USART_GPIO完全映射配置
+	
+static void usart_initialize_nr(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//USART_DMA配置--查询方式，不开中断
+static void usart_initialize_even(USART_TypeDef* USARTx,unsigned long USART_BaudRate);	//USART_DMA配置--查询方式，不开中断--偶校验
+static void usart_initialize_odd(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//USART_DMA配置--查询方式，不开中断--奇校验
+static void	usart_dma_initialize(USART_TypeDef* USARTx,unsigned short BufferSize);
+static void usart_it_initialize(USART_TypeDef* USARTx);	//串口GPIO配置
 
-//*****************RS485发送
-u16 	RS485_DMAPrintf						(RS485Def *pRS485,const char *format,...);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
-u16 	RS485_DMASend							(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize);	//RS485-DMA发送程序
+
+//------------------------------------------------------static2
+static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);		//串口DMA发送程序
+static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,unsigned char *RevBuffer);
+
+static unsigned char* get_usart_rx_data_addr(USART_TypeDef* USARTx);
+static unsigned char* get_usart_tx_data_addr(USART_TypeDef* USARTx);
+
+static unsigned short set_usart_dma_buffer_size(USART_TypeDef* USARTx,unsigned short size);
+static unsigned short get_usart_dma_buffer_size(USART_TypeDef* USARTx);
+
+static unsigned short set_usart_rx_capacity_backup(USART_TypeDef* USARTx,unsigned short size);
+static unsigned short get_usart_rx_capacity_backup(USART_TypeDef* USARTx);
+
+static unsigned short set_tx_retry_count(USART_TypeDef* USARTx,unsigned short count);
+static unsigned short get_tx_retry_count(USART_TypeDef* USARTx);
+static unsigned short set_rx_retry_count(USART_TypeDef* USARTx,unsigned short count);
+static unsigned short get_rx_retry_count(USART_TypeDef* USARTx);
+
+static DMA_Channel_TypeDef* get_usart_tx_dma_channel(USART_TypeDef* USARTx);
+static DMA_Channel_TypeDef* get_usart_rx_dma_channel(USART_TypeDef* USARTx);
+static void set_tx_dma_flag_clear(USART_TypeDef* USARTx);
+static void set_rx_dma_flag_clear(USART_TypeDef* USARTx);
+
+static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx);		//串口状态检查
+static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);		//串口状态检查
+
+static void set_rs485_tx(RS485Def *pRS485,FunctionalState NewState);
+static void set_rs485_rx(RS485Def *pRS485,FunctionalState NewState);
 
 
-void 	USART_ConfigurationIT(USART_TypeDef* USARTx,u32 USART_BaudRate,u8 PreemptionPriority,u8 SubPriority);	//USART_配置---常规中断方式
+
+
 void	USART_Send(USART_TypeDef* USARTx,u8* RevBuffer,u16 Lengh);
 unsigned char UART5ReceiveData(unsigned char* RecByte);			//串口5读数据,返回0-无中断，返回1有中断无数据（发送中断），返回2-有中断有接收到数据
 

@@ -664,7 +664,9 @@ void SPI2_IRQHandler(void)
 *******************************************************************************/
 void USART1_IRQHandler(void)
 {
-	WOW_Server();
+	#include "STM32_USART.H"
+	USART_RxServer(USART1);		//串口接收服务程序
+//	WOW_Server();
 }
 
 /*******************************************************************************

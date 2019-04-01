@@ -129,7 +129,7 @@ unsigned short API_IOT5302WGetUID(unsigned char* Buffer)
 unsigned short IOT5302W_HWSendData(unsigned char* TxdBuffer,unsigned short length)
 {
   unsigned short TxdLen = 0;
-  TxdLen = RS485_DMASend(&IOT5302W.Conf.IOT5302WPort,TxdBuffer,length);	//RS485-DMA发送程序
+  TxdLen = api_rs485_dma_send(&IOT5302W.Conf.IOT5302WPort,TxdBuffer,length);	//RS485-DMA发送程序
   return TxdLen;
 }
 /*******************************************************************************
@@ -144,7 +144,7 @@ unsigned short IOT5302W_HWSendData(unsigned char* TxdBuffer,unsigned short lengt
 unsigned short IOT5302W_HWReadData(unsigned char* Buffer)
 {
   unsigned short RxdLen = 0;
-  RxdLen = RS485_ReadBufferIDLE(&IOT5302W.Conf.IOT5302WPort,Buffer);
+  RxdLen = api_rs485_dam_receive(&IOT5302W.Conf.IOT5302WPort,Buffer);
   return RxdLen;
 }
 /*******************************************************************************
@@ -158,7 +158,7 @@ unsigned short IOT5302W_HWReadData(unsigned char* Buffer)
 *******************************************************************************/
 void IOT5302W_HWPortInitialize(unsigned long USART_BaudRate)
 {  
-  RS485_DMA_ConfigurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	IOT5302W_Initialize

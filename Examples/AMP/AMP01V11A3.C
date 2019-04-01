@@ -26,16 +26,22 @@
 #define ampCommPcPort        USART2
 //------------------通讯接口--柜口
 #define ampCommCbPort       USART1
-#define ampCommCbCTLPort    GPIOA         //锁控制接口，高电平开锁
-#define ampCommCbCTLPin     GPIO_Pin_8
+#define ampCommCbTxEnPort  	GPIOA         //锁控制接口，高电平开锁
+#define ampCommCbTxEnPin   	GPIO_Pin_8
+#define ampCommCbRxEnPort 	GPIOC
+#define ampCommCbRxEnPin		GPIO_Pin_9
 //------------------通讯接口--层板接口
-#define ampCommLayPort       UART4
-#define ampCommLayCTLPort    GPIOA         //锁控制接口，高电平开锁
-#define ampCommLayCTLPin     GPIO_Pin_12
+#define ampCommLayPort     	UART4
+#define ampCommLayTxEnPort 	GPIOA         //锁控制接口，高电平开锁
+#define ampCommLayTxEnPin  	GPIO_Pin_12
+#define ampCommLayRxEnPort 	GPIOA
+#define ampCommLayRxEnPin		GPIO_Pin_11
 //------------------通讯接口--读卡器接口
-#define ampCommCardPort      USART3
-#define ampCommCardCTLPort   GPIOC         //锁控制接口，高电平开锁
-#define ampCommCardCTLPin    GPIO_Pin_8
+#define ampCommCardPort    	USART3
+#define ampCommCardTxEnPort 	GPIOC         //锁控制接口，高电平开锁
+#define ampCommCardTxEnPin  	GPIO_Pin_8
+#define ampCommCardRxEnPort 	GPIOC
+#define ampCommCardRxEnPin		GPIO_Pin_7
 #define ampCommCardBaudRate  19200         //读卡器通讯波特率
 
 //------------------锁接口J10
@@ -72,7 +78,7 @@ static SPIDef stLed;
 ampdef ampsys;
 
 //----------------------------------调试数据
-//unsigned char rxd[maxFramesize];
+unsigned char rxd[maxFramesize];
 
 
 /*******************************************************************************
@@ -101,7 +107,9 @@ void AMP01V11A3_Configuration(void)
   
   while(1)
   {
-
+//		Pc_Server();
+//		Cab_Server();
+//		Lay_Server();
   }
 }
 /*******************************************************************************
@@ -359,7 +367,7 @@ static void del_ack_wait_flag(ampPortDef port)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Pc_Server(void)
+void Pc_Server(void)
 {
 	//--------------------------------------
 	//主板:接收PC数据，广播数据，内部使用和转发
@@ -367,7 +375,7 @@ static void Pc_Server(void)
 	unsigned short rxnum=0;
 	unsigned char rxd[maxFramesize];
 	//================================================数据接收
-	rxnum	=	API_USART_ReadBufferIDLE(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_usart_dma_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 		pc_data_process(rxd,rxnum);
@@ -382,7 +390,7 @@ static void Pc_Server(void)
 		if(ampsys.commdata.PcAck.size)
 		{
 			Cache	=	&ampsys.commdata.PcAck;
-			sendnum	=	API_USART_DMA_Send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+			sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 			if(sendnum)	//已将数据转移到缓存
 			{	
 				ampsys.commdata.PcAck.size	=	0;
@@ -403,7 +411,7 @@ static void Pc_Server(void)
 			ampsys.ReSend.Pc	=	0;
 			return;
 		}
-		sendnum	=	API_USART_DMA_Send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			set_ack_wait_flag(PcPort);	//0--无需等待应答，1--需等待应答
@@ -422,15 +430,15 @@ static void Pc_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Cab_Server(void)
+void Cab_Server(void)
 {
 	//--------------------------------------
 	//主板:接收PC数据，广播数据，内部使用和转发
 	//接收到总线数据，上传到PC
 	unsigned short 	rxnum=0;
-	unsigned char 	rxd[maxFramesize];
+	//unsigned char 	rxd[maxFramesize];
 	//================================================数据接收
-	rxnum	=	RS485_ReadBufferIDLE(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_dam_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 		cab_data_process(rxd,rxnum);
@@ -446,7 +454,7 @@ static void Cab_Server(void)
 		if(ampsys.commdata.CbAck.size)
 		{
 			Cache	=	&ampsys.commdata.CbAck;
-			sendnum	=	API_USART_DMA_Send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+			sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 			if(sendnum)	//已将数据转移到缓存
 			{	
 				ampsys.commdata.CbAck.size	=	0;
@@ -467,7 +475,7 @@ static void Cab_Server(void)
 			ampsys.ReSend.Cab	=	0;
 			return;
 		}
-		sendnum	=	RS485_DMASend(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			set_ack_wait_flag(CabPort);	//0--无需等待应答，1--需等待应答
@@ -485,7 +493,7 @@ static void Cab_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Lay_Server(void)
+void Lay_Server(void)
 {
 	//--------------------------------------
 	//主板:接收PC数据，广播数据，内部使用和转发
@@ -493,7 +501,7 @@ static void Lay_Server(void)
 	unsigned short 	rxnum=0;
 	unsigned char 	rxd[maxFramesize];
 	//================================================数据接收
-	rxnum	=	RS485_ReadBufferIDLE(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_dam_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(rxnum)
 	{
 		lay_data_process(rxd,rxnum);
@@ -507,7 +515,7 @@ static void Lay_Server(void)
 		if(ampsys.commdata.CbAck.size)
 		{
 			Cache	=	&ampsys.commdata.LyAck;
-			sendnum	=	RS485_DMASend(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+			sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 			if(sendnum)	//已将数据转移到缓存
 			{	
 				ampsys.commdata.LyAck.size	=	0;
@@ -527,7 +535,7 @@ static void Lay_Server(void)
 			ampsys.ReSend.Lay	=	0;
 			return;
 		}
-		sendnum	=	RS485_DMASend(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			set_ack_wait_flag(LayPort);
@@ -1189,30 +1197,31 @@ static void Communication_Configuration(void)
 {
 	IOT5302Wdef ampIOT5302W;
   //-----------------------------PC接口USART1
-  USART_DMA_ConfigurationNR	(ampCommPcPort,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR(ampCommPcPort,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断
   
   //-----------------------------读卡器接口USART3
   ampIOT5302W.Conf.IOT5302WPort.USARTx  = ampCommCardPort;
-  ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT  = ampCommCardCTLPort;
-  ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin   = ampCommCardCTLPin;
+	ampIOT5302W.Conf.IOT5302WPort.RS485_TxEn_PORT  = ampCommCardTxEnPort;
+  ampIOT5302W.Conf.IOT5302WPort.RS485_TxEn_Pin   = ampCommCardTxEnPin;
+	ampIOT5302W.Conf.IOT5302WPort.RS485_RxEn_PORT  = ampCommCardRxEnPort;
+  ampIOT5302W.Conf.IOT5302WPort.RS485_RxEn_Pin   = ampCommCardRxEnPin;
   ampIOT5302W.Conf.USART_BaudRate  = ampCommCardBaudRate;
-	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_7);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOC,GPIO_Pin_7);
   API_IOT5302WConfiguration(&ampIOT5302W);
   //-----------------------------层板接口USART2
   ampRS485Ly.USARTx  = ampCommLayPort;
-  ampRS485Ly.RS485_CTL_PORT  = ampCommLayCTLPort;
-  ampRS485Ly.RS485_CTL_Pin   = ampCommLayCTLPin;
-  RS485_DMA_ConfigurationNR			(&ampRS485Ly,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-	GPIO_Configuration_OOD50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
+  ampRS485Ly.RS485_TxEn_PORT  = ampCommLayTxEnPort;
+  ampRS485Ly.RS485_TxEn_Pin   = ampCommLayTxEnPin;
+	ampRS485Ly.RS485_RxEn_PORT	=	ampCommLayRxEnPort;
+	ampRS485Ly.RS485_RxEn_Pin		=	ampCommLayRxEnPin;
+  api_rs485_dma_configurationNR(&ampRS485Ly,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
   //-----------------------------副柜接口UART4
   ampRS485Cb.USARTx  					=	ampCommCbPort;
-  ampRS485Cb.RS485_CTL_PORT		= ampCommCbCTLPort;
-  ampRS485Cb.RS485_CTL_Pin   	= ampCommCbCTLPin;
-  RS485_DMA_ConfigurationNR			(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_9);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOC,GPIO_Pin_9);
+	ampRS485Cb.RS485_TxEn_PORT	=	ampCommCbTxEnPort;
+	ampRS485Cb.RS485_TxEn_Pin		=	ampCommCbTxEnPin;
+	ampRS485Cb.RS485_RxEn_PORT	=	ampCommCbRxEnPort;
+	ampRS485Cb.RS485_RxEn_Pin		=	ampCommCbRxEnPin;
+  api_rs485_dma_configurationNR(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	//GPIO_SetBits(GPIOC,GPIO_Pin_9);
 }
 /*******************************************************************************
 * 函数名			:	function

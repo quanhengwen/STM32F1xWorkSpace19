@@ -94,7 +94,7 @@ void AMPLAY_Receive(void)
   unsigned char rxd[256]={0};
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = RS485_ReadBufferIDLE(&stLayRS485,rxd);
+  RxNum = api_rs485_dam_receive(&stLayRS485,rxd);
   if(RxNum)
   {
     Msg_ProcessLY(LayPort,rxd,RxNum);              //柜消息处理
@@ -233,7 +233,7 @@ void AMPLAYCOMM_Configuration(void)
   stLayRS485.USARTx  = USART1;
   stLayRS485.RS485_CTL_PORT  = GPIOA;
   stLayRS485.RS485_CTL_Pin   = GPIO_Pin_12;
-  RS485_DMA_ConfigurationNR			(&stLayRS485,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&stLayRS485,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
   GPIO_Configuration_OPP50	(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
   GPIO_ResetBits(GPIOA,GPIO_Pin_11);
 }
@@ -331,7 +331,7 @@ void Msg_ProcessLY(enCCPortDef Port,unsigned char* pBuffer,unsigned short length
 unsigned short AMPLAY_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned short length)
 {
   unsigned  short   sendedlen = 0;
-  sendedlen = RS485_DMASend(&stLayRS485,pBuffer,length);	//RS485-DMA发送程序
+  sendedlen = api_rs485_dma_send(&stLayRS485,pBuffer,length);	//RS485-DMA发送程序
   return  sendedlen;
 }
 /*******************************************************************************

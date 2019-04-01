@@ -121,7 +121,7 @@ void CardReaderInitLoop(void)
   unsigned char data[64]={0};
   unsigned char RxNum  = 0;
   //---------------------层板接口 USART2
-  RxNum = RS485_ReadBufferIDLE(&stCbRS485Ly,data);
+  RxNum = api_rs485_dam_receive(&stCbRS485Ly,data);
   if(RxNum)
   {
     unsigned char i=0;
@@ -145,7 +145,7 @@ void CardReaderInitLoop(void)
         {
           InitCardReaderFlag=1;
           InitCardUSART_BaudRate=19200;
-          RS485_DMA_ConfigurationNR(&stCbRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+          api_rs485_dma_configurationNR(&stCbRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
         }
       }
     }
@@ -195,7 +195,7 @@ void CardReaderInitServer(void)
     {
       InitCardUSART_BaudRate=19200;
     }     
-    RS485_DMA_ConfigurationNR			(&stCbRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+    api_rs485_dma_configurationNR(&stCbRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
     
   }
   //---------------------0.5秒发送一次配置
@@ -205,7 +205,7 @@ void CardReaderInitServer(void)
     unsigned char TxdLen  = 0;
     //CardReaderInitLoop();
     TxdLen  = IOT5302WSetBaudrate(TxdBuffer,1);    //设置读卡器波特率
-    TxdLen = RS485_DMASend(&stCbRS485Ly,TxdBuffer,TxdLen);	//RS485-DMA发送程序
+    TxdLen = api_rs485_dma_send(&stCbRS485Ly,TxdBuffer,TxdLen);	//RS485-DMA发送程序
   }
   InitCardReaderTimeOut++;
 }
@@ -224,25 +224,25 @@ void AMPCAB_Receive(void)
   unsigned char rxd[256]={0};
   //==========================================================接收查询
   //---------------------PC接口 USART1
-  RxNum = API_USART_ReadBufferIDLE(USART1,rxd);
+  RxNum = api_usart_dma_receive(USART1,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(PcPort,rxd,RxNum);                //柜消息处理
   }
   //---------------------副柜接口 UART4
-  RxNum = RS485_ReadBufferIDLE(&stCbRS485Cb,rxd);
+  RxNum = api_rs485_dam_receive(&stCbRS485Cb,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(CabPort,rxd,RxNum);
   }  
   //---------------------层板接口 USART2
-  RxNum = RS485_ReadBufferIDLE(&stCbRS485Ly,rxd);
+  RxNum = api_rs485_dam_receive(&stCbRS485Ly,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(LayPort,rxd,RxNum);              //柜消息处理
   }
   //---------------------读卡器接口 USART3
-  RxNum = API_USART_ReadBufferIDLE(USART3,rxd);
+  RxNum = api_usart_dma_receive(USART3,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(CardPort,rxd,RxNum);
@@ -524,24 +524,24 @@ void AMPCAB_GenyConfiguration(void)
 void AMPCABCOMM_Configuration(void)
 {
   //-----------------------------PC接口USART1
-  USART_DMA_ConfigurationNR	(USART1,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR(USART1,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
   
   //-----------------------------读卡器接口USART3
 //  if(0==AMP.SwData.ICreadFlg) //sw2未拨码，默认19200
-//    USART_DMA_ConfigurationNR	(USART3,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
+//    api_usart_dma_configurationNR(USART3,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断
 //  else
-    USART_DMA_ConfigurationNR	(USART3,9600,gDatasize);	//USART_DMA配置--查询方式，不开中断
+    api_usart_dma_configurationNR	(USART3,9600,gDatasize);	//USART_DMA配置--查询方式，不开中断
 
   //-----------------------------层板接口USART2
   stCbRS485Ly.USARTx  = USART2;
   stCbRS485Ly.RS485_CTL_PORT  = GPIOA;
   stCbRS485Ly.RS485_CTL_Pin   = GPIO_Pin_1;
-  RS485_DMA_ConfigurationNR			(&stCbRS485Ly,9600,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&stCbRS485Ly,9600,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
   //-----------------------------副柜接口UART4
   stCbRS485Cb.USARTx  = UART4;
   stCbRS485Cb.RS485_CTL_PORT  = GPIOC;
   stCbRS485Cb.RS485_CTL_Pin   = GPIO_Pin_12;
-  RS485_DMA_ConfigurationNR			(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -558,13 +558,13 @@ unsigned short AMPCAB_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned 
   switch(Port)
   {
     case  NonPort   : return 0;   //不继续执行
-    case  PcPort    : sendedlen = API_USART_DMA_Send(USART1,pBuffer,length);
+    case  PcPort    : sendedlen = api_usart_dma_send(USART1,pBuffer,length);
       break;
-    case  CabPort   : sendedlen = RS485_DMASend(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
+    case  CabPort   : sendedlen = api_rs485_dma_send(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
       break;
-    case  LayPort   : sendedlen = RS485_DMASend(&stCbRS485Ly,pBuffer,length);	//RS485-DMA发送程序
+    case  LayPort   : sendedlen = api_rs485_dma_send(&stCbRS485Ly,pBuffer,length);	//RS485-DMA发送程序
       break;
-    case  CardPort  : sendedlen = API_USART_DMA_Send(USART3,pBuffer,length);
+    case  CardPort  : sendedlen = api_rs485_dma_send(USART3,pBuffer,length);
       break;
     default :return 0;      //不继续执行
   }
