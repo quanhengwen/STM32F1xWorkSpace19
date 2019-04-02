@@ -64,6 +64,7 @@ void api_usart_dma_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,un
 void api_usart_dma_configuration_idleIT(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--中断方式
 void api_usart_dma_configurationNR_Remap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射，不开中断
 void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射
+void api_rs485_dma_configurationIT(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//RS485_DMA配置--中断
 void api_usart_configuration_it(USART_TypeDef* USARTx,u32 USART_BaudRate);	//USART_中断方式配置
 
 
@@ -79,6 +80,12 @@ static void usart_it_initialize(USART_TypeDef* USARTx);	//串口GPIO配置
 
 
 //------------------------------------------------------static2
+static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type);		//设置串口类型：0---USART,1-RS485
+static unsigned char get_usart_type(USART_TypeDef* USARTx);
+
+static void set_rs485_addr(RS485Def *pRS485);
+static RS485Def* get_rs485_addr(USART_TypeDef* USARTx);
+
 static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);		//串口DMA发送程序
 static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,unsigned char *RevBuffer);
 
@@ -101,8 +108,12 @@ static DMA_Channel_TypeDef* get_usart_rx_dma_channel(USART_TypeDef* USARTx);
 static void set_tx_dma_flag_clear(USART_TypeDef* USARTx);
 static void set_rx_dma_flag_clear(USART_TypeDef* USARTx);
 
-static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx);		//串口状态检查
-static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);		//串口状态检查
+static unsigned char set_usart_rx_idle(USART_TypeDef* USARTx);
+static unsigned char set_usart_tx_idle(USART_TypeDef* USARTx);
+static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx);
+static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);
+static unsigned char del_usart_rx_idle(USART_TypeDef* USARTx);
+static unsigned char del_usart_tx_idle(USART_TypeDef* USARTx);
 
 static void set_rs485_tx(RS485Def *pRS485,FunctionalState NewState);
 static void set_rs485_rx(RS485Def *pRS485,FunctionalState NewState);

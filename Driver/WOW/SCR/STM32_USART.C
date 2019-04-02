@@ -63,7 +63,7 @@
 #define	uart_dma_buffer_size	280	//Ä¬ÈÏ´®¿ÚDMA½ÓÊÕ»º³å´óÐ¡,Èç¹ûÅäÖÃÊ±Î´ÊäÈë»º´æ´óÐ¡Ê±Ê¹ÓÃµÄÄ¬ÈÏÖµ
 #define	uBaudRate	115200	//Ä¬ÈÏ´®¿Ú²¨ÌØÂÊ
 
-static struct
+struct
 {
   unsigned short nUSART1;
   unsigned short nUSART2;
@@ -71,7 +71,7 @@ static struct
   unsigned short nUART4;
 //  unsigned short nUART5;	  //----ÎÞDMA
 }DmaSize;      //ÅäÖÃÊ±ÉèÖÃµÄDMA½ÓÊÕ»º´æ´óÐ¡
-static struct
+struct
 {
   unsigned short nUSART1;
   unsigned short nUSART2;
@@ -79,7 +79,7 @@ static struct
   unsigned short nUART4;
 //  unsigned short nUART5;	  //----ÎÞDMA
 }RemaDmaSize;     //DMA¿ªÆôºóÊ£ÓàDMA½ÓÊÕ»º´æ´óÐ¡£¬Í¨¹ýÓëÉèÖÃµÄDMA»º´æ´óÐ¡À´ÅÐ¶ÏÊý¾ÝÊÇ·ñÔÚ½ÓÊÕ
-static struct
+struct
 {
   unsigned short nUSART1;
   unsigned short nUSART2;
@@ -87,7 +87,7 @@ static struct
   unsigned short nUART4;
 //  unsigned short nUART5;	  //----ÎÞDMA
 }rx_retry_count;
-static struct
+struct
 {
   unsigned short nUSART1;
   unsigned short nUSART2;
@@ -95,6 +95,39 @@ static struct
   unsigned short nUART4;
 //  unsigned short nUART5;	  //----ÎÞDMA
 }tx_retry_count;
+
+struct
+{
+  unsigned char nUSART1	:1;
+  unsigned char nUSART2	:1;
+  unsigned char nUSART3	:1;
+  unsigned char nUART4	:1;
+  unsigned char nUART5	:1;	  //----ÎÞDMA
+}usart_type;		//´®¿ÚÀàÐÍ0---USART,1-RS485
+struct
+{
+  unsigned char nUSART1	:1;
+  unsigned char nUSART2	:1;
+  unsigned char nUSART3	:1;
+  unsigned char nUART4	:1;
+  unsigned char nUART5	:1;	  //----ÎÞDMA
+}usart_tx_idle_flag;		//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+struct
+{
+  unsigned char nUSART1	:1;
+  unsigned char nUSART2	:1;
+  unsigned char nUSART3	:1;
+  unsigned char nUART4	:1;
+  unsigned char nUART5	:1;	  //----ÎÞDMA
+}usart_rx_idle_flag;		//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+struct
+{
+  RS485Def *rs485_usart1;
+  RS485Def *rs485_usart2;
+	RS485Def *rs485_usart3;
+  RS485Def *rs485_uart4;
+  RS485Def *rs485_uart5;
+}rs485_addr;		//RS485µØÖ·
 
 /* Private variables ---------------------------------------------------------*/
 unsigned char uRx1Addr[uart_dma_buffer_size]={0};
@@ -131,10 +164,13 @@ unsigned char uTx4Addr[uart_dma_buffer_size]={0};
 *******************************************************************************/
 unsigned short api_usart_dma_receive(USART_TypeDef* USARTx,u8 *RevBuffer)
 {
+	unsigned short len=0;
 	if(get_usart_rx_idle(USARTx))
-		return get_usart_rx_dma_buffer(USARTx,RevBuffer);
-	else
-		return 0;
+	{		
+		len	= get_usart_rx_dma_buffer(USARTx,RevBuffer);
+		del_usart_rx_idle(USARTx);
+	}
+	return len;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	RS485_ReadBufferIDLE
@@ -145,13 +181,17 @@ unsigned short api_usart_dma_receive(USART_TypeDef* USARTx,u8 *RevBuffer)
 unsigned short api_rs485_dam_receive(RS485Def *pRS485,u8 *RevBuffer)	//´®¿Ú¿ÕÏÐÄ£Ê½¶Á´®¿Ú½ÓÊÕ»º³åÇø£¬Èç¹ûÓÐÊý¾Ý£¬½«Êý¾Ý¿½±´µ½RevBuffer,²¢·µ»Ø½ÓÊÕµ½µÄÊý¾Ý¸öÊý£¬È»ºóÖØÐÂ½«½ÓÊÕ»º³åÇøµØÖ·Ö¸ÏòRxdBuffer£¬
 {
 	USART_TypeDef* USARTx	=	pRS485->USARTx;
-	if(get_usart_tx_idle(USARTx))    //·¢ËÍÍê³É
+	if(get_usart_tx_idle(USARTx))
 	{
 		set_rs485_tx(pRS485,DISABLE);
 		set_rs485_rx(pRS485,ENABLE);
-		
-		if(get_usart_rx_idle(USARTx))
-			return get_usart_rx_dma_buffer(USARTx,RevBuffer);
+		del_usart_tx_idle(USARTx);		
+	}
+	if(get_usart_rx_idle(USARTx))
+	{
+		unsigned short len=0;
+		len	= get_usart_rx_dma_buffer(USARTx,RevBuffer);
+		return len;
 	}
 	return 0;
 }
@@ -179,8 +219,9 @@ unsigned short api_usart_dma_send(USART_TypeDef* USARTx,u8 *tx_buffer,u16 Buffer
 *******************************************************************************/
 unsigned short api_rs485_dma_send(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize)		//RS485-DMA·¢ËÍ³ÌÐò
 {
+	//-------------½ÓÊÕ¿ÕÏÐºÍ·¢ËÍ¿ÕÏÐ
   unsigned short sendedlen  =0;
-	if(get_usart_rx_idle(pRS485->USARTx))
+	if(get_usart_tx_idle(pRS485->USARTx)&&get_usart_rx_idle(pRS485->USARTx))
 	{
 		set_rs485_tx(pRS485,ENABLE);
 		set_rs485_rx(pRS485,DISABLE);
@@ -288,14 +329,17 @@ void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned 
 	usart_initialize_nr(pRS485->USARTx,USART_BaudRate);	//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï
 	usart_dma_initialize(pRS485->USARTx,BufferSize);		//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï
 	
+	set_usart_type(pRS485->USARTx,1);		//ÉèÖÃ´®¿ÚÀàÐÍ£º0---USART,1-RS485
+	set_rs485_addr(pRS485);
+	
 	if(pRS485->RS485_CTL_PORT)
 		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_CTL_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
 	
 	if(pRS485->RS485_TxEn_PORT)
-		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_TxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
+		GPIO_Configuration_OPP50	(pRS485->RS485_TxEn_PORT,pRS485->RS485_TxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
 	
 	if(pRS485->RS485_RxEn_PORT)
-		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_RxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605	
+		GPIO_Configuration_OPP50	(pRS485->RS485_RxEn_PORT,pRS485->RS485_RxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605	
 	
 	set_rs485_tx(pRS485,DISABLE);
 	set_rs485_rx(pRS485,ENABLE);
@@ -368,6 +412,44 @@ void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,uns
 	usart_gpio_initialize_Remap(pRS485->USARTx);				//´®¿ÚGPIOÅäÖÃ--ÍêÈ«Ó³Éä
 	usart_initialize_nr(pRS485->USARTx,USART_BaudRate);	//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï
 	usart_dma_initialize(pRS485->USARTx,BufferSize);		//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï
+	set_rs485_addr(pRS485);
+	if(pRS485->RS485_CTL_PORT)
+		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_CTL_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
+	
+	if(pRS485->RS485_TxEn_PORT)
+		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_TxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
+	
+	if(pRS485->RS485_RxEn_PORT)
+		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_RxEn_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605	
+	
+	set_rs485_tx(pRS485,DISABLE);
+	set_rs485_rx(pRS485,ENABLE);
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	USART_DMA_ConfigurationNr
+*¹¦ÄÜÃèÊö		:	USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï,ÅäÖÃÍêÄ¬ÈÏÎª½ÓÊÕ×´Ì¬
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*******************************************************************************/
+void api_rs485_dma_configurationIT(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize)	//USART_DMAÅäÖÃ--ÍêÈ«Ó³Éä
+{
+	USART_TypeDef* USARTx	=	pRS485->USARTx;
+	usart_gpio_initialize(USARTx);				//´®¿ÚGPIOÅäÖÃ--ÍêÈ«Ó³Éä
+	usart_initialize_nr(USARTx,USART_BaudRate);	//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï
+	usart_it_initialize(USARTx);	            	//´®¿ÚÖÐ¶ÏÅäÖÃ
+	
+	set_usart_type(pRS485->USARTx,1);		//ÉèÖÃ´®¿ÚÀàÐÍ£º0---USART,1-RS485
+	set_rs485_addr(pRS485);	
+	
+	USART_Cmd(USARTx, ENABLE);
+	/* Enable USART1 Receive and Transmit interrupts */
+//  USART_ITConfig(USARTx, USART_IT_RXNE, ENABLE);
+//  USART_ITConfig(USARTx, USART_IT_TXE, ENABLE);
+	USART_ITConfig(USARTx, USART_IT_TC, ENABLE);
+	USART_ClearITPendingBit(USARTx,USART_IT_TC); 					//Çå³ý¿ÕÏÐ´®¿Ú±êÖ¾Î»
+	
+	USART_ITConfig(USARTx,USART_IT_IDLE, ENABLE);					//Ê¹ÓÃ¿ÕÏÐÖÐ¶Ï£¬DMA×Ô¶¯½ÓÊÕ£¬¼ì²âµ½×ÜÏß¿ÕÏÐ±íÊ¾·¢ËÍ¶ËÒÑ¾­·¢ËÍÍê³É£¬Êý¾Ý±£´æÔÚDMA»º³åÆ÷ÖÐ
+	USART_ClearITPendingBit(USARTx,USART_IT_IDLE); 				//Çå³ý¿ÕÏÐ´®¿Ú±êÖ¾Î»
 	
 	if(pRS485->RS485_CTL_PORT)
 		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_CTL_Pin);			//½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½£¬×î´óËÙ¶È50MHz----V20170605
@@ -380,6 +462,8 @@ void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,uns
 	
 	set_rs485_tx(pRS485,DISABLE);
 	set_rs485_rx(pRS485,ENABLE);
+	
+	usart_dma_initialize(USARTx,BufferSize);		//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖÐ¶Ï	
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	USART_ConfigurationIT
@@ -712,7 +796,7 @@ static void	usart_dma_initialize(USART_TypeDef* USARTx,u16 BufferSize)	//USART_D
 	DMA_Initstructure.DMA_PeripheralBaseAddr  = (u32)(&USARTx->DR);						//DMAÍâÉèÔ´µØÖ·
 	DMA_Initstructure.DMA_MemoryBaseAddr      = (u32)uart_rxd;								//DMAÊý¾ÝÄÚ´æµØÖ·
 	DMA_Initstructure.DMA_DIR                 = DMA_DIR_PeripheralDST;			  //DMA_DIR_PeripheralDST£¨ÍâÉè×÷ÎªDMAµÄÄ¿µÄ¶Ë£©£¬DMA_DIR_PeripheralSRC£¨ÍâÉè×÷ÎªÊý¾Ý´«ÊäµÄÀ´Ô´£©
-	DMA_Initstructure.DMA_BufferSize          = dma_size; 								  	//Ö¸¶¨DMAÍ¨µÀµÄDMA»º´æµÄ´óÐ¡
+	DMA_Initstructure.DMA_BufferSize          = 0; 								  					//Ö¸¶¨DMAÍ¨µÀµÄDMA»º´æµÄ´óÐ¡
 	DMA_Initstructure.DMA_PeripheralInc       = DMA_PeripheralInc_Disable;	  //DMA_PeripheralInc_Enable£¨ÍâÉèµØÖ·¼Ä´æÆ÷µÝÔö£©£¬DMA_PeripheralInc_Disable£¨ÍâÉèµØÖ·¼Ä´æÆ÷²»±ä£©£¬
 	DMA_Initstructure.DMA_MemoryInc           = DMA_MemoryInc_Enable;				  //DMA_MemoryInc_Enable£¨ÄÚ´æµØÖ·¼Ä´æÆ÷µÝÔö£©£¬DMA_MemoryInc_Disable£¨ÄÚ´æµØÖ·¼Ä´æÆ÷²»±ä£©
 	DMA_Initstructure.DMA_PeripheralDataSize  = DMA_PeripheralDataSize_Byte;	//ÍâÉèÊý¾Ý¿í¶È--DMA_PeripheralDataSize_Byte£¨Êý¾Ý¿í¶ÈÎª8Î»£©£¬DMA_PeripheralDataSize_HalfWord£¨Êý¾Ý¿í¶ÈÎª16Î»£©£¬DMA_PeripheralDataSize_Word£¨Êý¾Ý¿í¶ÈÎª32Î»£©
@@ -810,6 +894,87 @@ static void usart_it_initialize(USART_TypeDef* USARTx)	//´®¿ÚGPIOÅäÖÃ
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
 *******************************************************************************/
+static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type)
+{
+	//´®¿ÚÀàÐÍ0---USART,1-RS485
+	if(USART1==USARTx)
+		usart_type.nUSART1	=	type;
+	if(USART2==USARTx)
+		usart_type.nUSART2	=	type;
+	if(USART3==USARTx)
+		usart_type.nUSART3	=	type;
+	if(UART4==USARTx)
+		usart_type.nUART4	=	type;
+	if(UART5==USARTx)
+		usart_type.nUART5	=	type;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	USART_DMASend
+*¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌÐò£¬Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0
+*ÊäÈë				: 
+*·µ»ØÖµ			:	Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
+*******************************************************************************/
+static unsigned char get_usart_type(USART_TypeDef* USARTx)
+{
+	//´®¿ÚÀàÐÍ0---USART,1-RS485
+	if(USART1==USARTx)
+		return usart_type.nUSART1;
+	if(USART2==USARTx)
+		return usart_type.nUSART2;
+	if(USART3==USARTx)
+		return usart_type.nUSART3;
+	if(UART4==USARTx)
+		return usart_type.nUART4;
+	if(UART5==USARTx)
+		return usart_type.nUART5;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	USART_DMASend
+*¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌÐò£¬Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0
+*ÊäÈë				: 
+*·µ»ØÖµ			:	Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
+*******************************************************************************/
+static void set_rs485_addr(RS485Def *pRS485)		//´®¿ÚDMA·¢ËÍ³ÌÐò
+{
+	USART_TypeDef* USARTx	=	pRS485->USARTx;
+	if(USART1==USARTx)
+		rs485_addr.rs485_usart1	=	pRS485;
+	if(USART2==USARTx)
+		rs485_addr.rs485_usart2	=	pRS485;
+	if(USART3==USARTx)
+		rs485_addr.rs485_usart3	=	pRS485;
+	if(UART4==USARTx)
+		rs485_addr.rs485_uart4	=	pRS485;
+	if(UART5==USARTx)
+		rs485_addr.rs485_uart5	=	pRS485;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	USART_DMASend
+*¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌÐò£¬Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0
+*ÊäÈë				: 
+*·µ»ØÖµ			:	Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
+*******************************************************************************/
+static RS485Def* get_rs485_addr(USART_TypeDef* USARTx)		//´®¿ÚDMA·¢ËÍ³ÌÐò
+{
+	if(0==get_usart_type(USARTx))
+		return 0;
+	if(USART1==USARTx)
+		return rs485_addr.rs485_usart1;
+	if(USART2==USARTx)
+		return rs485_addr.rs485_usart2;
+	if(USART3==USARTx)
+		return rs485_addr.rs485_usart3;
+	if(UART4==USARTx)
+		return rs485_addr.rs485_uart4;
+	if(UART5==USARTx)
+		return rs485_addr.rs485_uart5;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	USART_DMASend
+*¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌÐò£¬Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0
+*ÊäÈë				: 
+*·µ»ØÖµ			:	Èç¹ûÊý¾ÝÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óÐ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
+*******************************************************************************/
 static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize)		//´®¿ÚDMA·¢ËÍ³ÌÐò
 {
 	unsigned short conf_buffer_size	=	get_usart_dma_buffer_size(USARTx);
@@ -818,17 +983,13 @@ static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,u8 *tx_buffe
 	DMA_Channel_TypeDef*	DMAy_Channelx	=	get_usart_tx_dma_channel(USARTx);
 	
 	if(BufferSize>conf_buffer_size)
-		return 0;	
-	
+		return 0;		
 	memcpy(tx_addr,tx_buffer,BufferSize);
 	
 	DMAy_Channelx->CCR    &= (u32)0xFFFFFFFE;				//DMA_Cmd(DMA1_Channel4,DISABLE);//DMA·¢ËÍ¹Ø±Õ£¬Ö»ÄÜÔÚDMA¹Ø±ÕÇé¿öÏÂ²Å¿ÉÒÔÐ´ÈëCNDTR					
 	DMAy_Channelx->CNDTR 	=   BufferSize;					  //Éè¶¨´ý·¢ËÍ»º³åÇø´óÐ¡
-	DMAy_Channelx->CMAR 	=   (u32)tx_addr;			  //·¢ËÍ»º³åÇø
+	DMAy_Channelx->CMAR 	=   (u32)tx_addr;			  	//·¢ËÍ»º³åÇø
 	DMAy_Channelx->CCR    |=  (u32)0x00000001;			//DMA_Cmd(DMA1_Channel4,ENABLE);//DMA·¢ËÍ¿ªÆô3
-	set_tx_dma_flag_clear(USARTx);
-	USART_ClearFlag(USARTx, USART_FLAG_TC);
-
 	return BufferSize;
 }
 /*******************************************************************************
@@ -848,6 +1009,9 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 		return 0;
 	if(0==uart_rxd)
 		return 0;
+//	if(0==get_usart_rx_idle(USARTx))
+//		return 0;
+//	del_usart_rx_idle(USARTx);
 //	if(USART_GetFlagStatus(USARTx,USART_FLAG_IDLE))
 //	{	
 		uart_rxd	=	get_usart_rx_data_addr(USARTx);
@@ -865,6 +1029,9 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 		DMAy_Channelrx->CCR |= ((u32)0x00000001);						//DMA_Cmd(DMAx_Channelrx,ENABLE);//¿ªÆô½ÓÊÕDMA
 		
 		USARTx->SR = (u16)~USART_FLAG_IDLE;									//USART_ClearFlag(USARTx,USART_FLAG_IDLE);
+		
+		set_rx_retry_count(USARTx,0);
+		set_usart_rx_capacity_backup(USARTx,dma_size);			//»º´æÈÝÁ¿
 		return length;			//·µ»Ø½ÓÊÕµ½µÄÊý¾Ý¸öÊý
 //	}
 
@@ -1314,40 +1481,252 @@ static void set_rx_dma_flag_clear(USART_TypeDef* USARTx)
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)		//´®¿Ú×´Ì¬¼ì²é
+static unsigned char set_usart_rx_idle(USART_TypeDef* USARTx)
 {	
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+		usart_rx_idle_flag.nUSART1	=	1;
+	if(USART2	==	USARTx)
+		usart_rx_idle_flag.nUSART2	=	1;
+	if(USART3	==	USARTx)
+		usart_rx_idle_flag.nUSART3	=	1;
+	if(UART4	==	USARTx)
+		usart_rx_idle_flag.nUART4	=	1;
+	if(UART5	==	USARTx)
+		usart_rx_idle_flag.nUART5	=	1;
+	return 0;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char set_usart_tx_idle(USART_TypeDef* USARTx)
+{
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+		usart_tx_idle_flag.nUSART1	=	1;
+	if(USART2	==	USARTx)
+		usart_tx_idle_flag.nUSART2	=	1;
+	if(USART3	==	USARTx)
+		usart_tx_idle_flag.nUSART3	=	1;
+	if(UART4	==	USARTx)
+		usart_tx_idle_flag.nUART4	=	1;
+	if(UART5	==	USARTx)
+		usart_tx_idle_flag.nUART5	=	1;
+	return 0;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char get_usart_rx_idlebac(USART_TypeDef* USARTx)
+{	
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+	{
+		if(USART_GetFlagStatus(USART1,USART_FLAG_IDLE))
+			set_usart_rx_idle(USART1);
+		return usart_rx_idle_flag.nUSART1;
+	}
+	if(USART2	==	USARTx)
+	{
+		if(USART_GetFlagStatus(USART2,USART_FLAG_IDLE))
+			set_usart_rx_idle(USART2);
+		return usart_rx_idle_flag.nUSART2;
+	}
+	if(USART3	==	USARTx)
+	{
+		if(USART_GetFlagStatus(USART3,USART_FLAG_IDLE))
+			set_usart_rx_idle(USART3);
+		return usart_rx_idle_flag.nUSART3;
+	}
+	if(UART4	==	USARTx)
+	{
+		if(USART_GetFlagStatus(UART4,USART_FLAG_IDLE))
+			set_usart_rx_idle(UART4);
+		return usart_rx_idle_flag.nUART4;
+	}
+	if(UART5	==	USARTx)
+	{
+		if(USART_GetFlagStatus(UART5,USART_FLAG_IDLE))
+			set_usart_rx_idle(UART5);
+		return usart_rx_idle_flag.nUART5;
+	}
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char get_usart_tx_idlebac(USART_TypeDef* USARTx)
+{
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+	{
+		if(USART_GetFlagStatus(USART1,USART_FLAG_TC))
+		{
+			set_usart_tx_idle(USART1);
+			USART_ClearFlag(USART1,USART_FLAG_TC);
+		}
+		return usart_tx_idle_flag.nUSART1;	
+	}		
+	if(USART2	==	USARTx)	
+	{
+		if(USART_GetFlagStatus(USART2,USART_FLAG_TC))
+		{
+			set_usart_tx_idle(USART2);
+			USART_ClearFlag(USART2,USART_FLAG_TC);
+		}			
+		return usart_tx_idle_flag.nUSART2;
+	}
+	if(USART3	==	USARTx)	
+	{
+		if(USART_GetFlagStatus(USART3,USART_FLAG_TC))
+		{
+			set_usart_tx_idle(USART3);
+			USART_ClearFlag(USART3,USART_FLAG_TC);
+		}
+		return usart_tx_idle_flag.nUSART3;
+	}
+	if(UART4	==	USARTx)
+	{
+		if(USART_GetFlagStatus(UART4,USART_FLAG_TC))
+		{
+			set_usart_tx_idle(UART4);
+			USART_ClearFlag(UART4,USART_FLAG_TC);
+		}
+		return usart_tx_idle_flag.nUART4;
+	}
+	if(UART5	==	USARTx)
+	{
+		if(USART_GetFlagStatus(UART5,USART_FLAG_TC))
+		{
+			set_usart_tx_idle(UART5);
+			USART_ClearFlag(UART5,USART_FLAG_TC);
+		}
+		return usart_tx_idle_flag.nUART5;
+	}
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char del_usart_rx_idle(USART_TypeDef* USARTx)
+{	
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+		usart_rx_idle_flag.nUSART1	=	0;
+	if(USART2	==	USARTx)
+		usart_rx_idle_flag.nUSART2	=	0;
+	if(USART3	==	USARTx)
+		usart_rx_idle_flag.nUSART3	=	0;
+	if(UART4	==	USARTx)
+		usart_rx_idle_flag.nUART4		=	0;
+	if(UART5	==	USARTx)
+		usart_rx_idle_flag.nUART5		=	0;
+	return 0;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char del_usart_tx_idle(USART_TypeDef* USARTx)
+{
+	//¿ÕÏÐ±êÖ¾0---Ã¦,1-¿ÕÏÐ
+	if(USART1	==	USARTx)
+		usart_tx_idle_flag.nUSART1	=	0;
+	if(USART2	==	USARTx)
+		usart_tx_idle_flag.nUSART2	=	0;
+	if(USART3	==	USARTx)
+		usart_tx_idle_flag.nUSART3	=	0;
+	if(UART4	==	USARTx)
+		usart_tx_idle_flag.nUART4	=	0;
+	if(UART5	==	USARTx)
+		usart_tx_idle_flag.nUART5	=	0;
+	return 0;
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	0--·Ç¿ÕÏÐ£¬1--¿ÕÏÐ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
+{	
+	//-----------------½ÓÊÕ¿ÕÏÐ¼ì²â£ºIDLE¿ÕÏÐ±êÖ¾,DMA»º´æÂú£¬DMA»º´æÎ´Õ¼ÓÃ£¬DMA»º´æÕ¼ÓÃºóÃ»±ä»¯£¬DMAÎ´¿ªÆô
 	unsigned short	capacity	=	0;			//Ê£Óà»º´æ´óÐ¡
-	unsigned short	rxdelay		=	get_rx_retry_count(USARTx);
-	unsigned short	dma_conf_capacity_backup	=	get_usart_rx_capacity_backup(USARTx);			//Ê£Óà»º´æ´óÐ¡
-	unsigned short	dma_conf_size							=	get_usart_dma_buffer_size(USARTx);
 	
+	
+	unsigned short	dma_conf_size							=	get_usart_dma_buffer_size(USARTx);	
 	DMA_Channel_TypeDef*	DMAy_Channelx				=	get_usart_rx_dma_channel(USARTx);	
 	
 	capacity	=	DMAy_Channelx->CNDTR;		      //»ñÈ¡DMA½ÓÊÕ»º´æÊ£Óà¿Õ¼ä
-	
-	if(USART_GetFlagStatus(USARTx,USART_FLAG_IDLE)||(0==capacity))		//¼ì²â·¢ËÍÊý¾Ý¼Ä´æÆ÷ÊÇ·ñÎª¿Õ	RESET-·Ç¿Õ£¬SET-¿Õ£¬
+	//-----------------¿ÕÏÐ±êÖ¾
+	if(USART_GetFlagStatus(USARTx,USART_FLAG_IDLE))		//¼ì²â·¢ËÍÊý¾Ý¼Ä´æÆ÷ÊÇ·ñÎª¿Õ	RESET-·Ç¿Õ£¬SET-¿Õ£¬
 	{
-		rxdelay	=	0;
-		set_rx_retry_count(USARTx,rxdelay);
-		set_usart_rx_capacity_backup(USARTx,dma_conf_size);
+		USART_ClearFlag(USARTx,USART_FLAG_IDLE);
 		return 1;			//¿ÕÏÐ
 	}
-	if(capacity!=dma_conf_capacity_backup)
+	//-----------------DMA»º´æÂú
+	if(capacity==0)
 	{
-		set_usart_rx_capacity_backup(USARTx,capacity);
-		set_rx_retry_count(USARTx,0);
-		return 0;
+		return 1;
 	}
-	else
-	{		
-		if(rxdelay<100)
+	//-----------------DMA»º´æÎ´Õ¼ÓÃ
+	if(capacity==dma_conf_size)
+	{
+		return 1;
+	}
+	//-----------------DMA»º´æÕ¼ÓÃºóÃ»±ä»¯
+	if(capacity<dma_conf_size)	//»º´æÒÑÊ¹ÓÃ£º¼ì²éÊÇ·ñ»¹ÔÚÊ¹ÓÃ
+	{	
+		unsigned short	dma_conf_capacity_backup	=	get_usart_rx_capacity_backup(USARTx);			//Ê£Óà»º´æ´óÐ¡
+		unsigned short	rxdelay		=	get_rx_retry_count(USARTx);
+		//---------------»º´æÎÞ±ä»¯
+		if(capacity	==	dma_conf_capacity_backup)
 		{
-			rxdelay+=1;
-			set_rx_retry_count(USARTx,rxdelay);
+			if(rxdelay<=2)
+			{
+				rxdelay++;
+				set_rx_retry_count(USARTx,rxdelay);
+			}
+			else
+			{
+				return 1;
+			}
 		}
-		if(rxdelay>=5)
+		else	//ÊýÁ¿ÓÐ±ä»¯
 		{
-			return 1;
+			set_rx_retry_count(USARTx,0);
+			set_usart_rx_capacity_backup(USARTx,capacity);
+			return 0;
 		}
 	}
 	return 0;
@@ -1361,30 +1740,42 @@ static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)		//´®¿Ú×´Ì¬¼ì²é
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)		//´®¿Ú×´Ì¬¼ì²é
+static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
 {
+	//-----------------·¢ËÍ¿ÕÏÐ¼ì²â£ºTC·¢ËÍÍê³É±êÖ¾,TXE»º´æ¿Õ,£¬DMA»º´æ¿Õ£¬DMAÎ´¿ªÆô
 	unsigned short	txdelay		=	get_tx_retry_count(USARTx);
 
 	DMA_Channel_TypeDef*	DMAy_Channelx	=	get_usart_tx_dma_channel(USARTx);	
-	
+	//-----------------TC·¢ËÍÍê³É±êÖ¾
 	if(USART_GetFlagStatus(USARTx,USART_FLAG_TC))		//¼ì²â·¢ËÍÊý¾Ý¼Ä´æÆ÷ÊÇ·ñÎª¿Õ	RESET-·Ç¿Õ£¬SET-¿Õ
 	{
 		set_tx_retry_count(USARTx,0);
+		DMA_Cmd(DMAy_Channelx,DISABLE);
+		USART_ClearFlag(USARTx,USART_FLAG_TC);
+		USART_ClearFlag(USARTx,USART_FLAG_TXE);
 		return 1;				//·¢ËÍ¿ÕÏÐ
-	}	
+	}
+	//------------------DMAÎ´¿ªÆô
 	if(0	==	(DMAy_Channelx->CCR&0x00000001))	//dmaÎ´¿ª
 	{
-		set_tx_retry_count(USARTx,0);
 		return 1;				//·¢ËÍ¿ÕÏÐ
 	}
-	if(txdelay<50)
-	{
-		txdelay+=1;
-		set_tx_retry_count(USARTx,txdelay);
-	}
-	else
-	{
-		return 1;		//Ç¿ÖÆ×ªÎª¿ÕÏÐ
+	//------------------DMA»º´æ¿Õ£¬TXE»º´æ¿Õ
+	if((0==DMAy_Channelx->CNDTR)&&(USART_GetFlagStatus(USARTx,USART_FLAG_TXE)))
+	{		
+		if(txdelay<2)
+		{
+			txdelay+=1;
+			set_tx_retry_count(USARTx,txdelay);
+			return 0;				//·¢ËÍ¿ÕÏÐ
+		}
+		else
+		{
+			DMA_Cmd(DMAy_Channelx,DISABLE);
+			USART_ClearFlag(USARTx,USART_FLAG_TXE);
+			set_tx_retry_count(USARTx,0);
+			return 1;				//·¢ËÍ¿ÕÏÐ
+		}
 	}
 	return 0;
 }
@@ -1606,9 +1997,79 @@ unsigned char UART5ReceiveData(unsigned char* RecByte)			//´®¿Ú5¶ÁÊý¾Ý,·µ»Ø0-ÎÞÖ
 
 
 
-
-
-
+//-----------------------------------------------------------------------------´®¿ÚÊÕ·¢
+/*******************************************************************************
+* Function Name  : USART1_IRQHandler
+* Description    : This function handles USART1 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART1_IRQHandler(void)
+{
+	//--------------------------------------------------------·¢ËÍÖÐ¶Ï
+	if(USART_GetITStatus(USART1,USART_IT_TC))
+	{
+		USART_ClearITPendingBit(USART1,USART_IT_TC);
+		if(get_usart_type(USART1))		//´®¿ÚÀàÐÍ£º0---USART,1-RS485
+		{
+			RS485Def*	pRS485	=	get_rs485_addr(USART1);
+			if(0==pRS485)
+				return;
+			set_rs485_tx(pRS485,DISABLE);
+			set_rs485_rx(pRS485,ENABLE);
+			set_usart_tx_idle(USART1);
+		}
+	}
+	//--------------------------------------------------------½ÓÊÕ¿ÕÏÐÖÐ¶Ï
+	if(USART_GetITStatus(USART1,USART_IT_IDLE))
+	{
+		USART_ClearITPendingBit(USART1,USART_IT_IDLE);
+		if(get_usart_type(USART1))		//´®¿ÚÀàÐÍ£º0---USART,1-RS485
+		{
+			RS485Def*	pRS485	=	get_rs485_addr(USART1);
+			if(0==pRS485)
+				return;
+			set_usart_rx_idle(USART1);
+		}
+	}	
+}
+/*******************************************************************************
+* Function Name  : USART2_IRQHandler
+* Description    : This function handles USART2 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USART2_IRQHandler(void)
+{
+//--------------------------------------------------------·¢ËÍÖÐ¶Ï
+	if(USART_GetITStatus(USART2,USART_IT_TC))
+	{
+		USART_ClearITPendingBit(USART2,USART_IT_TC);
+		if(get_usart_type(USART2))		//´®¿ÚÀàÐÍ£º0---USART,1-RS485
+		{
+			RS485Def*	pRS485	=	get_rs485_addr(USART2);
+			if(0==pRS485)
+				return;
+			set_rs485_tx(pRS485,DISABLE);
+			set_rs485_rx(pRS485,ENABLE);			
+		}
+		set_usart_tx_idle(USART2);
+	}
+	//--------------------------------------------------------½ÓÊÕ¿ÕÏÐÖÐ¶Ï
+	if(USART_GetITStatus(USART2,USART_IT_IDLE))
+	{
+		USART_ClearITPendingBit(USART2,USART_IT_IDLE);
+		if(get_usart_type(USART2))		//´®¿ÚÀàÐÍ£º0---USART,1-RS485
+		{
+			RS485Def*	pRS485	=	get_rs485_addr(USART2);
+			if(0==pRS485)
+				return;
+		}
+		set_usart_rx_idle(USART2);
+	}
+}
 
 
 

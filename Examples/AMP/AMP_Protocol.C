@@ -86,7 +86,7 @@ ampphydef* api_get_frame(unsigned char* pbuffer,unsigned short len)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir)
+unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir)
 {
 	unsigned short framlen	=0;
 	unsigned short msglen		=0;
@@ -99,6 +99,7 @@ unsigned char api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir)
 	crclen	=	msglen+1;
 	
 	frame->msg.cmd.cmd	=	cmd;
+	frame->msg.cmd.rv		=	0;
 	if(dir)
 		frame->msg.cmd.dir	=	1;
 	else
@@ -110,5 +111,6 @@ unsigned char api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir)
 	CrcStartAddr[crclen+1]=(crc16>>8)&0xFF;	//CRC高8位	
 	CrcStartAddr[crclen+2]	=	endcode;	//设置结束符
 	
-	return 0;
+	framlen	=	msglen+1+2+2;		//len,crc,head,end
+	return framlen;
 }

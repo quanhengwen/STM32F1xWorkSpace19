@@ -369,57 +369,13 @@ static void del_ack_wait_flag(ampPortDef port)
 *******************************************************************************/
 void Pc_Server(void)
 {
-	//--------------------------------------
-	//主板:接收PC数据，广播数据，内部使用和转发
-	//接收到总线数据，上传到PC
-	unsigned short rxnum=0;
-	unsigned char rxd[maxFramesize];
-	//================================================数据接收
-	rxnum	=	api_usart_dma_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
-	if(rxnum)
-	{
-		pc_data_process(rxd,rxnum);
-		return;
-	}
-	//================================================数据发送
-	if(0==ampsys.time.PcSendTime)
-	{
-		unsigned short sendnum=0;
-		ampCachedef*	Cache;
-		//----------------------------------------------检查有无应答数据要发送
-		if(ampsys.commdata.PcAck.size)
-		{
-			Cache	=	&ampsys.commdata.PcAck;
-			sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-			if(sendnum)	//已将数据转移到缓存
-			{	
-				ampsys.commdata.PcAck.size	=	0;
-				del_ack_wait_flag(PcPort);	//0--无需等待应答，1--需等待应答
-				ampsys.time.PcSendTime	=	ampReSendTime;
-			}
-			return;
-		}		
-		//----------------------------------------------发送数据
-		if(ampsys.ReSend.Pc>=ampMaxResendCount)	//超出发送次数，放弃发送
-		{
-			ampsys.ReSend.Pc	=	0;
-			del_cache_data(PcPort);
-		}
-		Cache	=	get_cache_data(PcPort);
-		if(0==Cache)	//无数据
-		{
-			ampsys.ReSend.Pc	=	0;
-			return;
-		}
-		sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-		if(sendnum)	//已将数据转移到缓存
-		{	
-			set_ack_wait_flag(PcPort);	//0--无需等待应答，1--需等待应答
-			ampsys.ReSend.Pc++;			
-			ampsys.time.PcSendTime	=	ampReSendTime;
-		}		
-	}
+	pc_receive_data_process();
+	pc_send_data_process();
 }
+//------------------------------------------------------------------------------
+
+
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -435,55 +391,15 @@ void Cab_Server(void)
 	//--------------------------------------
 	//主板:接收PC数据，广播数据，内部使用和转发
 	//接收到总线数据，上传到PC
-	unsigned short 	rxnum=0;
-	//unsigned char 	rxd[maxFramesize];
-	//================================================数据接收
-	rxnum	=	api_rs485_dam_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
-	if(rxnum)
-	{
-		cab_data_process(rxd,rxnum);
-		return;
-	}
-	//================================================数据发送
-	
-	if(0==ampsys.time.CabSendTime)
-	{
-		unsigned short sendnum=0;
-		ampCachedef*	Cache;
-		//----------------------------------------------检查有无应答数据要发送
-		if(ampsys.commdata.CbAck.size)
-		{
-			Cache	=	&ampsys.commdata.CbAck;
-			sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-			if(sendnum)	//已将数据转移到缓存
-			{	
-				ampsys.commdata.CbAck.size	=	0;
-				del_ack_wait_flag(CabPort);	//0--无需等待应答，1--需等待应答
-				ampsys.time.CabSendTime		=	ampReSendTime;
-			}
-			return;
-		}
-		//----------------------------------------------发送数据
-		if(ampsys.ReSend.Cab>=ampMaxResendCount)
-		{
-			ampsys.ReSend.Cab	=	0;
-			del_cache_data(CabPort);
-		}
-		Cache	=	get_cache_data(CabPort);
-		if(0==Cache)	//无数据
-		{
-			ampsys.ReSend.Cab	=	0;
-			return;
-		}
-		sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-		if(sendnum)	//已将数据转移到缓存
-		{	
-			set_ack_wait_flag(CabPort);	//0--无需等待应答，1--需等待应答
-			ampsys.ReSend.Cab++;			
-			ampsys.time.CabSendTime	=	ampReSendTime;
-		}		
-	}
+	cab_receive_data_process();
+	//================================================数据发送	
+	cab_send_data_process();
 }
+//------------------------------------------------------------------------------
+
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -498,148 +414,14 @@ void Lay_Server(void)
 	//--------------------------------------
 	//主板:接收PC数据，广播数据，内部使用和转发
 	//接收到总线数据，上传到PC
-	unsigned short 	rxnum=0;
-	unsigned char 	rxd[maxFramesize];
-	//================================================数据接收
-	rxnum	=	api_rs485_dam_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
-	if(rxnum)
-	{
-		lay_data_process(rxd,rxnum);
-		return;			
-	}
-	//================================================数据发送
-	if(0==ampsys.time.LaySendTime)
-	{
-		unsigned short sendnum=0;
-		ampCachedef*	Cache;
-		if(ampsys.commdata.CbAck.size)
-		{
-			Cache	=	&ampsys.commdata.LyAck;
-			sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-			if(sendnum)	//已将数据转移到缓存
-			{	
-				ampsys.commdata.LyAck.size	=	0;
-				del_ack_wait_flag(LayPort);	//0--无需等待应答，1--需等待应答
-				ampsys.time.LaySendTime		=	ampReSendTime;
-			}
-			return;
-		}
-		if(ampsys.ReSend.Lay>=ampMaxResendCount)
-		{
-			ampsys.ReSend.Lay	=	0;
-			del_cache_data(LayPort);
-		}
-		Cache	=	get_cache_data(LayPort);
-		if(0==Cache)	//无数据
-		{
-			ampsys.ReSend.Lay	=	0;
-			return;
-		}
-		sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-		if(sendnum)	//已将数据转移到缓存
-		{	
-			set_ack_wait_flag(LayPort);
-			ampsys.ReSend.Lay++;			
-			ampsys.time.LaySendTime	=	ampReSendTime;
-		}		
-	}
+	lay_receive_data_process();
+	lay_send_data_process();
 }
-/*******************************************************************************
-* 函数名			:	Cmd_Process
-* 功能描述		:	柜消息处理：处理针对本柜的消息/命令
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void pc_data_process(unsigned char* pBuffer,unsigned short len)
-{  
-	unsigned char 	cab_addr	=	0;	//柜地址
-	unsigned char 	lay_addr	=	0;	//层地址
-	unsigned char		cmd	=	ampCmdNone;
-	unsigned short	Saved_len	=	0;
-	
-	ampphydef* frame	=	api_get_frame(pBuffer,len);
-	if(0==frame)
-		return;
-	cmd	=	frame->msg.cmd.cmd;
-	//------------------------------------------检查是否为应答
-	if(ampCmdAck==cmd)	//应答，删除一缓存
-	{
-		received_ack_process(PcPort);
-		return;
-	}
-	//==========================================数据类通讯
-	//------------------------------PC数据
-	Saved_len	=	 set_cache_data(CabPort,frame);		//发往其它柜
-	Saved_len	=	 set_cache_data(LayPort,frame);		//发往本柜层板
-	//------------------------------命令处理
-	cmd_process(frame);
-//	cmd_process(frame);			//命令处理
-	amp_ack_up(PcPort);
-}
-/*******************************************************************************
-* 函数名			:	Cmd_Process
-* 功能描述		:	柜消息处理：处理针对本柜的消息/命令
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-static void cab_data_process(unsigned char* pBuffer,unsigned short len)
-{  
-	unsigned char 	cab_addr	=	0;	//柜地址
-	unsigned char 	lay_addr	=	0;	//层地址
-	unsigned char		cmd	=	ampCmdNone;
-	unsigned char		dir	=	0;
-	unsigned short	Saved_len	=	0;
+//------------------------------------------------------------------------------
 
-	ampphydef* frame	=	api_get_frame(pBuffer,len);
-	if(0==frame)
-		return;
-	cmd	=	frame->msg.cmd.cmd;
-	dir	=	frame->msg.cmd.dir;
-	//------------------------------------------检查数据传输方向，如果是辅柜，只接收下发数据，如果是主柜，只接收上传数据
-	if(ampsys.sysdata.MB_Flag)	//主柜
-	{
-		if(0==dir)	//下发
-			return;
-	}
-	else
-	{
-		if(1==dir)	//上传
-			return;
-	}
-	//------------------------------------------检查是否为应答
-	if(ampCmdAck==cmd)	//应答，删除一缓存
-	{	
-		received_ack_process(CabPort);
-		return;
-	}
-	//==========================================数据类通讯	
-	//------------------------------------------主柜数据转发到PC
-	if(ampsys.sysdata.MB_Flag)	//主柜
-	{
-		Saved_len	=	 set_cache_data(PcPort,frame);			//发往PC缓存
-		amp_ack_down(CabPort);
-		return;
-	}
-	//------------------------------鼗将数据存储到发送队列
 
-	Saved_len	=	 set_cache_data(LayPort,frame);		//发往本柜层板
 
-	//==========================================命令处理
-	cmd_process(frame);
-	if(0xFF!=cab_addr)	//广播数据:不应答
-	{
-		if(0==dir)	//下发
-			amp_ack_up(CabPort);
-		else				//上传
-			amp_ack_down(CabPort);
-	}
-}
+
 /*******************************************************************************
 * 函数名			:	Cmd_Process
 * 功能描述		:	柜消息处理：处理针对本柜的消息/命令
@@ -677,13 +459,13 @@ static void lay_data_process(unsigned char* pBuffer,unsigned short len)
 	if(ampsys.sysdata.MB_Flag)	//主柜
 	{
 		Saved_len	=	 set_cache_data(PcPort,frame);			//发往PC缓存
-		amp_ack_down(LayPort);
+		set_ackdown_frame(LayPort);
 		return;
 	}
 	else	//辅柜数据转到柜连接端口
 	{
 		Saved_len	=	 set_cache_data(CabPort,frame);			//发往柜接口缓存
-		amp_ack_down(LayPort);
+		set_ackdown_frame(LayPort);
 		return;
 	}
 }
@@ -764,7 +546,7 @@ static void received_ack_process(ampPortDef port)
 	unsigned char		wait_ack	=	get_ack_wait_flag(port);
 	if(wait_ack)
 	{
-		ampsys.ReSend.Cab	=	0;
+//		ampsys.ReSend.Cab	=	0;
 		del_cache_data(port);
 		del_ack_wait_flag(port);
 	}
@@ -772,6 +554,443 @@ static void received_ack_process(ampPortDef port)
 //------------------------------------------------------------------------------
 
 
+/*******************************************************************************
+* 函数名			:	Cmd_Process
+* 功能描述		:	柜消息处理：处理针对本柜的消息/命令
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void pc_receive_data_process(void)
+{  
+	unsigned char 	cab_addr	=	0;	//柜地址
+	unsigned char 	lay_addr	=	0;	//层地址
+	unsigned char		cmd	=	ampCmdNone;
+	unsigned short	Saved_len	=	0;
+	unsigned short 	rxnum=0;
+	unsigned char 	rxd[maxFramesize];
+	
+	ampphydef* frame;
+	
+	rxnum	=	api_usart_dma_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	if(0==rxnum)
+	{
+		return;
+	}	
+	frame	=	api_get_frame(rxd,rxnum);
+	
+	if(0==frame)
+		return;
+	cmd	=	frame->msg.cmd.cmd;
+	//------------------------------------------检查是否为应答
+	if(ampCmdAck==cmd)	//应答，删除一缓存
+	{
+		//------------------------------------------应答
+		unsigned char wait_ack	=	get_ack_wait_flag(PcPort);
+		if(wait_ack)
+		{
+			ampsys.ReSend.Pc	=	0;
+			ampsys.time.PcSendTime	=	5;
+			del_cache_data(PcPort);
+			del_ack_wait_flag(PcPort);
+		}
+		return ;
+	}
+	//------------------------------数据转发到层板
+	if((ampsys.sysdata.Cab_Addr==frame->msg.addr.address1)||(0xFF==frame->msg.addr.address1))
+	{
+		Saved_len	=	 set_cache_data(LayPort,frame);		//发往本柜层板
+	}
+	//------------------------------数据转发到其它柜
+	if((ampsys.sysdata.Cab_Addr!=frame->msg.addr.address1)||(0xFF==frame->msg.addr.address1))
+	{
+		Saved_len	=	 set_cache_data(CabPort,frame);		//发往其它柜
+	}
+	//------------------------------命令处理
+	if((ampsys.sysdata.Cab_Addr==frame->msg.addr.address1)||(0xFF==frame->msg.addr.address1))
+	{
+		cmd_process(frame);		
+	}
+	set_ackup_frame(PcPort);	
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void pc_send_data_process(void)
+{
+	unsigned short sendnum=0;
+	ampCachedef*	Cache;
+	
+	if(0!=ampsys.time.PcSendTime)
+	{
+		return;
+	}	
+	//----------------------------------------------检查有无应答数据要发送
+	if(ampsys.commdata.PcAck.size)
+	{
+		Cache	=	&ampsys.commdata.PcAck;
+		sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		if(sendnum)	//已将数据转移到缓存
+		{	
+			ampsys.commdata.PcAck.size	=	0;
+			ampsys.time.PcSendTime	=	2;
+			del_ack_wait_flag(PcPort);		//0--无需等待应答，1--需等待应答				
+		}
+		return;
+	}		
+	//----------------------------------------------发送数据：清除超出发送次数的缓存，上报连接超时；广播数据只发固定再次
+	//----------上报PC只发再次
+	if(ampsys.ReSend.Pc>=1)
+	{
+		ampsys.ReSend.Pc	=	0;
+		del_cache_data(PcPort);
+	}
+	Cache	=	get_cache_data(PcPort);
+	if(0==Cache)	//无数据
+	{
+		ampsys.ReSend.Pc	=	0;
+		return;
+	}
+	sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	if(sendnum)	//已将数据转移到缓存
+	{	
+		set_ack_wait_flag(PcPort);	//0--无需等待应答，1--需等待应答
+		ampsys.ReSend.Pc+=1;			
+		ampsys.time.PcSendTime	=	ampReSendTime;
+	}
+}
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+* 函数名			:	Cmd_Process
+* 功能描述		:	柜消息处理：处理针对本柜的消息/命令
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+static void cab_receive_data_process(void)
+{  
+	//--------------------------------------
+	//主板:接收PC数据，广播数据，内部使用和转发
+	//接收到总线数据，上传到PC
+	unsigned char 	cab_addr	=	0;	//柜地址
+	unsigned char 	lay_addr	=	0;	//层地址
+	unsigned char		cmd	=	ampCmdNone;
+	unsigned char		dir	=	0;
+	unsigned short	Saved_len	=	0;	
+	unsigned short 	rxnum=0;
+	
+	ampphydef* frame;
+	unsigned char 	rxd[maxFramesize];
+	//================================================数据接收
+	rxnum	=	api_rs485_dam_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	if(0==rxnum)
+	{
+		return;
+	}
+	frame	=	api_get_frame(rxd,rxnum);
+	if(0==frame)
+		return;
+	
+	cmd	=	frame->msg.cmd.cmd;
+	dir	=	frame->msg.cmd.dir;
+	//------------------------------------------检查数据传输方向，如果是辅柜，只接收下发数据，如果是主柜，只接收上传数据
+	if(ampsys.sysdata.MB_Flag)	//主柜
+	{
+		if(0==dir)	//下发
+			return;
+	}
+	else
+	{
+		if(1==dir)	//上传
+			return;
+	}
+	//------------------------------------------检查是否为应答
+	if(ampCmdAck==cmd)	//应答，删除一缓存
+	{	
+		//------------------------------------------应答
+		unsigned char wait_ack	=	get_ack_wait_flag(CabPort);
+		if(wait_ack)
+		{
+			ampsys.ReSend.Cab	=	0;
+			ampsys.time.CabSendTime	=	2;
+			del_cache_data(CabPort);
+			del_ack_wait_flag(CabPort);
+		}
+		return ;
+	}
+	//------------------------------------------主柜数据转发到PC
+	if(ampsys.sysdata.MB_Flag)	//主柜
+	{
+		Saved_len	=	 set_cache_data(PcPort,frame);			//发往PC缓存
+		set_ackdown_frame(CabPort);
+		return;
+	}
+	//------------------------------数据转发到层板
+	if((ampsys.sysdata.Cab_Addr==frame->msg.addr.address1)||(0xFF==frame->msg.addr.address1))
+	{
+		Saved_len	=	 set_cache_data(LayPort,frame);
+	}
+	//------------------------------命令处理
+	if((ampsys.sysdata.Cab_Addr==frame->msg.addr.address1)||(0xFF==frame->msg.addr.address1))
+	{
+		cmd_process(frame);
+	}
+	//------------------------------:应答;只对本地址数据应答
+	if((0xFF!=cab_addr)&&(ampsys.sysdata.Cab_Addr==frame->msg.addr.address1))	//广播数据:不应答
+	{
+		//----------------------------此为辅柜
+		set_ackup_frame(CabPort);
+	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void cab_send_data_process(void)
+{	
+	unsigned short sendnum=0;
+	ampCachedef*	Cache;
+	ampphydef* frame;
+	
+	if(0!=ampsys.time.CabSendTime)
+	{
+		return;
+	}		
+	//----------------------------------------------检查有无应答数据要发送
+	if(ampsys.commdata.CbAck.size)
+	{
+		Cache	=	&ampsys.commdata.CbAck;
+		sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		if(sendnum)	//已将数据转移到缓存
+		{	
+			ampsys.commdata.CbAck.size	=	0;
+			del_ack_wait_flag(CabPort);	//0--无需等待应答，1--需等待应答
+			ampsys.time.CabSendTime		=	10;
+		}
+		return;
+	}
+	//----------------------------------------------检查有无发送超时
+	if(ampsys.ReSend.Cab>=ampMaxResendCount)
+	{			
+		Cache	=	get_cache_data(CabPort);
+		if(0!=Cache)	//有数据
+		{
+			frame	=	(ampphydef*)Cache->data;
+			ampsys.ReSend.Cab	=	0;
+			del_cache_data(CabPort);
+			if(ampsys.sysdata.MB_Flag)	//主柜
+			{
+				set_comm_time_out_msg(PcPort,frame);
+			}
+			else
+			{
+				set_comm_time_out_msg(CabPort,frame);
+			}
+		}
+	}
+	//----------------------------------------------发送数据：广播数据只发两次
+	Cache	=	get_cache_data(CabPort);
+	if(0==Cache)	//无数据
+	{
+		ampsys.ReSend.Cab	=	0;
+		ampsys.time.CabSendTime		=	5;
+		return;
+	}	
+	//----------------------------------------------
+	sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	if(sendnum)	//已将数据转移到缓存
+	{	
+		frame	=	(ampphydef*)Cache->data;		
+		ampsys.ReSend.Cab+=1;			
+		ampsys.time.CabSendTime	=	ampReSendTime;
+		//----------------------------------------------广播数据只发两次，不需要应答
+		if(0xFF==frame->msg.addr.address1)	//广播地址
+		{
+			if(ampsys.ReSend.Cab>=2)
+			{
+				ampsys.ReSend.Cab=0;
+				del_cache_data(CabPort);
+				del_ack_wait_flag(CabPort);			//0--无需等待应答，1--需等待应答
+				return;
+			}
+		}
+		else
+		{
+			set_ack_wait_flag(CabPort);			//0--无需等待应答，1--需等待应答
+		}
+	}		
+}
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+* 函数名			:	Cmd_Process
+* 功能描述		:	柜消息处理：处理针对本柜的消息/命令
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+static void lay_receive_data_process(void)
+{  
+	//--------------------------------------
+	//主板:接收PC数据，广播数据，内部使用和转发
+	//接收到总线数据，上传到PC
+	unsigned char 	cab_addr	=	0;	//柜地址
+	unsigned char 	lay_addr	=	0;	//层地址
+	unsigned char		cmd	=	ampCmdNone;
+	unsigned char		dir	=	0;
+	unsigned short	Saved_len	=	0;	
+	unsigned short 	rxnum=0;
+	
+	ampphydef* frame;
+	unsigned char 	rxd[maxFramesize];
+	//================================================数据接收
+	rxnum	=	api_rs485_dam_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	if(0==rxnum)
+	{
+		return;
+	}
+	frame	=	api_get_frame(rxd,rxnum);
+	if(0==frame)
+		return;
+	
+	cmd	=	frame->msg.cmd.cmd;
+	dir	=	frame->msg.cmd.dir;
+	//------------------------------------------检查数据传输方向，层接口只接收上传
+	if(0==dir)	//下发
+		return;
+	//------------------------------------------检查是否为应答
+	if(ampCmdAck==cmd)	//应答，删除一缓存
+	{	
+		//------------------------------------------应答
+		unsigned char wait_ack	=	get_ack_wait_flag(LayPort);
+		if(wait_ack)
+		{
+			ampsys.ReSend.Lay	=	0;
+			ampsys.time.LaySendTime	=	2;
+			del_cache_data(LayPort);
+			del_ack_wait_flag(LayPort);
+		}
+		return ;
+	}
+	//------------------------------------------主柜数据转发到PC
+	if(ampsys.sysdata.MB_Flag)	//主柜
+	{
+		Saved_len	=	 set_cache_data(PcPort,frame);			//发往PC缓存
+		set_ackdown_frame(LayPort);
+		return;
+	}
+	else
+	{
+		Saved_len	=	 set_cache_data(CabPort,frame);
+		set_ackdown_frame(LayPort);
+	}	
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void lay_send_data_process(void)
+{	
+	unsigned short sendnum=0;
+	ampCachedef*	Cache;
+	ampphydef* frame;
+	
+	if(0!=ampsys.time.LaySendTime)
+	{
+		return;
+	}		
+	//----------------------------------------------检查有无应答数据要发送
+	if(ampsys.commdata.LyAck.size)
+	{
+		Cache	=	&ampsys.commdata.CbAck;
+		sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		if(sendnum)	//已将数据转移到缓存
+		{	
+			ampsys.commdata.LyAck.size	=	0;
+			del_ack_wait_flag(LayPort);	//0--无需等待应答，1--需等待应答
+			ampsys.time.LaySendTime		=	10;
+		}
+		return;
+	}
+	//----------------------------------------------检查有无发送超时
+	if(ampsys.ReSend.Cab>=ampMaxResendCount)
+	{			
+		Cache	=	get_cache_data(LayPort);
+		if(0!=Cache)	//有数据
+		{
+			frame	=	(ampphydef*)Cache->data;
+			ampsys.ReSend.Lay	=	0;
+			del_cache_data(LayPort);
+			if(ampsys.sysdata.MB_Flag)	//主柜
+			{
+				set_comm_time_out_msg(PcPort,frame);
+			}
+			else
+			{
+				set_comm_time_out_msg(CabPort,frame);
+			}
+		}
+	}
+	//----------------------------------------------发送数据：广播数据只发两次
+	Cache	=	get_cache_data(LayPort);
+	if(0==Cache)	//无数据
+	{
+		ampsys.ReSend.Lay	=	0;
+		ampsys.time.LaySendTime		=	5;
+		return;
+	}	
+	//----------------------------------------------
+	sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	if(sendnum)	//已将数据转移到缓存
+	{	
+		frame	=	(ampphydef*)Cache->data;		
+		ampsys.ReSend.Lay+=1;			
+		ampsys.time.LaySendTime	=	ampReSendTime;
+		//----------------------------------------------广播数据只发两次，不需要应答
+		if((0xFF==frame->msg.addr.address2)||(0xFF==frame->msg.addr.address3))	//广播地址
+		{
+			if(ampsys.ReSend.Lay>=2)
+			{
+				ampsys.ReSend.Lay=0;
+				del_cache_data(LayPort);
+				del_ack_wait_flag(LayPort);			//0--无需等待应答，1--需等待应答
+				return;
+			}
+		}
+		else
+		{
+			set_ack_wait_flag(LayPort);			//0--无需等待应答，1--需等待应答
+		}
+	}		
+}
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -840,69 +1059,6 @@ static void lock_status_updata(void)
 }
 //------------------------------------------------------------------------------
 
-
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void amp_ack_up(ampPortDef port)
-{
-	ampCachedef*	Cache;
-	if(PcPort	==	port)
-		Cache	=	&ampsys.commdata.PcAck;
-	else if(CabPort	==	port)
-		Cache	=	&ampsys.commdata.CbAck;
-	else if(LayPort	==	port)
-		Cache	=	&ampsys.commdata.LyAck;
-	else
-		return;
-	Cache->arry	=	1;
-	Cache->size	=	7;
-	Cache->data[0]=0x7E;
-	Cache->data[1]=0x02;
-	Cache->data[2]=0x81;
-	Cache->data[3]=0x00;
-	Cache->data[4]=0xB0;
-	Cache->data[5]=0x50;
-	Cache->data[6]=0x7F;
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void amp_ack_down(ampPortDef port)
-{
-	ampCachedef*	Cache;
-	if(PcPort	==	port)
-		Cache	=	&ampsys.commdata.PcAck;
-	else if(CabPort	==	port)
-		Cache	=	&ampsys.commdata.CbAck;
-	else if(LayPort	==	port)
-		Cache	=	&ampsys.commdata.LyAck;
-	else
-		return;
-	
-	Cache->arry	=	1;
-	Cache->size	=	7;
-	Cache->data[0]=0x7E;
-	Cache->data[1]=0x02;
-	Cache->data[2]=0x01;
-	Cache->data[3]=0x00;
-	Cache->data[4]=0xD1;
-	Cache->data[5]=0x90;
-	Cache->data[6]=0x7F;
-}
-//------------------------------------------------------------------------------
 
 
 /*******************************************************************************
@@ -975,38 +1131,170 @@ static void set_layer_power(unsigned char flag)
 //------------------------------------------------------------------------------
 
 
-///*******************************************************************************
-//*函数名			:	function
-//*功能描述		:	function
-//*输入				: 
-//*返回值			:	无
-//*修改时间		:	无
-//*修改说明		:	无
-//*注释				:	wegam@sina.com
-//*******************************************************************************/
-//static void SwitchID_Server(void)
-//{
-//  static unsigned char id=0;
-//  static unsigned char power_on_flag=0; //上电时为0
 
-//	if(0!=ampsys.time.swicthidtime)
-//		return;
-//	ampsys.time.swicthidtime	=	2000;
-//  if(0==power_on_flag)  //刚上电
-//  {
-//    power_on_flag = 1;  //已上电完成
-//    id  = SWITCHID_ReadLeft(&ampSwitchID)&0x3F;
-//  }
-//  else
-//  {
-//		unsigned char new_id  = 0;
-//		new_id  = SWITCHID_ReadLeft(&ampSwitchID)&0x3F;
-//		if(id != new_id)  //重新初始化
-//		{
-//			power_on_flag = 0;
-//		}
-//  }
-//}
+
+/*******************************************************************************
+*函数名			:	getframe
+*功能描述		:	获取帧地址，返回帧长度
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void set_ackup_frame(ampPortDef Port)
+{  
+	ampphydef*	frame;
+
+	ampCachedef*	Cache;
+	if(PcPort	==	Port)
+		Cache	=	&ampsys.commdata.PcAck;
+	else if(CabPort	==	Port)
+		Cache	=	&ampsys.commdata.CbAck;
+	else if(LayPort	==	Port)
+		Cache	=	&ampsys.commdata.LyAck;
+	else
+		return ;	
+
+	frame=(ampphydef*)Cache->data;
+	
+	frame->head	=	headcode;
+	frame->msg.length	=	5;
+	frame->msg.cmd.cmd	=	ampCmdAck;
+	frame->msg.cmd.rv		=	0;
+	frame->msg.cmd.dir	=	1;
+	frame->msg.addr.address1	=	ampsys.sysdata.Cab_Addr;		//向上应答为柜地址
+	frame->msg.addr.address2	=	0;
+	frame->msg.addr.address3	=	0;
+	frame->msg.data[0]=0;
+	
+	Cache->arry	=	1;
+	Cache->size	=	api_set_frame(frame,ampCmdAck,1);    //补充消息的CRC和结束符，返回帧长度
+}
+/*******************************************************************************
+*函数名			:	getframe
+*功能描述		:	获取帧地址，返回帧长度
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void set_ackdown_frame(ampPortDef Port)
+{  
+  ampphydef*	frame;
+
+	ampCachedef*	Cache;
+	if(PcPort	==	Port)
+		Cache	=	&ampsys.commdata.PcAck;
+	else if(CabPort	==	Port)
+		Cache	=	&ampsys.commdata.CbAck;
+	else if(LayPort	==	Port)
+		Cache	=	&ampsys.commdata.LyAck;
+	else
+		return;	
+
+	frame=(ampphydef*)Cache->data;
+	
+	frame->head	=	headcode;
+	frame->msg.length	=	5;
+	frame->msg.cmd.cmd	=	ampCmdAck;
+	frame->msg.cmd.rv		=	0;
+	frame->msg.cmd.dir	=	0;
+	frame->msg.addr.address1	=	0x00;		//向下应答无地址
+	frame->msg.addr.address2	=	0;
+	frame->msg.addr.address3	=	0;
+	frame->msg.data[0]=0;
+	
+	Cache->arry	=	1;
+	Cache->size	=	api_set_frame(frame,ampCmdAck,0);    //补充消息的CRC和结束符，返回帧长度
+}
+//------------------------------------------------------------------------------
+
+
+
+
+/*******************************************************************************
+*函数名			:	LockStatusUpdata
+*功能描述		:	上报锁状态
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void set_comm_time_out_msg(ampPortDef Port,ampphydef* frame)
+{
+  unsigned char databuffer[32]={0};
+  unsigned short framlength = 0;  //生成的消息长度
+  unsigned short datalength = 2;  //需要上报的数据字节数
+  ampphydef  ampframe;
+	
+	ampframe.head	=	headcode;
+	ampframe.msg.length		=	6;
+	ampframe.msg.cmd.cmd	=	ampCmdSta;
+	ampframe.msg.cmd.rv		=	0;
+	ampframe.msg.cmd.dir	=	1;
+	ampframe.msg.addr.address1	=	frame->msg.addr.address1;
+	ampframe.msg.addr.address2	=	frame->msg.addr.address2;
+	ampframe.msg.addr.address3	=	frame->msg.addr.address3;
+	ampframe.msg.data[0]	=	ampStypeComm;
+	ampframe.msg.data[1]	=	AmpCommTimeOut;
+	
+  switch(Port)
+  {
+    case  NonPort   : return ;   //不继续执行
+    case  PcPort    : return;    //PC接口发送缓存
+      break;
+    case  CabPort   ://柜接口发送缓存
+                      ampframe.msg.addr.address2 = 0;
+                      ampframe.msg.addr.address3 = 0;
+      break;
+    case  LayPort   ://层接口发送缓存
+      break;
+    case  CardPort  ://读卡器接口发送缓存
+      break;
+    default :return;      //不继续执行 
+  }
+	api_set_frame(&ampframe,ampCmdSta,1);
+	set_cache_data(Port,&ampframe);
+}
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void SwitchID_Server(void)
+{
+  static unsigned char id=0;
+  static unsigned char power_on_flag=0; //上电时为0
+
+	if(0!=ampsys.time.swicthidtime)
+		return;
+	ampsys.time.swicthidtime	=	2000;
+  if(0==power_on_flag)  //刚上电
+  {
+    power_on_flag = 1;  //已上电完成
+    id  = SWITCHID_ReadLeft(&ampSwitchID)&0x3F;
+  }
+  else
+  {
+		unsigned char new_id  = 0;
+		new_id  = SWITCHID_ReadLeft(&ampSwitchID)&0x3F;
+		if(id != new_id)  //重新初始化
+		{
+			power_on_flag = 0;
+		}
+  }
+}
 
 //------------------------------------------------------------------------------
 /*******************************************************************************
@@ -1220,7 +1508,8 @@ static void Communication_Configuration(void)
 	ampRS485Cb.RS485_TxEn_Pin		=	ampCommCbTxEnPin;
 	ampRS485Cb.RS485_RxEn_PORT	=	ampCommCbRxEnPort;
 	ampRS485Cb.RS485_RxEn_Pin		=	ampCommCbRxEnPin;
-  api_rs485_dma_configurationNR(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  //api_rs485_dma_configurationIT(&ampRS485Cb,19200,maxFramesize);	//RS485_DMA配置--中断
+	api_rs485_dma_configurationNR(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	//GPIO_SetBits(GPIOC,GPIO_Pin_9);
 }
 /*******************************************************************************

@@ -14,7 +14,7 @@
 #define gDatasize       		maxmsgsize	//串口最大数据包容量
 #define arrysize        		10       		//每个发送端口待发送缓存排序个数
 #define MaxSlave        		30        	//最大从机数量(柜、层、位)
-#define ampReSendTime  			200 	      	//重发间隔时间单位ms
+#define ampReSendTime  			100 	      	//重发间隔时间单位ms
 #define SendNopTime     		10  	      	//发送等待时间单位ms---应答等待时间
 #define ampMaxResendCount  		5         	//最大发送次数
 #define ampUnlockOuttime   		2000      	//开锁倒计时超时时间
@@ -46,11 +46,11 @@ typedef enum _ampLockSts
   AmpLockOn         = 1,    //锁关上
   AmpLockOpenFailed = 2,    //开锁失败
 }ampLockStsdef;
-//typedef enum _ampSts
-//{
-//  AmpCommOK       = 0,    //连接正常 
-//  AmpCommTimeOut  = 1,    //连接超时/失败
-//}ampStsdef;
+typedef enum _amp_comm_sts
+{
+  AmpCommOK       = 0,    //连接正常 
+  AmpCommTimeOut  = 1,    //连接超时/失败
+}ampCommStsdef;
 
 
 
@@ -113,7 +113,7 @@ typedef struct _ampphy
 
 //------------------------------------------------------------------头文件
 ampphydef* api_get_frame(unsigned char* pbuffer,unsigned short len);
-unsigned char api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir);
+unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir);
 
 
 

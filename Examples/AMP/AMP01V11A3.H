@@ -128,8 +128,19 @@ static void LayPower_Configuration(void);
 static void Lock_Configuration(void);
 static void Led_Configuration(void);
 
-static void pc_data_process(unsigned char* pBuffer,unsigned short len);
-static void cab_data_process(unsigned char* pBuffer,unsigned short len);
+
+
+static void pc_receive_data_process(void);
+static void pc_send_data_process(void);
+
+static void cab_receive_data_process(void);
+static void cab_send_data_process(void);
+
+static void lay_receive_data_process(void);
+static void lay_send_data_process(void);
+
+
+
 static void lay_data_process(unsigned char* pBuffer,unsigned short len);
 static void cmd_process(ampphydef* frame);
 static void received_ack_process(ampPortDef port);
@@ -137,14 +148,17 @@ static void received_ack_process(ampPortDef port);
 static void status_server(void);
 static void lock_status_updata(void);
 
-static void amp_ack_up(ampPortDef port);
-static void amp_ack_down(ampPortDef port);
-
 
 
 static void set_door(unsigned char flag);
 static void set_backlight(unsigned char flag);
 static void set_layer_power(unsigned char flag);
+
+
+void set_ackup_frame(ampPortDef Port);
+void set_ackdown_frame(ampPortDef Port);
+
+void set_comm_time_out_msg(ampPortDef Port,ampphydef* frame);
 
 
 static void door_server(void);
