@@ -35,8 +35,8 @@ typedef enum  _Cmd //STATUS
   Anticoll      = 0x04,   //防冲突
   Select        = 0x05,   //选定卡
   //----------------------Mifare Application Commands (0x20~0x2F)
-  IotRead          = 0x20, //集成寻卡，防冲突，选卡，验证密码，读卡等操作，一个命令完成读卡操作。
-  IotWrite         = 0x21, //集成寻卡，防冲突，选卡，验证密码，写卡等操作，一个命令完成写卡操作。.
+  IotRead     	= 0x20, //集成寻卡，防冲突，选卡，验证密码，读卡等操作，一个命令完成读卡操作。
+  IotWrite    	= 0x21, //集成寻卡，防冲突，选卡，验证密码，写卡等操作，一个命令完成写卡操作。.
   InitVal       = 0x22, //集成寻卡，防冲突，选卡，验证密码等操作，一个命令完成块值初始化操作。
   Decrement     = 0x23, //集成了寻卡，防冲突，选卡，验证密码，块值减操作，一个命令完成块减值操作。
   Increment     = 0x24, //集成了寻卡，防冲突，选卡，验证密码，块值加等操作，一个命令完成块值加操作。
@@ -109,19 +109,29 @@ typedef struct _IOT5302W
 
 
 
-unsigned short IOT5302WGetSNR(unsigned char* Buffer);    //寻卡模式，获取UID
-unsigned short IOT5302WSetBaudrate(unsigned char* Buffer,unsigned char Num);  //设置读卡器波特率
+
+
 unsigned short IotMifareGetCmdFrame(Cmddef Cmd,unsigned char Sec,unsigned char* Buffer,unsigned char* KeyBuffer);
 
 
 
 
-void API_IOT5302WConfiguration(IOT5302Wdef* pIOT5302W);
-void API_IOT5302WServer(void);
+void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W);
+void api_iot5302w_server(void);
 
-unsigned short API_IOT5302WGetUID(unsigned char* Buffer);
+unsigned short api_get_iot5302w_uid(unsigned char* Buffer);		//获取UID
 
+//---------------------------------------------------------hardware
+static void hw_port_configuration(unsigned long USART_BaudRate);
+static unsigned short iot5302w_send_msg(unsigned char* TxdBuffer,unsigned short length);
+static unsigned short iot5302w_read_msg(unsigned char* RxdBuffer);
 
+//---------------------------------------------------------software
+static void iot5302w_initialize(void);
+static void iot5302w_data_process(void);	//数据接收处理，接收拼包，协议检查
+static void iot5302w_data_check(void);		//数据协议检查
+static unsigned short iot5302w_set_frame_GetSNR(unsigned char* Buffer);    		//生成获取UID的消息帧，获取UID
+static unsigned short iot5302w_set_frame_SetBaudrate(unsigned char* Buffer,unsigned char Num);  //生成配置读卡器波特率的消息帧
 #endif
 
 

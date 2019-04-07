@@ -86,7 +86,7 @@ ampphydef* api_get_frame(unsigned char* pbuffer,unsigned short len)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir)
+unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,unsigned char dir)
 {
 	unsigned short framlen	=0;
 	unsigned short msglen		=0;

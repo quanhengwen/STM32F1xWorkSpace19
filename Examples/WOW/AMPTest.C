@@ -7,6 +7,7 @@
 
 #include "LCD.H"
 #include "NAND.H"
+#include "SHT20M.H"
 
 
 #include "STM32F10x_BitBand.H"
@@ -40,10 +41,10 @@
 //NE3 0x680000000
 //NE4 0x6C0000000
 
-//数据区地址
-#define Bank1_LCD_Data ((u32)0x6C100000)
-//寄存器区地址
-#define Bank1_LCD_Reg ((u32)0x6C000000)
+////数据区地址
+//#define Bank1_LCD_Data ((u32)0x6C100000)
+////寄存器区地址
+//#define Bank1_LCD_Reg ((u32)0x6C000000)
 
 LCDDef	sLCD;
 
@@ -118,6 +119,7 @@ void ClockServer(void);
 void SYSLED(void);
 void USART_TEST(void);
 void RS485Configuration(void);
+static void SHT20MTEST(void);
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
 //->函数名		:	
 //->功能描述	:	 
@@ -144,8 +146,8 @@ void AMPTest_Configuration(void)
 //    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
   
   
-  USART_DMA_ConfigurationNR	(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
-  USART_DMA_ConfigurationNR	(USART3,19200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART3,19200,ussize);	//USART_DMA配置--查询方式，不开中断
   RS485Configuration();
 	PWM_OUT(TIM2,PWM_OUTChannel1,100,900);						//PWM设定-20161127版本
 
@@ -165,8 +167,80 @@ void AMPTest_Server(void)
 {
 //  ClockServer();
   RTC_Server();
-  USART_Server();
+  //USART_Server();
   //USART_TEST();
+	SHT20MTEST();		//温湿度模块测试
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void SHT20MTEST(void)
+{
+	unsigned char RxNum	=	0;
+	static unsigned short time	=	0;
+	if(time++>500)
+	{
+		u3txbuffer[0]=0x01;
+		u3txbuffer[1]=0x04;
+		u3txbuffer[2]=0x00;
+		u3txbuffer[3]=0x01;
+		u3txbuffer[4]=0x00;
+		u3txbuffer[5]=0x02;
+		u3txbuffer[6]=0x20;
+		u3txbuffer[7]=0x0B;
+		
+		RxNum	=	api_rs485_dma_send(&RS485B,u3txbuffer,8);	//RS485-DMA发送程序
+		if(RxNum)
+		{
+			LCD_ShowHex(260,u1dsp,16,u1dspcolr,8,8,u3txbuffer);			
+			time = 0;
+			return;
+		}		
+	}
+		
+	
+	
+	
+	RxNum = api_rs485_dma_receive(&RS485B,u2rxbuffer);
+	if(RxNum)
+	{
+		double t1	=	0.0;		//温度
+		double t2	=	0.0;		//湿度
+		unsigned short temp=0;
+		temp	=	u2rxbuffer[3]<<8|u2rxbuffer[4];
+		t1	=	(double)temp/10.0;
+		temp	=	u2rxbuffer[5]<<8|u2rxbuffer[6];
+		t2	=	(double)temp/10.0;
+		
+		memcpy(u1txbuffer,u2rxbuffer,RxNum);
+    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
+		
+		LCD_Printf(500,u1dsp,16,LCD565_BLACK,"温度%0.2f℃  湿度%0.2f%%",t1,t2);
+		
+		u1dsp+=(RxNum/33+1)*16;
+		if(LCD565_RED==u1dspcolr)
+		{
+			u1dspcolr = LCD565_BLUE;
+		}
+		else
+		{
+			u1dspcolr = LCD565_RED;
+		}
+    if(u1dsp>=479)
+    {
+      LCD_Fill(0,32,800,480,sLCD.Data.BColor);				//在指定区域内填充指定颜色;区域大小:(xend-xsta)*(yend-ysta)
+      u1dsp=32;
+      u3dsp=32;
+    }
+		
+	}
 }
 /*******************************************************************************
 *函数名			:	function
@@ -182,8 +256,12 @@ void RS485Configuration(void)
 	RS485B.USARTx	=	USART2;
 	RS485B.RS485_CTL_PORT	=	GPIOA;
 	RS485B.RS485_CTL_Pin	=	GPIO_Pin_1;
+	RS485B.RS485_TxEn_PORT	=	GPIOA;
+	RS485B.RS485_TxEn_Pin		=	GPIO_Pin_1;
+	RS485B.RS485_RxEn_PORT	=	GPIOA;
+	RS485B.RS485_RxEn_Pin		=	GPIO_Pin_1;
 	
-	RS485_DMA_ConfigurationNR	(&RS485B,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	api_rs485_dma_configurationNR(&RS485B,9600,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
 //->函数名		:	
@@ -209,22 +287,22 @@ void USART_TEST(void)
       txflg = 0;
       crc16 = CRC16_MODBUS(&OpenLed[1],10);
       memcpy(&OpenLed[11],&crc16,2);
-      API_USART_DMA_Send(USART3,OpenLed,sizeof(OpenLed));
+      api_usart_dma_send(USART3,OpenLed,sizeof(OpenLed));
     }
     else  //关LED
     {
       txflg = 1;
       crc16 = CRC16_MODBUS(&ClosLed[1],10);
       memcpy(&ClosLed[11],&crc16,2);
-      API_USART_DMA_Send(USART3,ClosLed,sizeof(ClosLed));
+      api_usart_dma_send(USART3,ClosLed,sizeof(ClosLed));
     }
   }
 
-  RxNum = API_USART_ReadBufferIDLE(USART1,u1rxbuffer);
+  RxNum = api_usart_dma_receive(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
-    API_USART_DMA_Send(USART3,u3txbuffer,RxNum);
+    api_usart_dma_send(USART3,u3txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=16;
     if(u1dsp>=479)
@@ -240,11 +318,11 @@ void USART_TEST(void)
       u1dsp=32;
     }
   }
-  RxNum = API_USART_ReadBufferIDLE(USART3,u3rxbuffer);
+  RxNum = api_usart_dma_receive(USART3,u3rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
+    api_usart_dma_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(400,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -271,9 +349,7 @@ void USART_TEST(void)
 void USART_Server(void)
 {
   unsigned short RxNum  = 0;
-
-
-  RxNum = API_USART_ReadBufferIDLE(USART1,u1rxbuffer);
+  RxNum = api_usart_dma_receive(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
@@ -282,8 +358,8 @@ void USART_Server(void)
     
     memcpy(&u3txbuffer[u3txbuffer[1]+2],&crc16mbs,2);
     
-    API_USART_DMA_Send(USART3,u3txbuffer,RxNum);
-		RS485_DMASend(&RS485B,u3txbuffer,RxNum);	//RS485-DMA发送程序
+    api_usart_dma_send(USART3,u3txbuffer,RxNum);
+		api_rs485_dma_send(&RS485B,u3txbuffer,RxNum);	//RS485-DMA发送程序
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=(RxNum/33+1)*16;
     if(LCD565_RED==u1dspcolr)
@@ -301,11 +377,11 @@ void USART_Server(void)
       u3dsp=32;
     }
   }
-  RxNum = API_USART_ReadBufferIDLE(USART3,u3rxbuffer);
+  RxNum = api_usart_dma_receive(USART3,u3rxbuffer);
   if(RxNum)
-  {
+  {		
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
+    api_usart_dma_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -322,11 +398,11 @@ void USART_Server(void)
       u3dsp=32;
     }
   }
-	RxNum = RS485_ReadBufferIDLE(&RS485B,u2rxbuffer);
+	RxNum = api_rs485_dma_receive(&RS485B,u2rxbuffer);
 	if(RxNum)
 	{
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
+    api_usart_dma_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)
@@ -589,7 +665,9 @@ void LCD_Configuration(void)
   LcdPort->sREST_PORT = NULL;
   LcdPort->sREST_Pin  = 0;
   
-  sLCD.Data.FsmcRegAddr   = (unsigned long)0x6C000000;
+  //sLCD.Data.FsmcRegAddr   = (unsigned long)0x6C000000;
+  //sLCD.Data.FsmcDataAddr  = (unsigned long)0x6C100000;
+	sLCD.Data.FsmcRegAddr   = (unsigned long)0x6C000000;
   sLCD.Data.FsmcDataAddr  = (unsigned long)0x6C100000;
   
   sLCD.Data.BColor	=	LCD565_WHITE;

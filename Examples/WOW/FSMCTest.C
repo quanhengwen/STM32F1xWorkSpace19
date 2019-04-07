@@ -116,7 +116,7 @@ void FSMCTest_Configuration(void)
   LCD_ShowBattery(780,2,2,LCD565_GRED);   //显示12x12电池
   LCD_ShowAntenna(760,2,3,LCD565_GRED);   //显示12x12天线
   
-//  USART_DMA_ConfigurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+//  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
   
   LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
     year,month,day,hour,minute,second);  //后边的省略号就是可变参数
@@ -148,7 +148,7 @@ void FSMCTest_Server(void)
 //  RxNum = USART_ReadBufferIDLE(USART1,buffer);
 //  if(RxNum)
 //  {
-//    API_USART_DMA_Send(USART1,buffer,RxNum);
+//    api_usart_dma_send(USART1,buffer,RxNum);
 //  }
 //  if(time++<1000)
 //    return;

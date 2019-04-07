@@ -94,7 +94,7 @@ void USBTEST_RS485TOUSART_Server(void)
 //		USART_DMAPrintf(USART2,"串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer---%4d\n",Tcnt);					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
 //		API_USART_DMA_Send(USART2,(u32*)strings,strlen(strings));											//串口DMA发送程序
 	}
-	RxNum=RS485_ReadBufferIDLE(&RS4851,(u32*)RevBuffer2,(u32*)RxdBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
+	RxNum=api_rs485_dma_receive(&RS4851,(u32*)RevBuffer2,(u32*)RxdBuffer);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
 	if(RxNum)
 	{
 		API_USART_DMA_Send(USART1,(u32*)RevBuffer2,RxNum);											//串口DMA发送程序
@@ -103,7 +103,7 @@ void USBTEST_RS485TOUSART_Server(void)
 	RxNum2=USART_ReadBufferIDLE(USART1,(u32*)RevBuffer,(u32*)RxdBuffer2);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
 	if(RxNum2)
 	{
-		RS485_DMASend							(&RS4851,(u32*)RevBuffer,RxNum2);	//RS485-DMA发送程序
+		api_rs485_dma_send(&RS4851,(u32*)RevBuffer,RxNum2);	//RS485-DMA发送程序
 	}
 	
 	RS485_RX_EN(&RS4851);		//收使能，已经设置为接收状态返回1，否则返回0
@@ -123,7 +123,7 @@ void USBTEST_RS485TOUSART_Conf(void)
 	RS4851.RS485_CTL_Pin=GPIO_Pin_15;
 	
 	RS485_DMA_ConfigurationNR	(&RS4851,19200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
-	USART_DMA_ConfigurationNR	(USART1,115200,(u32*)RxdBuffer2,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer2,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
 }
 
 

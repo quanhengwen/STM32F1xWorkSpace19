@@ -121,7 +121,7 @@ void CardReaderInitLoop(void)
   unsigned char data[64]={0};
   unsigned char RxNum  = 0;
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&stCbRS485Ly,data);
+  RxNum = api_rs485_dma_receive(&stCbRS485Ly,data);
   if(RxNum)
   {
     unsigned char i=0;
@@ -204,7 +204,7 @@ void CardReaderInitServer(void)
     unsigned char TxdBuffer[64]={0};
     unsigned char TxdLen  = 0;
     //CardReaderInitLoop();
-    TxdLen  = IOT5302WSetBaudrate(TxdBuffer,1);    //设置读卡器波特率
+    TxdLen  = iot5302w_set_frame_SetBaudrate(TxdBuffer,1);    //设置读卡器波特率
     TxdLen = api_rs485_dma_send(&stCbRS485Ly,TxdBuffer,TxdLen);	//RS485-DMA发送程序
   }
   InitCardReaderTimeOut++;
@@ -230,13 +230,13 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(PcPort,rxd,RxNum);                //柜消息处理
   }
   //---------------------副柜接口 UART4
-  RxNum = api_rs485_dam_receive(&stCbRS485Cb,rxd);
+  RxNum = api_rs485_dma_receive(&stCbRS485Cb,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(CabPort,rxd,RxNum);
   }  
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&stCbRS485Ly,rxd);
+  RxNum = api_rs485_dma_receive(&stCbRS485Ly,rxd);
   if(RxNum)
   {
     Msg_ProcessCB(LayPort,rxd,RxNum);              //柜消息处理

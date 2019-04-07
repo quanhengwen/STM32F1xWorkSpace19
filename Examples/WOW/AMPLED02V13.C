@@ -194,7 +194,7 @@ void RS485_Server(void)
 {
 	unsigned short RxNum	=	0;
 
-	RxNum=RS485_ReadBufferIDLE(&RS485,RxdBuffe);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
+	RxNum=api_rs485_dma_receive(&RS485,RxdBuffe);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer
 	if(RxNum)
 	{
     LCD_ShowHex(0,16,16,LCD565_RED,RxNum,8,RxdBuffe);                //显示十六进制数据
@@ -336,7 +336,7 @@ void ackFrame(void)
   crc = CRC16_MODBUS(&ackBuffe[1],3);				//多项式x16+x15+x5+1（0x8005），初始值0xFFFF，低位在前，高位在后，结果与0x0000异或
   memcpy(&ackBuffe[4],&crc,2);
   ackBuffe[6]=0x7F;   //end
-  RS485_DMASend(&RS485,ackBuffe,7);	//RS485-DMA发送程序
+  api_rs485_dma_send(&RS485,ackBuffe,7);	//RS485-DMA发送程序
 }
 /*******************************************************************************
 * 函数名			:	function

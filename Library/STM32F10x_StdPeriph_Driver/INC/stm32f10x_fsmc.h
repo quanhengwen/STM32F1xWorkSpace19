@@ -25,28 +25,28 @@
 /* Timing parameters For NOR/SRAM Banks */
 typedef struct
 {
-  u32 FSMC_AddressSetupTime;
-  u32 FSMC_AddressHoldTime;
-  u32 FSMC_DataSetupTime;
-  u32 FSMC_BusTurnAroundDuration;
-  u32 FSMC_CLKDivision;
-  u32 FSMC_DataLatency;
-  u32 FSMC_AccessMode;
+  u32 FSMC_AddressSetupTime;			//地址建立时间
+  u32 FSMC_AddressHoldTime;				//地址的持续时间
+  u32 FSMC_DataSetupTime;					//设定数据时间期限
+  u32 FSMC_BusTurnAroundDuration;	//总线翻转时间
+  u32 FSMC_CLKDivision;						//CLK时钟输出信号的HCLK时钟分频系数
+  u32 FSMC_DataLatency;						//指定在获得第一个数据前的时钟周期
+  u32 FSMC_AccessMode;						//模式
 }FSMC_NORSRAMTimingInitTypeDef;
 
 /* FSMC NOR/SRAM Init structure definition */
 typedef struct
 {
-  u32 FSMC_Bank;
-  u32 FSMC_DataAddressMux;
-  u32 FSMC_MemoryType;
-  u32 FSMC_MemoryDataWidth;
-  u32 FSMC_BurstAccessMode;
-  u32 FSMC_WaitSignalPolarity;
-  u32 FSMC_WrapMode;
-  u32 FSMC_WaitSignalActive;
+  u32 FSMC_Bank;							//存储块
+  u32 FSMC_DataAddressMux;		//地址和数据值复用使能/失能
+  u32 FSMC_MemoryType;				//外部存储器类型
+  u32 FSMC_MemoryDataWidth;		//数据宽度8位/16位
+  u32 FSMC_BurstAccessMode;		//突发访问模式使能/失能  普通访问模式就是一个数据对应一个地址；突发访问模式是写入一个地址，然后写入一批数据及数据长度
+  u32 FSMC_WaitSignalPolarity;//等待信号的极性
+  u32 FSMC_WrapMode;					//循环模式 使能/禁止
+  u32 FSMC_WaitSignalActive;	//设置WAIT信号有效时机
   u32 FSMC_WriteOperation;
-  u32 FSMC_WaitSignal;
+  u32 FSMC_WaitSignal;				//设定是否使用WAIT信号
   u32 FSMC_ExtendedMode;
   u32 FSMC_AsyncWait;
   u32 FSMC_WriteBurst;
@@ -153,8 +153,8 @@ typedef struct
                                       
                                
 /* FSMC Burst Access Mode ----------------------------------------------------*/
-#define FSMC_BurstAccessMode_Disable                    ((u32)0x00000000) 
-#define FSMC_BurstAccessMode_Enable                     ((u32)0x00000100)
+#define FSMC_BurstAccessMode_Disable                    ((u32)0x00000000) 	//禁用突发访问模式，普通访问模式就是一个数据对应一个地址
+#define FSMC_BurstAccessMode_Enable                     ((u32)0x00000100)		//使能突发访问模式，突发访问模式是写入一个地址，然后写入一批数据及数据长度
 
 #define IS_FSMC_BURSTMODE(STATE) (((STATE) == FSMC_BurstAccessMode_Disable) || \
                                   ((STATE) == FSMC_BurstAccessMode_Enable))
@@ -234,10 +234,10 @@ typedef struct
 #define IS_FSMC_DATA_LATENCY(LATENCY) ((LATENCY) <= 0xF)
 
 /* FSMC Access Mode ----------------------------------------------------------*/
-#define FSMC_AccessMode_A                               ((u32)0x00000000)
-#define FSMC_AccessMode_B                               ((u32)0x10000000) 
-#define FSMC_AccessMode_C                               ((u32)0x20000000)
-#define FSMC_AccessMode_D                               ((u32)0x30000000)
+#define FSMC_AccessMode_A                               ((u32)0x00000000)			//模式A —— SRAM/PSRAM(CRAM) OE翻转
+#define FSMC_AccessMode_B                               ((u32)0x10000000) 		//模式B —— NOR闪存
+#define FSMC_AccessMode_C                               ((u32)0x20000000)			//模式C —— NOR闪存 - OE翻转
+#define FSMC_AccessMode_D                               ((u32)0x30000000)			//模式D —— 带地址扩展的异步操作
 
 #define IS_FSMC_ACCESS_MODE(MODE) (((MODE) == FSMC_AccessMode_A) || \
                                    ((MODE) == FSMC_AccessMode_B) || \

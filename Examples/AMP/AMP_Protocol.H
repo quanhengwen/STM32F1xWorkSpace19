@@ -14,10 +14,10 @@
 #define gDatasize       		maxmsgsize	//串口最大数据包容量
 #define arrysize        		10       		//每个发送端口待发送缓存排序个数
 #define MaxSlave        		30        	//最大从机数量(柜、层、位)
-#define ampReSendTime  			100 	      	//重发间隔时间单位ms
-#define SendNopTime     		10  	      	//发送等待时间单位ms---应答等待时间
-#define ampMaxResendCount  		5         	//最大发送次数
-#define ampUnlockOuttime   		2000      	//开锁倒计时超时时间
+#define ampReSendTime  			100 	     	//重发间隔时间单位ms
+#define SendNopTime     		10  	     	//发送等待时间单位ms---应答等待时间
+#define ampMaxResendCount  	5         	//最大发送次数
+#define ampUnlockOuttime   	2000      	//开锁倒计时超时时间
 #define reslockdelaytime   	200   			//检测到锁已打开后延时关闭驱动时间ms
 #define checkswitchidtime 	2000    		//检查拨码开关时间间隔
 #define GetOnlinetime   		5000      	//获取在线设备时间间隔
@@ -69,6 +69,7 @@ typedef enum _ampecmd
 	ampCmdLcdData  	= (unsigned char)0x09,    	//LCD内容显示数据传输命令--物品名称及规格及显示参数
 	ampCmdLcdConf  	= (unsigned char)0x0A,			//LCD配置命令，修改背景色命令,字体色,字体大小
 	ampCmdLcdPwr  	= (unsigned char)0x0B,			//LCD电源供电控制指令
+	ampCmdTimeSync	=	(unsigned char)0x0C,			//LCD显示同步时间
 }ampecmddef;
 typedef enum _ampedir
 {
@@ -113,7 +114,7 @@ typedef struct _ampphy
 
 //------------------------------------------------------------------头文件
 ampphydef* api_get_frame(unsigned char* pbuffer,unsigned short len);
-unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,ampedirdef dir);
+unsigned short api_set_frame(ampphydef* frame,ampecmddef cmd,unsigned char dir);
 
 
 

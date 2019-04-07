@@ -5,9 +5,9 @@
 
 //#include	"AMP_PHY.H"
 
-#define 	ampArrySize    	30       		//每个发送端口待发送缓存排序个数
+#define	ampArrySize    	50       		//每个发送端口待发送缓存排序个数
 
-
+#define	ampledtime	40	//2000ms
 //typedef struct _ampdata       //拨码数据：
 //{
 //  unsigned char Cab_Addr;         	//柜地址
@@ -75,7 +75,38 @@ typedef struct _ampdata       //拨码数据：
   unsigned char Cab_Addr;         	//柜地址
   unsigned char MB_Flag;          	//主板标志://0--副柜，1--主柜
 }ampdatadef;
-
+typedef struct _ampcommled       //拨码数据：
+{
+	unsigned char display;
+  struct
+	{
+		unsigned char pc_rx:1;
+		unsigned char pc_tx:1;
+		
+		unsigned char cb_rx:1;
+		unsigned char cb_tx:1;
+		
+		unsigned char ly_rx:1;
+		unsigned char ly_tx:1;
+		
+		unsigned char rf_rx:1;
+		unsigned char rf_tx:1;
+	}flag;
+	struct
+	{
+		unsigned short pc_rx;
+		unsigned short pc_tx;
+		
+		unsigned short cb_rx;
+		unsigned short cb_tx;
+		
+		unsigned short ly_rx;
+		unsigned short ly_tx;
+		
+		unsigned short rf_rx;
+		unsigned short rf_tx;
+	}time;
+}ampcommleddef;
 typedef struct _ampStatus        //状态标志：
 {
   unsigned short lock    		:1;  //锁状态：0-开状态，1-锁状态
@@ -84,13 +115,6 @@ typedef struct _ampStatus        //状态标志：
 }ampStadef;
 typedef struct _amp
 {
-//  stTimesdef        Time;         //相关时间变量
-//  stSWdef           SwData;       //主机标志
-//  stReqdef          Req;         //请求类标志
-  
-//  stFlgdef          Flag;         //相关标志位
-//  stAckQdef         AckQ;         //标志应答标志，0-不需要，1-需要应答相应接口
-	
 	ampReqdef				request;
 	ampStadef     	status;          //状态码
 	ampWaitAckdef		AckW;				//等待应答标志
@@ -98,6 +122,7 @@ typedef struct _amp
 	ampCCdef				commdata;			//通讯数据
 	ampdatadef			sysdata;		//常用数据和标识
 	ampTimesdef			time;
+	ampcommleddef		led;
 }ampdef;
 
 
@@ -105,21 +130,44 @@ typedef struct _amp
 
 void AMP01V11A3_Configuration(void);
 void AMP01V11A3_Server(void);
-
-
-
-
+static void status_server(void);
+//--------------------------------static-cache_buffer
 static ampCachedef* get_cache_addr(ampPortDef port);
 static unsigned short set_cache_data(ampPortDef port,ampphydef* frame);
 static ampCachedef* get_cache_data(ampPortDef port);
 static unsigned char del_cache_data(ampPortDef port);
-
-
+//--------------------------------static-ack_flag
 static unsigned char get_ack_wait_flag(ampPortDef port);
 static void set_ack_wait_flag(ampPortDef port);
 static void del_ack_wait_flag(ampPortDef port);
-
-
+//--------------------------------static-port_server
+static void Pc_Server(void);
+static void Cab_Server(void);
+static void Lay_Server(void);
+static void CardReader_Server(void);
+//--------------------------------static-port_data_process
+static void pc_receive_data_process(void);
+static void pc_send_data_process(void);
+static void cab_receive_data_process(void);
+static void cab_send_data_process(void);
+static void lay_receive_data_process(void);
+static void lay_send_data_process(void);
+static void cmd_process(ampphydef* frame);
+//--------------------------------static-hardware_control
+static void set_door(unsigned char flag);
+static void set_backlight(unsigned char flag);
+static void set_layer_power(unsigned char flag);
+//--------------------------------static-set_frame
+static void set_ackup_frame(ampPortDef Port);
+static void set_ackdown_frame(ampPortDef Port);
+static void set_lock_status_frame(void);
+static void set_comm_time_out_frame(ampPortDef Port,ampphydef* frame);
+//--------------------------------static-Server
+static void SwitchID_Server(void);
+static void door_server(void);
+static void Led_Server(void);
+static void Tim_Server(void);
+//--------------------------------static-configuration
 static void Hardware_Configuration(void);
 static void Communication_Configuration(void);
 static void SwitchID_Configuration(void);
@@ -127,49 +175,8 @@ static void BackLight_Configuration(void);
 static void LayPower_Configuration(void);
 static void Lock_Configuration(void);
 static void Led_Configuration(void);
-
-
-
-static void pc_receive_data_process(void);
-static void pc_send_data_process(void);
-
-static void cab_receive_data_process(void);
-static void cab_send_data_process(void);
-
-static void lay_receive_data_process(void);
-static void lay_send_data_process(void);
-
-
-
-static void lay_data_process(unsigned char* pBuffer,unsigned short len);
-static void cmd_process(ampphydef* frame);
-static void received_ack_process(ampPortDef port);
-
-static void status_server(void);
-static void lock_status_updata(void);
-
-
-
-static void set_door(unsigned char flag);
-static void set_backlight(unsigned char flag);
-static void set_layer_power(unsigned char flag);
-
-
-void set_ackup_frame(ampPortDef Port);
-void set_ackdown_frame(ampPortDef Port);
-
-void set_comm_time_out_msg(ampPortDef Port,ampphydef* frame);
-
-
-static void door_server(void);
-static void Led_Server(void);
-void Pc_Server(void);
-void Cab_Server(void);
-void Lay_Server(void);
-
-
-
-void Tim_Server(void);
-
+//--------------------------------static-test
+static void test_cabinet_address_none_process(void);		//未拨码柜接口发LCD测试程序
+static void set_time_sync_frame(void);		//未拨码柜接口发LCD测试程序
 
 #endif

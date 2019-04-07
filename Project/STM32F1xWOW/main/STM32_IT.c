@@ -622,7 +622,7 @@ void SPI1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void SPI2_IRQHandler(void)
+ void SPI2_IRQHandler(void)
 {
 	
 	
@@ -662,10 +662,10 @@ void SPI2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART1_IRQHandler(void)
-{
-	WOW_Server();
-}
+//void USART1_IRQHandler(void)
+//{
+//	WOW_Server();
+//}
 
 /*******************************************************************************
 * Function Name  : USART2_IRQHandler
@@ -674,11 +674,11 @@ void USART1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART2_IRQHandler(void)
-{
-//	USART_RX_Server();
-	WOW_Server();
-}
+//void USART2_IRQHandler(void)
+//{
+////	USART_RX_Server();
+//	WOW_Server();
+//}
 
 /*******************************************************************************
 * Function Name  : USART3_IRQHandler

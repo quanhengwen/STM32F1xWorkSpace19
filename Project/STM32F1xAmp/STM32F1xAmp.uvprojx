@@ -453,21 +453,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -1040,6 +1025,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -1692,21 +1682,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -2279,6 +2254,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -2933,21 +2913,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -3520,6 +3485,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -4172,21 +4142,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -4759,6 +4714,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -5411,21 +5371,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -5998,6 +5943,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -6650,21 +6600,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -7237,6 +7172,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -7889,21 +7829,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -8476,6 +8401,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -9128,21 +9058,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -9715,6 +9630,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -10367,21 +10287,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -10954,6 +10859,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -11606,21 +11516,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -12193,6 +12088,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -12845,21 +12745,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -13432,6 +13317,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -14084,21 +13974,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -14671,6 +14546,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -15323,21 +15203,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -15910,6 +15775,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -16562,21 +16432,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -17149,6 +17004,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -17801,21 +17661,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -18388,6 +18233,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -19040,21 +18890,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -19627,6 +19462,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -20279,21 +20119,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -20866,6 +20691,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -21518,21 +21348,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -22105,6 +21920,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -22757,21 +22577,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -23344,6 +23149,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -23996,21 +23806,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -24583,6 +24378,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -25235,21 +25035,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -25822,6 +25607,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -26474,21 +26264,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -27061,6 +26836,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -27713,21 +27493,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -28300,6 +28065,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -28952,21 +28722,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -29539,6 +29294,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -30191,21 +29951,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -30778,6 +30523,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -31430,21 +31180,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -32017,6 +31752,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -32669,21 +32409,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -33256,6 +32981,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -33908,21 +33638,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -34495,6 +34210,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -35147,21 +34867,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -35734,6 +35439,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -36386,21 +36096,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -36973,6 +36668,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -37625,21 +37325,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -38212,6 +37897,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -38864,21 +38554,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -39451,6 +39126,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -40103,21 +39783,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -40690,6 +40355,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -41342,21 +41012,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -41929,6 +41584,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -42581,21 +42241,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -43168,6 +42813,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -43950,21 +43600,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -44759,6 +44394,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -45458,21 +45098,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -46045,6 +45670,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -46697,21 +46327,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -47331,6 +46946,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -47983,21 +47603,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -48758,6 +48363,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -49457,21 +49067,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -50044,6 +49639,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -50696,21 +50296,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -51330,6 +50915,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -51981,21 +51571,6 @@
         <Group>
           <GroupName>AMP01V11A3</GroupName>
           <Files>
-            <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
             <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
@@ -52680,6 +52255,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -53520,21 +53100,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -54107,6 +53672,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -54758,21 +54328,6 @@
         <Group>
           <GroupName>AMP01V11A3</GroupName>
           <Files>
-            <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
             <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
@@ -55457,6 +55012,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -56156,21 +55716,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -56790,6 +56335,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -57444,21 +56994,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -58219,6 +57754,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -58937,21 +58477,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -59759,6 +59284,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -60477,162 +60007,6 @@
           <GroupName>AMP01V11A3</GroupName>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>0</vShortEn>
-                    <vShortWch>0</vShortWch>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>0</vShortEn>
-                    <vShortWch>0</vShortWch>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>0</vShortEn>
-                    <vShortWch>0</vShortWch>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -61645,6 +61019,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -62474,21 +61853,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -63202,6 +62566,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -63984,21 +63353,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>AMP01_SW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_SW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP01_HW.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP01V11A3\AMP01_HW.C</FilePath>
-            </File>
-            <File>
-              <FileName>AMP.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\AMP\AMP.C</FilePath>
-            </File>
-            <File>
               <FileName>AMP_Protocol.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\AMP\AMP_Protocol.C</FilePath>
@@ -64712,6 +64066,11 @@
               <FileName>ST7789V.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ST7789V.C</FilePath>
+            </File>
+            <File>
+              <FileName>MFRC522.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\MFRC522.C</FilePath>
             </File>
           </Files>
         </Group>

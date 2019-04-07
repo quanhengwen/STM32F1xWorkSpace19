@@ -149,13 +149,13 @@ void LCDFsmc_Initialize(LCDDef *pInfo)
   /*-- FSMC Configuration ------------------------------------------------------*/
   /*----------------------- SRAM Bank 4 ----------------------------------------*/
   /* FSMC_Bank1_NORSRAM4 configuration */
-  FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime = 1;
-  FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime = 0;
-  FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime = 2;
+  FSMC_NORSRAMTimingInitStructure.FSMC_AddressSetupTime 	= 1;
+  FSMC_NORSRAMTimingInitStructure.FSMC_AddressHoldTime 		= 0;
+  FSMC_NORSRAMTimingInitStructure.FSMC_DataSetupTime 			= 2;
   FSMC_NORSRAMTimingInitStructure.FSMC_BusTurnAroundDuration = 0;
-  FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision = 0;
-  FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency = 0;
-  FSMC_NORSRAMTimingInitStructure.FSMC_AccessMode = FSMC_AccessMode_B;
+  FSMC_NORSRAMTimingInitStructure.FSMC_CLKDivision 				= 0;
+  FSMC_NORSRAMTimingInitStructure.FSMC_DataLatency 				= 0;
+  FSMC_NORSRAMTimingInitStructure.FSMC_AccessMode 				= FSMC_AccessMode_B;
 
   /* Color LCD configuration ------------------------------------
      LCD configured as follow:
@@ -165,20 +165,20 @@ void LCDFsmc_Initialize(LCDDef *pInfo)
         - Write Operation = Enable
         - Extended Mode = Enable
         - Asynchronous Wait = Disable */
-  FSMC_NORSRAMInitStructure.FSMC_Bank = FSMC_Bank1_NORSRAM4;
-  FSMC_NORSRAMInitStructure.FSMC_DataAddressMux = FSMC_DataAddressMux_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_SRAM;
-  FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;
-  FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_Bank 							= FSMC_Bank1_NORSRAM4;						//NOR/PSRAM块的第四区，NE4/CS4
+  FSMC_NORSRAMInitStructure.FSMC_DataAddressMux 		= FSMC_DataAddressMux_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_MemoryType 				= FSMC_MemoryType_SRAM;
+  FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth 		= FSMC_MemoryDataWidth_16b;				//数据宽度
+  FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode 		= FSMC_BurstAccessMode_Disable;
   FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;
-  FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;
-  FSMC_NORSRAMInitStructure.FSMC_WriteOperation = FSMC_WriteOperation_Enable;
-  FSMC_NORSRAMInitStructure.FSMC_WaitSignal = FSMC_WaitSignal_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_ExtendedMode = FSMC_ExtendedMode_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_WriteBurst = FSMC_WriteBurst_Disable;
-  FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct = &FSMC_NORSRAMTimingInitStructure;
-  FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &FSMC_NORSRAMTimingInitStructure;
+  FSMC_NORSRAMInitStructure.FSMC_WrapMode 					= FSMC_WrapMode_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive 	= FSMC_WaitSignalActive_BeforeWaitState;
+  FSMC_NORSRAMInitStructure.FSMC_WriteOperation 		= FSMC_WriteOperation_Enable;
+  FSMC_NORSRAMInitStructure.FSMC_WaitSignal 				= FSMC_WaitSignal_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_ExtendedMode 			= FSMC_ExtendedMode_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_WriteBurst 				= FSMC_WriteBurst_Disable;
+  FSMC_NORSRAMInitStructure.FSMC_ReadWriteTimingStruct 	= &FSMC_NORSRAMTimingInitStructure;
+  FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct 			= &FSMC_NORSRAMTimingInitStructure;
 
   FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure);
 
@@ -194,7 +194,7 @@ void LCDFsmc_Initialize(LCDDef *pInfo)
 	
   //===========================函数地址
   LCDSYS->Display.WriteIndex    = LCDFsmc_WriteIndex;
-  LCDSYS->Display.WriteData     = LCDFsmc_WriteData;
+  LCDSYS->Display.WriteData     = LCDFsmc_WriteGRAM;
   LCDSYS->Display.WriteCommand  = LCD_WriteCommand;
   //==========================驱动配置
   SSD1963_Initialize(pInfo);
@@ -330,9 +330,22 @@ void LCDFsmc_WriteIndex(unsigned short Index)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void LCDFsmc_WriteData(unsigned short Data)
+void LCDFsmc_WriteGRAM(unsigned short Data)
 {  
   *(volatile unsigned short*)(LCDSYS->Data.FsmcDataAddr)  = Data;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short LCDFsmc_ReadGRAM(void)
+{  
+  return *(volatile unsigned short*)(LCDSYS->Data.FsmcDataAddr);
 }
 /*******************************************************************************
 *函数名			:	R61509V_WriteCommand

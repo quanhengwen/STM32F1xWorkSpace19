@@ -43,7 +43,7 @@ typedef struct
 
 //------------------------------------------------------API-1
 unsigned short api_usart_dma_receive(USART_TypeDef* USARTx,unsigned char *RevBuffer);
-unsigned short api_rs485_dam_receive(RS485Def *pRS485,unsigned char *RevBuffer);
+unsigned short api_rs485_dma_receive(RS485Def *pRS485,unsigned char *RevBuffer);
 
 
 unsigned short api_usart_dma_send(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);
@@ -55,26 +55,26 @@ unsigned short api_rs485_dma_printf(RS485Def *pRS485,const char *format,...);
 
 
 //------------------------------------------------------API-configuration
-void api_usart_dma_configurationNR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断
+void api_usart_dma_configurationNR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
 
-void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);
 
-void api_usart_dma_configuration_even(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,偶校验
-void api_usart_dma_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--查询方式，不开中断,奇校验
-void api_usart_dma_configuration_idleIT(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--中断方式
-void api_usart_dma_configurationNR_Remap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射，不开中断
-void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射
-void api_rs485_dma_configurationIT(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);	//RS485_DMA配置--中断
-void api_usart_configuration_it(USART_TypeDef* USARTx,u32 USART_BaudRate);	//USART_中断方式配置
+void api_usart_dma_configuration_even(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
+void api_usart_dma_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
+void api_usart_dma_configuration_idleIT(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
+void api_usart_dma_configurationNR_Remap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
+void api_rs485_dma_configurationNR_Remap(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);
+void api_rs485_dma_configurationIT(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);
+void api_usart_configuration_it(USART_TypeDef* USARTx,u32 USART_BaudRate);
 
 
 //------------------------------------------------------static1
 static void	usart_gpio_initialize(USART_TypeDef* USARTx);
-static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx);	//USART_GPIO完全映射配置
+static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx);
 	
-static void usart_initialize_nr(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//USART_DMA配置--查询方式，不开中断
-static void usart_initialize_even(USART_TypeDef* USARTx,unsigned long USART_BaudRate);	//USART_DMA配置--查询方式，不开中断--偶校验
-static void usart_initialize_odd(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//USART_DMA配置--查询方式，不开中断--奇校验
+static void usart_initialize_nr(USART_TypeDef* USARTx,unsigned long USART_BaudRate);
+static void usart_initialize_even(USART_TypeDef* USARTx,unsigned long USART_BaudRate);	//偶校验
+static void usart_initialize_odd(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//奇校验
 static void	usart_dma_initialize(USART_TypeDef* USARTx,unsigned short BufferSize);
 static void usart_it_initialize(USART_TypeDef* USARTx);	//串口GPIO配置
 
@@ -86,7 +86,7 @@ static unsigned char get_usart_type(USART_TypeDef* USARTx);
 static void set_rs485_addr(RS485Def *pRS485);
 static RS485Def* get_rs485_addr(USART_TypeDef* USARTx);
 
-static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);		//串口DMA发送程序
+static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);
 static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,unsigned char *RevBuffer);
 
 static unsigned char* get_usart_rx_data_addr(USART_TypeDef* USARTx);

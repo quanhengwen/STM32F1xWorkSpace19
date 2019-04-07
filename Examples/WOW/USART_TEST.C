@@ -48,7 +48,14 @@ unsigned char ts3[4]={0x43,0x01,0x19,0xa2};
 unsigned char td3[5]={0x05,0x02,0x00,0x00,0xf8};
 unsigned char te3[4]={0x19,0x01,0x10,0xd5};
 
-static void function(void);
+unsigned char steep	=	0;
+unsigned char targ	=	0;
+
+//unsigned char rd1[4]=
+static void test(void);
+static void function(unsigned char steep);
+static void function2(void);
+
 //u8 itf=0;
 /*******************************************************************************
 * 函数名		:	
@@ -63,14 +70,20 @@ void Usart_test_Configuration(void)
 	
 	GPIO_DeInitAll();							//将所有的GPIO关闭----V20170605
 	
+	GPIO_Configuration_IPD(GPIOA,GPIO_Pin_8);			//将GPIO相应管脚配置为下拉输入模式----V20170605
+	
 	PWM_OUT(TIM2,PWM_OUTChannel1,1,900);						//PWM设定-20161127版本	
 	
-	USART_DMA_ConfigurationNR	(USART1,625000,BufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_dma_configurationNR	(USART1,625000,BufferSize);	//USART_DMA配置--查询方式，不开中断
   
 //  IWDG_Configuration(1000);			//独立看门狗配置---参数单位ms	
   
   SysTick_Configuration(100);	//系统嘀嗒时钟配置72MHz,单位为uS
   pr=(int*)0x20024300;
+	while(1)
+	{
+//		function();
+	}
 }
 /*******************************************************************************
 * 函数名		:	
@@ -85,15 +98,16 @@ void Usart_test_Server(void)
 	
 	IWDG_Feed();								//独立看门狗喂狗
 	
-	function();	
-	return;
+	test();
+
 	
-	Length	=	API_USART_ReadBufferIDLE(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	Length	=	api_usart_dma_receive(USART1,rxBuffer1);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(Length)
 	{
-    API_USART_DMA_Send(USART1,rxBuffer1,Length);	//串口DMA发送程序
-		
+    //api_usart_dma_send(USART1,rxBuffer1,Length);	//串口DMA发送程序
+		memset(rxBuffer1,0x00,BufferSize);
 	}
+	return;
 	if(USART_GetFlagStatus(USART1,USART_FLAG_TC))
 	{		
 		//USART_DMAPrintf(USART1,"自定义printf串口DMA发送程序,后边的省略号就是可变参数\r\n");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
@@ -112,47 +126,123 @@ void Usart_test_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void function(void)
+static void test(void)
+{
+//	static unsigned char steep	=	0;
+	static unsigned short time	=	0;
+//	if(time++<5000)
+//	{
+//		return;
+//	}
+	if(targ==0)
+	{
+		if(GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_8))
+			targ	=	1;
+		return;
+	}
+	function(steep);	
+	
+	if(steep++>=10)
+	{
+		time	=	0;
+		targ	=	0;
+		steep=0;
+	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void function(unsigned char steep)
+{
+	if(0==steep)
+	{
+		api_usart_dma_send(USART1,t1,4);	//串口DMA发送程序
+	}	
+	else if(1==steep)
+		api_usart_dma_send(USART1,ts1,4);	//串口DMA发送程序
+	else if(2==steep)
+		api_usart_dma_send(USART1,td1,5);	//串口DMA发送程序
+	else if(3==steep)
+	{
+		api_usart_dma_send(USART1,te1,4);	//串口DMA发送程序
+	}
+	
+	else if(4==steep)
+		api_usart_dma_send(USART1,ts2,4);	//串口DMA发送程序
+	else if(5==steep)
+		api_usart_dma_send(USART1,td2,5);	//串口DMA发送程序
+	else if(6==steep)
+	{
+		api_usart_dma_send(USART1,te2,4);	//串口DMA发送程序
+	}
+	
+	else if(7==steep)
+		api_usart_dma_send(USART1,ts3,4);	//串口DMA发送程序
+	else if(8==steep)
+		api_usart_dma_send(USART1,td3,5);	//串口DMA发送程序
+	else if(9==steep)
+		api_usart_dma_send(USART1,te3,4);	//串口DMA发送程序
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void function2(void)
 {
 	static unsigned char i	=	0;
+	static unsigned short time	=	0;
+	if(time++<10000)
+	{
+		return ;
+	}
 	if(i>=10)
 	{
-		SysTick_DeleyS(1);					//SysTick延时nS
+		time	=	0;					//SysTick延时nS
 		i=0;
+		return;
 	}
-	
 	if(0==i)
 	{
-		API_USART_DMA_Send(USART1,t1,4);	//串口DMA发送程序
-		SysTick_DeleyuS(200);					//SysTick延时nuS
-	}
-	
+		api_usart_dma_send(USART1,t1,4);	//串口DMA发送程序
+		SysTick_DeleyuS(300);					//SysTick延时nuS
+	}	
 	else if(1==i)
-		API_USART_DMA_Send(USART1,ts1,4);	//串口DMA发送程序
+		api_usart_dma_send(USART1,ts1,4);	//串口DMA发送程序
 	else if(2==i)
-		API_USART_DMA_Send(USART1,td1,5);	//串口DMA发送程序
+		api_usart_dma_send(USART1,td1,5);	//串口DMA发送程序
 	else if(3==i)
 	{
-		API_USART_DMA_Send(USART1,te1,4);	//串口DMA发送程序
-		SysTick_DeleyuS(800);					//SysTick延时nuS
+		api_usart_dma_send(USART1,te1,4);	//串口DMA发送程序
+		SysTick_DeleyuS(50);					//SysTick延时nuS
 	}
 	
 	else if(4==i)
-		API_USART_DMA_Send(USART1,ts2,4);	//串口DMA发送程序
+		api_usart_dma_send(USART1,ts2,4);	//串口DMA发送程序
 	else if(5==i)
-		API_USART_DMA_Send(USART1,td2,5);	//串口DMA发送程序
+		api_usart_dma_send(USART1,td2,5);	//串口DMA发送程序
 	else if(6==i)
 	{
-		API_USART_DMA_Send(USART1,te2,4);	//串口DMA发送程序
-		SysTick_DeleyuS(500);					//SysTick延时nuS
+		api_usart_dma_send(USART1,te2,4);	//串口DMA发送程序
+		SysTick_DeleymS(50);					//SysTick延时nuS
 	}
-	
+//	
 	else if(7==i)
-		API_USART_DMA_Send(USART1,ts3,4);	//串口DMA发送程序
+		api_usart_dma_send(USART1,ts3,4);	//串口DMA发送程序
 	else if(8==i)
-		API_USART_DMA_Send(USART1,td3,5);	//串口DMA发送程序
+		api_usart_dma_send(USART1,td3,5);	//串口DMA发送程序
 	else if(9==i)
-		API_USART_DMA_Send(USART1,te3,4);	//串口DMA发送程序
+		api_usart_dma_send(USART1,te3,4);	//串口DMA发送程序
 	
 	i+=1;
 }

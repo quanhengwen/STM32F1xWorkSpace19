@@ -1104,7 +1104,7 @@ void AMPLCDV11_Send(void)
   unsigned  short   sendedlen = sAmpLcd.Comm.TxLen;
 	if(sendedlen)
 	{
-		sendedlen	=	RS485_DMASend(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Txd,sendedlen);	//RS485-DMA发送程序
+		sendedlen	=	api_rs485_dma_send(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Txd,sendedlen);	//RS485-DMA发送程序
 		if(sAmpLcd.Comm.TxLen	==	sendedlen)
 		{
 			sAmpLcd.Comm.TxLen	=	0;
@@ -1139,7 +1139,7 @@ void AMPLCDV11_Receive(void)
   unsigned short RxNum  = 0;
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = RS485_ReadBufferIDLE(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
+  RxNum = api_rs485_dma_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
   if(RxNum)
   {	
     AMPLCDV11_Process(sAmpLcd.Comm.Rxd,RxNum);              //柜消息处理

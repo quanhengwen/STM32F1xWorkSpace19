@@ -1329,7 +1329,7 @@ void ReceiveData(void)
   unsigned short RxNum  = 0;
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
+  RxNum = api_rs485_dma_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
   if(RxNum)
   {	
     ProcessData(sAmpLcd.Comm.Rxd,RxNum);              //柜消息处理

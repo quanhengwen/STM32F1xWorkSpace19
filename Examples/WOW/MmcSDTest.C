@@ -87,7 +87,7 @@ void MmcSDTest_Configuration(void)
 	GPIO_DeInitAll();							//将所有的GPIO关闭----V20170605	
   LCD_Configuration();
   SD_Configuration();
-  USART_DMA_ConfigurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
 //  TM1618_PinSet();
 
 //  res = f_open(&fsrc, "1:srcfile.dat", FA_OPEN_EXISTING | FA_READ);

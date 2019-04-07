@@ -186,19 +186,19 @@ unsigned char GetBuildSecond(const char* TimeStr)
 * 输出			: 计算结果
 * 返回			: 无
 *******************************************************************************/
-unsigned char BCC8(const unsigned char *buffer,unsigned short num)			//异或校验
+unsigned char BCC8(const unsigned char *buffer,unsigned short len)			//异或校验
 {
-	u16 i=0;
-	u16 temp=0;
+	unsigned short i=0;
+	unsigned char temp=0;
 	if(NULL	==	buffer)
 	{
 		return 0;
 	}
-	if(1	>=	num)
+	if(1	>=	len)
 	{
 		return 0;
 	}
-	for(i=0;i<num;i++)
+	for(i=0;i<len;i++)
 	{
 		temp=temp^buffer[i];
 	}
@@ -222,9 +222,34 @@ unsigned char CRC8(const unsigned char *buffer)			//循环冗余校验
 * 输出			: 无
 * 返回			: 无
 *******************************************************************************/
-unsigned char LRC8(const unsigned char *buffer)		//纵向冗余校验
+unsigned char LRC8(const unsigned char *buffer,unsigned short len)		//纵向冗余校验
 {
-	return 0;
+	unsigned short i=0;
+	unsigned char temp	=	0;
+	for(i=0;i<len;i++)
+	{
+		temp+=buffer[i];
+	}
+	temp=temp^0xFF+1;
+	return temp;
+}
+/*******************************************************************************
+* 函数名		:	CheckSum验
+* 功能描述	: 累加和校验算法
+* 输入			: 无
+* 输出			: 无
+* 返回			: 无
+*******************************************************************************/
+unsigned char CheckSum(const unsigned char *buffer,unsigned short len)		//纵向冗余校验
+{
+	unsigned short i=0;
+	unsigned char temp	=	0;
+	for(i=0;i<len;i++)
+	{
+		temp+=buffer[i];
+	}
+	temp=temp^0xFF;
+	return temp;
 }
 /*******************************************************************************
 * 函数名			:	function

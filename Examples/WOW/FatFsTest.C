@@ -73,7 +73,7 @@ void FatFsTest_Configuration(void)
 	
   LCD_Configuration();
 //  TM1618_PinSet();
-  USART_DMA_ConfigurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
   
   LCD_Printf (0,0,16,0,"为逻辑驱动器注册工作区......");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
   /* 为逻辑驱动器注册工作区 */
@@ -96,7 +96,7 @@ void FatFsTest_Configuration(void)
 	
 
 
-  USART_DMA_ConfigurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
 //  
   ADC_TempSensorConfiguration(&ADCDATA);								//STM32内部温度传感器配置
 //  LCD_ShowBattery(780,2,2,0);   //显示12x12电池

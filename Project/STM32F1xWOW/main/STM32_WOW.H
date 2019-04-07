@@ -127,7 +127,15 @@
 	#include "IOTReaderTest.H"
 #endif
 
+//*********************************mfrc522test*********************************//
+#ifdef mfrc522test
+	#include "mfrc522test.H"
+#endif
 
+//*********************************sram_test*********************************//
+#ifdef sram_test
+	#include "sram_test.H"
+#endif
 
 
 

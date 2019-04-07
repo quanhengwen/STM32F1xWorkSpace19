@@ -338,6 +338,15 @@ void WOW_Configuration(void)
 #ifdef IOTReaderTest
 	IOTReaderTest_Configuration();
 #endif
+//*********************************IOTReaderTest*********************************//
+#ifdef mfrc522test
+	mfrc522test_Configuration();
+#endif
+//*********************************sram_test*********************************//
+#ifdef sram_test
+	sram_test_Configuration();
+#endif
+
 
 }
 
@@ -662,6 +671,15 @@ void WOW_Server(void)
 #ifdef IOTReaderTest
 	IOTReaderTest_Server();
 #endif
+//*********************************mfrc522test*********************************//
+#ifdef mfrc522test
+	mfrc522test_Server();
+#endif
+//*********************************sram_test*********************************//
+#ifdef sram_test
+	sram_test_Server();
+#endif
+
 //IWDG_Feed();								//∂¿¡¢ø¥√≈π∑Œππ∑
 
 }

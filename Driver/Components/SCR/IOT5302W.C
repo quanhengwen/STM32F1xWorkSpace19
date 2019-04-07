@@ -14,12 +14,7 @@ IOT5302Wdef IOT5302W;
 
 unsigned char CmdBuffer[16]={0};
 
-void IOT5302W_Initialize(void);     //读卡器初始化
-void IOT5302W_DataProcess(void);    //数据处理，接收拼包，协议检查
-void IOT5302W_DataCheck(void);
 
-unsigned short IOT5302W_HWSendData(unsigned char* TxdBuffer,unsigned short length);
-unsigned short IOT5302W_HWReadData(unsigned char* Buffer);
 /*******************************************************************************
 *函数名			:	IOT5302W_Configuration
 *功能描述		:	IOT5302W配置
@@ -30,7 +25,7 @@ unsigned short IOT5302W_HWReadData(unsigned char* Buffer);
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_IOT5302WConfiguration(IOT5302Wdef* pIOT5302W)
+void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W)
 {
   IOT5302W  = *pIOT5302W;
   IOT5302W.Data.Initialized = 0;
@@ -48,20 +43,20 @@ void API_IOT5302WConfiguration(IOT5302Wdef* pIOT5302W)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_IOT5302WServer(void)
+void api_iot5302w_server(void)
 { 
   //==================================检查参数
-  if((0==IOT5302W.Conf.USART_BaudRate)||((0==IOT5302W.Conf.IOT5302WPort.USARTx)||(0==IOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT)))  //参数错误
+  if((0==IOT5302W.Conf.USART_BaudRate)||(0==IOT5302W.Conf.IOT5302WPort.USARTx))  //参数错误
   {
     return;
   }
   
   //==================================数据处理，接收拼包，协议检查
-  IOT5302W_DataProcess();
+  iot5302w_data_process();
   //==================================如果未初始化成功，不执行
   if(0==IOT5302W.Data.Initialized)  //未初始化成功
   {
-    IOT5302W_Initialize();    //读卡器初始化
+    iot5302w_initialize();    //读卡器初始化
     return;
   }
   IOT5302W.Data.Time++;
@@ -70,25 +65,28 @@ void API_IOT5302WServer(void)
   {
     unsigned char TxdLen  = 0;
     IOT5302W.Data.Time=0; //清零
-    IOT5302WGetSNR(CmdBuffer);
-    TxdLen  = IOT5302WGetSNR(CmdBuffer);                    //设置读卡器波特率
-    TxdLen  = IOT5302W_HWSendData(CmdBuffer,TxdLen);	      //寻卡，获取卡的UID，每个M1卡都有一个唯一的序列号，我们称为“UID”，是32位的，也就是4个字节。
+    TxdLen  = iot5302w_set_frame_GetSNR(CmdBuffer);                    //设置读卡器波特率
+    TxdLen  = iot5302w_send_msg(CmdBuffer,TxdLen);	      //寻卡，获取卡的UID，每个M1卡都有一个唯一的序列号，我们称为“UID”，是32位的，也就是4个字节。
   }
 }
+//------------------------------------------------------------------------------
+
+
 
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
 *输入				: 
-*返回值			:	无
+*返回值			:	4字节卡片UID
 *修改时间		:	无
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short API_IOT5302WGetUID(unsigned char* Buffer)
+unsigned short api_get_iot5302w_uid(unsigned char* Buffer)
 {
   unsigned char i=0;
   unsigned char n=0;
+	static unsigned short no_data_wait_time	=	0;
   for(i=0;i<4;i++)
   {
     if(IOT5302W.Data.UID[i])
@@ -96,15 +94,16 @@ unsigned short API_IOT5302WGetUID(unsigned char* Buffer)
   }
   if(0!=n)  //有数据
   {
+		no_data_wait_time	=	0;
     if(memcmp(IOT5302W.Data.UID,IOT5302W.Data.UIDbac,4)) //对比两组数据不一样
     {
       memcpy(Buffer,IOT5302W.Data.UID,4);
       memcpy(IOT5302W.Data.UIDbac,IOT5302W.Data.UID,4);
-      memset(IOT5302W.Data.UID,0x00,4);
+      memset(IOT5302W.Data.UID,0x00,4);			//清除数据
       IOT5302W.Data.TimeCmp = 0;
       return 4; //4字节UID
     }
-    else if(IOT5302W.Data.TimeCmp++>2000)
+    else if(IOT5302W.Data.TimeCmp++>2000)		//相同的数据，2秒钟上传一次
     {
       memcpy(Buffer,IOT5302W.Data.UID,4);
       IOT5302W.Data.TimeCmp = 0;
@@ -113,9 +112,30 @@ unsigned short API_IOT5302WGetUID(unsigned char* Buffer)
   }
   else
   {
-    memset(IOT5302W.Data.UIDbac,0x00,4);
+		if(no_data_wait_time++>300)	//200ms
+		{
+			no_data_wait_time	=	0;
+			memset(IOT5302W.Data.UIDbac,0x00,4);
+		}    
   }
   return 0;
+}
+//------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------hardware
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	配置读卡器接口
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void hw_port_configuration(unsigned long USART_BaudRate)
+{  
+  api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -126,7 +146,7 @@ unsigned short API_IOT5302WGetUID(unsigned char* Buffer)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short IOT5302W_HWSendData(unsigned char* TxdBuffer,unsigned short length)
+static unsigned short iot5302w_send_msg(unsigned char* TxdBuffer,unsigned short length)
 {
   unsigned short TxdLen = 0;
   TxdLen = api_rs485_dma_send(&IOT5302W.Conf.IOT5302WPort,TxdBuffer,length);	//RS485-DMA发送程序
@@ -141,37 +161,29 @@ unsigned short IOT5302W_HWSendData(unsigned char* TxdBuffer,unsigned short lengt
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short IOT5302W_HWReadData(unsigned char* Buffer)
+static unsigned short iot5302w_read_msg(unsigned char* RxdBuffer)
 {
   unsigned short RxdLen = 0;
-  RxdLen = api_rs485_dam_receive(&IOT5302W.Conf.IOT5302WPort,Buffer);
+  RxdLen = api_rs485_dma_receive(&IOT5302W.Conf.IOT5302WPort,RxdBuffer);
   return RxdLen;
 }
+//------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------software
 /*******************************************************************************
-*函数名			:	function
-*功能描述		:	配置读卡器接口
+*函数名			:	iot5302w_initialize
+*功能描述		:	以不同的波特率发送读卡器波特率配置命令，检查返回
+							根据读卡器的响应时间，时间间隔可以设置为200ms
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void IOT5302W_HWPortInitialize(unsigned long USART_BaudRate)
+static void iot5302w_initialize(void)
 {  
-  api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-}
-/*******************************************************************************
-*函数名			:	IOT5302W_Initialize
-*功能描述		:	根据读卡器的响应时间，时间间隔可以设置为200ms
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-void IOT5302W_Initialize(void)
-{  
-  IOT5302W_DataProcess(); ////数据处理，接收拼包，协议检查
+  iot5302w_data_process(); 					//数据处理，接收拼包，协议检查
   if(0!=IOT5302W.Data.Initialized)  //未初始化成功
   {
     return;
@@ -209,16 +221,16 @@ void IOT5302W_Initialize(void)
       IOT5302W.Data.USART_BaudRate=IOT5302W.Conf.USART_BaudRate;
       IOT5302W.Data.BaudRateSetStep = 0;
     }
-    IOT5302W_HWPortInitialize(IOT5302W.Data.USART_BaudRate);	//配置读卡器接口
+    hw_port_configuration(IOT5302W.Data.USART_BaudRate);			//配置波特率，根据当前波特率与读卡器通讯是否成功
     IOT5302W.Data.Time  = 0;
   }
-  //---------------------0.5秒发送一次配置
+  //---------------------按照上面的硬件接口波特率0.5秒发送一次配置读卡器波特率命令，
   if((50==IOT5302W.Data.Time))
   {
     
     unsigned char TxdLen  = 0;
     unsigned char BaudRateCode  = 0;
-    switch(IOT5302W.Conf.USART_BaudRate)    //根据实际应用需要的波特率设置获取设置读卡器波特率的代码
+    switch(IOT5302W.Conf.USART_BaudRate) 	//根据实际应用需要的波特率设置获取设置读卡器波特率的代码
     {
       case 9600:BaudRateCode=0;
       break;
@@ -233,8 +245,8 @@ void IOT5302W_Initialize(void)
       default:BaudRateCode=0; //默认配置
       break;
     }
-    TxdLen  = IOT5302WSetBaudrate(CmdBuffer,BaudRateCode);  //设置读卡器波特率
-    TxdLen  = IOT5302W_HWSendData(CmdBuffer,TxdLen);	      //RS485-DMA发送程序
+    TxdLen  = iot5302w_set_frame_SetBaudrate(CmdBuffer,BaudRateCode);  //设置读卡器波特率
+    TxdLen  = iot5302w_send_msg(CmdBuffer,TxdLen);	      //RS485-DMA发送程序
     IOT5302W.Data.BaudRateSetStep += 1;
   }
   IOT5302W.Data.Time++;
@@ -248,11 +260,11 @@ void IOT5302W_Initialize(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void IOT5302W_DataProcess(void)
+static void iot5302w_data_process(void)
 {
   unsigned char IOT5302WRx[64];
   unsigned short RxdLen = 0;  
-  RxdLen  = IOT5302W_HWReadData(IOT5302WRx);
+  RxdLen  = iot5302w_read_msg(IOT5302WRx);
   if(RxdLen)
   {
     if(IOT5302W.Data.DataCount+RxdLen>IOT5302WBufferSize)
@@ -268,7 +280,7 @@ void IOT5302W_DataProcess(void)
   {
     IOT5302W.Data.Initialized = 0;  //初始化标志，0-未初始化成功，1-初始化成功
   }
-  IOT5302W_DataCheck();
+  iot5302w_data_check();
 }
 /*******************************************************************************
 *函数名			:	IOT5302W_DataCheck
@@ -279,7 +291,7 @@ void IOT5302W_DataProcess(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void IOT5302W_DataCheck(void)
+static void iot5302w_data_check(void)
 {
   if(0==IOT5302W.Data.DataCount)  //没有数据
   {
@@ -329,16 +341,21 @@ void IOT5302W_DataCheck(void)
     IOT5302W.Data.TimeOut = 0;    //超时计时清除
   }
 }
+//------------------------------------------------------------------------------
+
+
+//---------------------------------------------------------software-SetFrame
 /*******************************************************************************
-*函数名			:	IOT5302WGetSNR
-*功能描述		:	寻卡，获取卡的UID，每个M1卡都有一个唯一的序列号，我们称为“UID”，是32位的，也就是4个字节。
+*函数名			:	iot5302w_set_frame_GetSNR
+*功能描述		:	生成获取UID的消息帧
+							寻卡，获取卡的UID，每个M1卡都有一个唯一的序列号，我们称为“UID”，是32位的，也就是4个字节。
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short IOT5302WGetSNR(unsigned char* Buffer)
+static unsigned short iot5302w_set_frame_GetSNR(unsigned char* Buffer)
 {
   unsigned short FrameLen=8;
   
@@ -356,15 +373,15 @@ unsigned short IOT5302WGetSNR(unsigned char* Buffer)
   return  FrameLen;
 }
 /*******************************************************************************
-*函数名			:	IOT5302WSetBaudrate
-*功能描述		:	设置读卡器波特率
+*函数名			:	iot5302w_set_frame_SetBaudrate
+*功能描述		:	生成配置读卡器波特率的消息帧
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short IOT5302WSetBaudrate(unsigned char* Buffer,unsigned char BaudRateCode)
+static unsigned short iot5302w_set_frame_SetBaudrate(unsigned char* Buffer,unsigned char BaudRateCode)
 {
   unsigned short FrameLen=7;
   
@@ -383,79 +400,8 @@ unsigned short IOT5302WSetBaudrate(unsigned char* Buffer,unsigned char BaudRateC
   
   return  FrameLen;
 }
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned short IotReaderGetCmdFrame(Cmddef Cmd,unsigned char* Buffer)
-{
-  unsigned short FrameLen=0;
-  IRDdef* IotReader=(IRDdef*)Buffer;
-  IotReader->STX  = IotReaderSTX;   //头标识
-  IotReader->ID   = 0x00;
-  IotReader->Len  = 0X00;     //长度
-  IotReader->Cts  = Cmd;
-  switch((unsigned char)Cmd)
-  {
-    case  WriteUserInfo:
-          FrameLen  = 0;
-    case  ReadUserInfo:
-          FrameLen  = 0;
-    default:
-      FrameLen  = 0;
-  }
-  return  FrameLen;
-}
+//------------------------------------------------------------------------------
 
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned short IotMifareGetCmdFrame(Cmddef Cmd,unsigned char Sec,unsigned char* Buffer,unsigned char* KeyBuffer)
-{
-  unsigned short FrameLen=0;
-//  if(Sec<1&&Sec>4)  //读取的块范围不对
-//  {
-//    return  0;
-//  }
-  switch((unsigned char)Cmd)
-  {
-    case  IotRead:
-          Buffer[0]   = IotReaderSTX; //头标识
-          Buffer[1]   = 0x00;         //设备地址
-          Buffer[2]   = 0x0A;         //长度：不包括STX,ETX,BCC,设备地址
-          Buffer[3]   = Cmd;          //命令
-          Buffer[4]   = 0x01;         //Data[0]读取模式
-          Buffer[5]   = Sec;          //Data[1]要读的块，即读多少块。取值范围01-04(一个扇区有4个块，可以一次读取多个块)
-          Buffer[6]   = 0x01;         //Data[2]要读的块的起点地址。取值范围：十六进制00-3F即00块到63块。(一个扇区4个块，一个块16字节，一个扇区总共64字节)
-          Buffer[7]   = KeyBuffer[0]; //Data[3]key[0]
-          Buffer[8]   = KeyBuffer[1]; //Data[4]key[1]
-          Buffer[9]   = KeyBuffer[2]; //Data[5]key[2]
-          Buffer[10]  = KeyBuffer[3]; //Data[6]key[3]
-          Buffer[11]  = KeyBuffer[4]; //Data[7]key[4]
-          Buffer[12]  = KeyBuffer[5]; //Data[8]key[5]
-          Buffer[13]  = BCC8(&Buffer[1],12);		//异或校验;         //Data[8]key[5]
-          Buffer[14]  = IotReaderETX;		//异或校验;         //Data[8]key[5]
-          FrameLen    = 15;
-    break;
-    case  IotWrite:
-          FrameLen  = 0;
-    break;
-    default:
-      FrameLen  = 0;
-  }
-  return  FrameLen;
-}
 
 
 

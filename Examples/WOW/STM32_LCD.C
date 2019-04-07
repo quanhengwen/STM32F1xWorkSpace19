@@ -71,7 +71,7 @@ void STM32_LCD_Configuration(void)
 	TM1618_PinSet();
 
 //	GT32L32_Configuration();
-  USART_DMA_ConfigurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
 //  
   ADC_TempSensorConfiguration(&ADCDATA);								//STM32内部温度传感器配置
 //  LCD_ShowBattery(780,2,2,0);   //显示12x12电池

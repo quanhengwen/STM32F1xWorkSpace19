@@ -317,16 +317,16 @@ void USART_Server(void)
     memcpy(u2txbuffer,u1rxbuffer,RxNum);
 
     
-    API_USART_DMA_Send(USART1,u1txbuffer,sizeof(str)-1);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+    api_usart_dma_send(USART1,u1txbuffer,sizeof(str)-1);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
     
-    RS485_DMASend(&stRS485BS,u2txbuffer,RxNum);
+    api_rs485_dma_send(&stRS485BS,u2txbuffer,RxNum);
 
   }
-  RxNum = RS485_ReadBufferIDLE(&stRS485BS,u2rxbuffer);
+  RxNum = api_rs485_dma_receive(&stRS485BS,u2rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    API_USART_DMA_Send(USART1,u1txbuffer,RxNum);
+    api_usart_dma_send(USART1,u1txbuffer,RxNum);
   }
 }
 /*******************************************************************************
@@ -359,7 +359,7 @@ void hw_configuration(void)
 void COMM_Configuration(void)
 {
   unsigned short RxNum  = 0;
-  USART_DMA_ConfigurationNR	(USART1,115200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_dma_configurationNR	(USART1,115200,ussize);	//USART_DMA配置--查询方式，不开中断
 
   //-----------------------------总线接口485
   stRS485BS.USARTx  = USART2;

@@ -78,7 +78,7 @@ void AMP_CABV11_Server(void)
   AMPCAB_SwitchIDServer();
   AMPCAB_SYSLED();
   AMPCAB_BackLight();     //背光灯
-  API_IOT5302WServer();   //读卡器服务程序
+  api_iot5302w_server();   //读卡器服务程序
 	
 	AMPCAB_Receive();
   Send_Server();
@@ -115,7 +115,7 @@ void CardReaderInitLoop(void)
   unsigned char data[64]={0};
   unsigned char RxNum  = 0;
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&stCardRS485Ly,data);
+  RxNum = api_rs485_dma_receive(&stCardRS485Ly,data);
   if(RxNum)
   {
     unsigned char i=0;
@@ -168,7 +168,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(PcPort,rxd,RxNum);                //柜消息处理
   }
   //---------------------副柜接口 UART4
-  RxNum = api_rs485_dam_receive(&stCbRS485Cb,rxd);
+  RxNum = api_rs485_dma_receive(&stCbRS485Cb,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -176,7 +176,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(CabPort,rxd,RxNum);
   }  
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&stCbRS485Ly,rxd);
+  RxNum = api_rs485_dma_receive(&stCbRS485Ly,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -184,7 +184,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(LayPort,rxd,RxNum);              //柜消息处理
   }
   //---------------------读卡器接口 USART3
-  RxNum = API_IOT5302WGetUID(rxd);
+  RxNum = api_get_iot5302w_uid(rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -483,7 +483,7 @@ void AMPCABCOMM_Configuration(void)
   IOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT  = CommCardCTLPort;
   IOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin   = CommCardCTLPin;
   IOT5302W.Conf.USART_BaudRate  = CommCardBaudRate;
-  API_IOT5302WConfiguration(&IOT5302W);
+  api_iot5302w_configuration(&IOT5302W);
   //-----------------------------层板接口USART2
   stCbRS485Ly.USARTx  = CommLayPort;
   stCbRS485Ly.RS485_CTL_PORT  = CommLayCTLPort;

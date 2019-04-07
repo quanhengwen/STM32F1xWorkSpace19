@@ -289,7 +289,7 @@ void USART_Config_Default(void)
 //	USART_DMA_Configuration(USART1,115200,0,0,(u32*)buffer_rx,(u32*)buffer_tx,VIRTUAL_COM_PORT_DATA_SIZE);
 //	DMA_ITConfig(DMA1_Channel4,DMA_IT_TC, DISABLE);
 //	USART_ITConfig(USART1,USART_IT_IDLE, DISABLE);					//使用空闲中断，DMA自动接收，检测到总线空闲表示发送端已经发送完成，数据保存在DMA缓冲器中
-	USART_DMA_ConfigurationNR	(USART1,115200,VIRTUAL_COM_PORT_DATA_SIZE);	//USART_DMA配置--查询方式，不开中断
+	api_usart_dma_configurationNR(USART1,115200,VIRTUAL_COM_PORT_DATA_SIZE);	//USART_DMA配置--查询方式，不开中断
 }
 
 /*******************************************************************************
@@ -378,7 +378,7 @@ bool USART_Config(void)
 void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 {
 	Usart_tx_flg=1;
-	API_USART_DMA_Send(USART1,data_buffer,(u16)Nb_bytes);		//自定义printf串口DMA发送程序
+	api_usart_dma_send(USART1,data_buffer,(u16)Nb_bytes);		//自定义printf串口DMA发送程序
 }
 /*******************************************************************************
 * Function Name  : USB_To_UART_Send_Data.

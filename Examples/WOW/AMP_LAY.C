@@ -94,7 +94,7 @@ void AMPLAY_Receive(void)
   unsigned char rxd[256]={0};
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dam_receive(&stLayRS485,rxd);
+  RxNum = api_rs485_dma_receive(&stLayRS485,rxd);
   if(RxNum)
   {
     Msg_ProcessLY(LayPort,rxd,RxNum);              //柜消息处理

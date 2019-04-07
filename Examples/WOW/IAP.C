@@ -118,7 +118,7 @@ void IAP_Server(void)		//CRC--TEST
 //		else
 //		{
 //			memcpy(TxdBuffer,RevBuffer,Num);
-//			API_USART_DMA_Send(USART1,(u32*)TxdBuffer,Num);	//串口DMA发送程序
+//			api_usart_dma_send(USART1,(u32*)TxdBuffer,Num);	//串口DMA发送程序
 //		}
 //	}
 //	
@@ -148,7 +148,7 @@ void MAIN_Configuration(void)
 		
 	SysTick_Configuration(500);							//系统嘀嗒时钟配置72MHz,单位为uS
 	
-	USART_DMA_ConfigurationNR	(USART1,115200,(u32*)RxdBuffer,BufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer,BufferSize);	//USART_DMA配置--查询方式，不开中断
 	
 	CRC_SetEnable();
 }
@@ -178,7 +178,7 @@ void IAP_CRCTEST(void)		//CRC--TEST
 			TxdBuffer[Num/2]		=	(TxdBuffer[Num/2]&0x00FF)|((crc_data<<8)&0xFF00);			//低8位放入最后半字的高8位
 			TxdBuffer[Num/2+1]	=	(TxdBuffer[Num/2+1]&0xFF00)|((crc_data>>8)&0x00FF);		//高8位放入新增半字的低8位
 		}
-		API_USART_DMA_Send(USART1,(u32*)TxdBuffer,Num+2);	//串口DMA发送程序
+		api_usart_dma_send(USART1,(u32*)TxdBuffer,Num+2);	//串口DMA发送程序
 	}
 }
 /*******************************************************************************

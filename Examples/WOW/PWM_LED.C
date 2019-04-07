@@ -95,7 +95,7 @@ void PWM_LED_Configuration(void)
 		GPIO_Configuration_IPU(GPIOB,	GPIO_Pin_14);			//将GPIO相应管脚配置为上拉输入模式----V20170605--B
 	#endif
 	
-	USART_DMA_ConfigurationNR	(USART1,115200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断	
+	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断	
 	
 //	USART_DMAPrintf(USART1,"参数设置方法1（十六进制:FE A9 XX XX）\r\n");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
 	

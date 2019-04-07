@@ -69,7 +69,7 @@ void CS5530Demo_Configuration(void)
 	
 	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);						//PWM设定-20161127版本
 	
-//	USART_DMA_ConfigurationNR	(USART2,115200,32);	//USART_DMA配置--查询方式，不开中断
+//	api_usart_dma_configurationNR	(USART2,115200,32);	//USART_DMA配置--查询方式，不开中断
 	
 //	TM1616_WriteByte(&TM1616_1,5);
 	

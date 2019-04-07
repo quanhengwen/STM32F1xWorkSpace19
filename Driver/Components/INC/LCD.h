@@ -235,7 +235,8 @@ void LCD_Reset(void);
 void LCD_WriteIndex( unsigned short Index );		//GPIO方式写地址
 void LCD_WriteData(u16 Data);										//GPIO方式写数据					
 void LCDFsmc_WriteIndex(unsigned short Index);	//FSMC方式写地址
-void LCDFsmc_WriteData(unsigned short Data);		//FSMC方式写数据
+void LCDFsmc_WriteGRAM(unsigned short Data);		//FSMC方式写数据
+unsigned short LCDFsmc_ReadGRAM(void);
 void LCD_WriteCommand(unsigned short index,unsigned short Command);		//写完整控制命令
 u16 LCD_ReadData( unsigned short Index );				//读数据
 

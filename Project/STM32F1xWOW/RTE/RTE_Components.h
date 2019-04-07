@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xWOW' 
- * Target:  'USART_TEST' 
+ * Target:  'AMPTest' 
  */
 
 #ifndef RTE_COMPONENTS_H

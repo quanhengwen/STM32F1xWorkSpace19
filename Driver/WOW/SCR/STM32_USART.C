@@ -178,7 +178,7 @@ unsigned short api_usart_dma_receive(USART_TypeDef* USARTx,u8 *RevBuffer)
 *输入				: 
 *返回值			:	无
 *******************************************************************************/
-unsigned short api_rs485_dam_receive(RS485Def *pRS485,u8 *RevBuffer)	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer，
+unsigned short api_rs485_dma_receive(RS485Def *pRS485,u8 *RevBuffer)	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数，然后重新将接收缓冲区地址指向RxdBuffer，
 {
 	USART_TypeDef* USARTx	=	pRS485->USARTx;
 	if(get_usart_tx_idle(USARTx))
