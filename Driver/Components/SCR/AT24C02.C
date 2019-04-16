@@ -70,7 +70,7 @@ unsigned char AT24C02_Read(sI2CDef *sI2C,unsigned char Addr)
 	
 	
 	
-	I2C_SDASetIn(sI2C);
+	iic_set_sda_in(sI2C);
 	
 	Data	=	I2C_ReadByte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
 	
@@ -151,15 +151,15 @@ unsigned char AT24C02_ReadBuffer(sI2CDef *sI2C,unsigned char Addr,unsigned char 
 	
 	for(i=0;i<Length;i++)
 	{
-		I2C_SDASetIn(sI2C);
+		iic_set_sda_in(sI2C);
 		
 		Buffer[i]	=	I2C_ReadByte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
 	
-		I2C_SDASetOut(sI2C);
+		iic_set_sda_out(sI2C);
 		
 		I2C_Ack(sI2C);											//CPU产生一个ACK信号
 	}
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	
 	I2C_NAck(sI2C);											//CPU产生一个NACK信号(NACK即无应答信号)
 	

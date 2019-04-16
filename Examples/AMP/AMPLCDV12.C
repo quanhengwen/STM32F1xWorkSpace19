@@ -2,9 +2,9 @@
 
 #include "AMPLCDV12.H"
 
+#include	"AMP_Protocol.H"
 
-
-#include	"AMP_PHY.H"
+//#include	"AMP_PHY.H"
 //#include "AMP_LAY.H"
 //#include "AMP_CABV11.H"
 
@@ -1237,7 +1237,7 @@ void HW_Configuration(void)
 	
 	sAmpLcd.Comm.RS485Port	=	sRS485Port;
 	
-  api_rs485_dma_configurationNR(&sAmpLcd.Comm.RS485Port,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&sAmpLcd.Comm.RS485Port,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
 //  GPIO_Configuration_OPP50	(sRS485Port.RS485_CTL_PORT,sRS485Port.RS485_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
@@ -1394,7 +1394,8 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 			
 			PackManaData:
 			GetManaData(buffer,DataLen);
-			AckData();						
+			if((0xFF	!=	ampframe->msg.addr.address2)&&(0xFF	!=	ampframe->msg.addr.address3))
+				AckData();						
     }
 		//---------------------------修改背景色命令--只带2字节数据,低8位颜色在前
 		else if(AmpCmdLcdConf ==  ampframe->msg.cmd.cmd)
@@ -1402,7 +1403,8 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 			unsigned short BackColor	=	0;			
 			memcpy(&BackColor,ampframe->msg.data,2);	//2字节背景色数据，低位在前
 			SetBackColor(BackColor);
-			AckData();			
+			if((0xFF	!=	ampframe->msg.addr.address2)&&(0xFF	!=	ampframe->msg.addr.address3))
+				AckData();			
 		}
 		goto ReCheckData;		//重新检测剩余的数据
   }

@@ -61,11 +61,11 @@ void api_iot5302w_server(void)
   }
   IOT5302W.Data.Time++;
   //==================================周期扫描数据
-  if(IOT5302W.Data.Time%IOT5302WReadCycle==0)   //0.5秒扫描一次
+  if(IOT5302W.Data.Time%IOT5302WReadCycle==0)   //0.3秒扫描一次
   {
     unsigned char TxdLen  = 0;
     IOT5302W.Data.Time=0; //清零
-    TxdLen  = iot5302w_set_frame_GetSNR(CmdBuffer);                    //设置读卡器波特率
+    TxdLen  = iot5302w_set_frame_GetSNR(CmdBuffer);     	//生成获取UID的消息帧
     TxdLen  = iot5302w_send_msg(CmdBuffer,TxdLen);	      //寻卡，获取卡的UID，每个M1卡都有一个唯一的序列号，我们称为“UID”，是32位的，也就是4个字节。
   }
 }

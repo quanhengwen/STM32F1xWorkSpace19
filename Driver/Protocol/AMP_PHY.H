@@ -225,6 +225,8 @@ unsigned short Check_SendBuff(enCCPortDef Port);
 void Send_ConnectErr(enCCPortDef Port,unsigned char* pBuffer,unsigned short length);    //发送连接错误/超时
 
 unsigned short AddSendBuffer(enCCPortDef Port,unsigned char* pBuffer,unsigned short length);
+
+void CommTimeOutUpdata(enCCPortDef Port,stampaddrdef address);
 #endif
 
 

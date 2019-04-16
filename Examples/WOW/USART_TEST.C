@@ -12,6 +12,10 @@
 #include "STM32_SYSTICK.H"
 
 
+
+#include 	"CRC.H"
+
+
 #include	"stdio.h"			//用于printf
 #include	"string.h"		//用于printf
 #include	"stdarg.h"		//用于获取不确定个数的参数
@@ -51,6 +55,9 @@ unsigned char te3[4]={0x19,0x01,0x10,0xd5};
 unsigned char steep	=	0;
 unsigned char targ	=	0;
 
+unsigned char testbuffer[]={0x30,0xcc,0x97,0x01,0x0a,0xee,0xe8,0x02};
+unsigned short crc16test=0;
+
 //unsigned char rd1[4]=
 static void test(void);
 static void function(unsigned char steep);
@@ -80,6 +87,9 @@ void Usart_test_Configuration(void)
   
   SysTick_Configuration(100);	//系统嘀嗒时钟配置72MHz,单位为uS
   pr=(int*)0x20024300;
+	
+	crc16test	=	CRC16_USB(testbuffer,8);
+	
 	while(1)
 	{
 //		function();

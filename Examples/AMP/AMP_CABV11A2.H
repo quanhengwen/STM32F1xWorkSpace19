@@ -97,6 +97,6 @@ void CardDataSendUp(enCCPortDef Port,unsigned char* pBuffer,unsigned short lengt
 
 void RequestServer(void);   //«Î«Û√¸¡Ó¥¶¿Ì
 void LockStatusUpdata(eucmddef Cmd,eLockStsdef std);
-void CommTimeOutUpdata(enCCPortDef Port,stampaddrdef address);
+//void CommTimeOutUpdata(enCCPortDef Port,stampaddrdef address);
 
 #endif

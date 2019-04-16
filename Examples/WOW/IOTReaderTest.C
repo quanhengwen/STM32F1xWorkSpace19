@@ -71,27 +71,27 @@ void IOTReaderTest_Server(void)
 //    }    
 //    if(0==bfla)
 //    {
-//      RS485_DMA_ConfigurationNR(&RS485RD,9600,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+//      api_rs485_dma_configurationNR(&RS485RD,9600,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 //      bfla=bfla+1;
 //    }
 //    else if(1==bfla)
 //    {
-//      RS485_DMA_ConfigurationNR(&RS485RD,19200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+//      api_rs485_dma_configurationNR(&RS485RD,19200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 //      bfla=bfla+1;
 //    }
 //    else if(2==bfla)
 //    {
-//      RS485_DMA_ConfigurationNR(&RS485RD,38400,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+//      api_rs485_dma_configurationNR(&RS485RD,38400,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 //      bfla=bfla+1;
 //    }
 //    else if(3==bfla)
 //    {
-//      RS485_DMA_ConfigurationNR(&RS485RD,57600,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+//      api_rs485_dma_configurationNR(&RS485RD,57600,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 //      bfla=bfla+1;
 //    }
 //    else if(4==bfla)
 //    {
-//      RS485_DMA_ConfigurationNR(&RS485RD,115200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+//      api_rs485_dma_configurationNR(&RS485RD,115200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 //      bfla=bfla+1;
 //    }
     //TxdLen  = IOT5302WSetBaudrate(TxdBuffer);    //设置读卡器波特率
@@ -114,7 +114,7 @@ void IOTReaderTestCOMM_Configuration(void)
   RS485RD.USARTx  = UART4;
   RS485RD.RS485_CTL_PORT  = GPIOC;
   RS485RD.RS485_CTL_Pin   = GPIO_Pin_12;
-  RS485_DMA_ConfigurationNR(&RS485RD,19200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR(&RS485RD,19200,datasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function

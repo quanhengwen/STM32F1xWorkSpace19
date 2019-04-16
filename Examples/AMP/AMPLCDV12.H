@@ -2,7 +2,7 @@
 #define __AMPLCDV12_H
 
 
-#include	"AMP_PHY.H"
+#include	"AMP_Protocol.H"
 
 #include "GT32L32M0180.H"
 #include "ST7789V.H"
@@ -407,8 +407,8 @@ typedef struct _Windows		//显示
 typedef struct _Comm			//通讯
 {
 	RS485Def 				RS485Port;   	//RS485通讯
-	unsigned	char	Rxd[gDatasize];	//接收
-	unsigned	char	Txd[gDatasize];	//发送
+	unsigned	char	Rxd[maxFramesize];	//接收
+	unsigned	char	Txd[maxFramesize];	//发送
 	unsigned	short TxLen;					//需要发送的数量
 }CommDef;
 typedef struct _Variable	//运行相关变量

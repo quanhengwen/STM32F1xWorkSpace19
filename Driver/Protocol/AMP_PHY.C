@@ -936,6 +936,63 @@ unsigned short AddSendBuffer(enCCPortDef Port,unsigned char* pBuffer,unsigned sh
   }
   return  0;
 }
-
+/*******************************************************************************
+*函数名			:	LockStatusUpdata
+*功能描述		:	上报锁状态
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void CommTimeOutUpdata(enCCPortDef Port,stampaddrdef address)
+{
+  unsigned char databuffer[32]={0};
+  unsigned short framlength = 0;  //生成的消息长度
+  unsigned short datalength = 2;  //需要上报的数据字节数
+  stampphydef* ampframe=NULL;
+  //-------------------------锁状态上报：第一字节为锁标识，第二字节为状态
+  databuffer[0] = AmpStsComm;       //连接状态标识
+  databuffer[1] = AmpCommTimeOut;   //连接超时
+  //-------------------------按状态上报类型打包消息
+  framlength  = PackUpMsg(databuffer,AmpCmdSta,&datalength); 
+  //-------------------------打包完成的数据转换为消息帧
+  ampframe  = (stampphydef*)databuffer;
+  //-------------------------添加地址
+  ampframe->msg.addr.address1 = address.address1;  //当前柜地址
+  ampframe->msg.addr.address2 = address.address2;
+  ampframe->msg.addr.address3 = address.address3;
+  
+  switch(Port)
+  {
+    case  NonPort   : return ;   //不继续执行
+    case  PcPort    : return;    //PC接口发送缓存
+      break;
+    case  CabPort   ://柜接口发送缓存
+                      ampframe->msg.addr.address2 = 0;
+                      ampframe->msg.addr.address3 = 0;
+      break;
+    case  LayPort   ://层接口发送缓存
+      break;
+    case  CardPort  ://读卡器接口发送缓存
+                      ampframe->msg.addr.address2 = 0;
+                      ampframe->msg.addr.address3 = 0;
+      break;
+    default :return;      //不继续执行 
+  }
+  //-------------------------设置CRC和结束符
+  framlength  = SetFrame(databuffer,&framlength);//补充消息的CRC和结束符，返回帧长度
+  //-------------------------选择上报路径
+  if(MainFlag)  //0--副柜，1--主柜
+  {
+    AMPPro.buffer.WaitAck.Pc=1;   //需要应答
+    PCnet_Send(databuffer,framlength);    //往副柜发送消息
+  }
+  else
+  {
+    AMPPro.buffer.WaitAck.Cab=1;   //需要应答
+    Cabinet_Send(databuffer,framlength);    //往副柜发送消息
+  }
+}
 
 

@@ -58,28 +58,41 @@ typedef	struct	_I2C				//带反馈锁控制标志及吸合时间
 void I2C_Configuration(sI2CDef *sI2C);		//启用锁--配置
 void I2C_Server(sI2CDef *sI2C);
 
+
+
+//-----------------------------------------hw
+void iic_set_sda_out(sI2CDef *sI2C);
+void iic_set_sda_in(sI2CDef *sI2C);
+void iic_set_scl_out(sI2CDef *sI2C);
+void iic_set_scl_in(sI2CDef *sI2C);
+
+void iic_set_sda_high(sI2CDef *sI2C);
+void iic_set_sda_low(sI2CDef *sI2C);
+
+void iic_set_scl_high(sI2CDef *sI2C);
+void iic_set_scl_low(sI2CDef *sI2C);
+
+
+unsigned char iic_get_sda(sI2CDef *sI2C);
+unsigned char iic_get_scl(sI2CDef *sI2C);
+
+
+
+//-----------------------------------------sw--protocol
+
+
 void I2C_Start(sI2CDef *sI2C);
-
-
-
-
-
-void I2C_SCLHigh(sI2CDef *sI2C);
-void I2C_SCLLow(sI2CDef *sI2C);
-void I2C_SDAHigh(sI2CDef *sI2C);
-void I2C_SDALow(sI2CDef *sI2C);
-void I2C_SDASetOut(sI2CDef *sI2C);
-void I2C_SDASetIn(sI2CDef *sI2C);
 
 unsigned char I2C_WaitAck(sI2CDef *sI2C);		//CPU产生一个时钟，并且读取器件的ACK应答信号
 void I2C_Ack(sI2CDef *sI2C);								//CPU产生一个ACK信号 
 void I2C_NAck(sI2CDef *sI2C);								//CPU产生一个NACK信号(NACK即无应答信号) 
-unsigned char I2C_ReadBit(sI2CDef *sI2C);
+
 
 
 void I2C_Start(sI2CDef *sI2C);
 void I2C_Stop(sI2CDef *sI2C);
 
+//-----------------------------------------sw--data
 void I2C_SendByte(sI2CDef *sI2C,unsigned char ucByte);
 void I2C_WriteOneByte(sI2CDef *sI2C,unsigned short address,unsigned char ucByte);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 void I2C_WritePage(sI2CDef *sI2C,unsigned short PageAddress,const unsigned char* pBuffer);		//页写：

@@ -365,7 +365,7 @@ void COMM_Configuration(void)
   stRS485BS.USARTx  = USART2;
   stRS485BS.RS485_CTL_PORT  = GPIOB;
   stRS485BS.RS485_CTL_Pin   = GPIO_Pin_11;
-  RS485_DMA_ConfigurationNR			(&stRS485BS,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_dma_configurationNR			(&stRS485BS,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 * 函数名			:	function

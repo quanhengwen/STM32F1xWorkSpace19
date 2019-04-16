@@ -207,7 +207,7 @@ void ST7789V_ShowString(
 		unsigned char GetBufferLength	=	0;
 		unsigned char dst=Buffer[i];
 		unsigned char UnicodeFlag=0;
-		unsigned char UnicodeAddr=0;
+//		unsigned char UnicodeAddr=0;
 		//==================================Unicode
 		//UnicodeFlag	=	UnicodeCheck(&Buffer[i],num-i);
 		
@@ -439,8 +439,8 @@ void ST7789V_ShowStringBKAre(
 							u8 *Buffer	//Buffer	:显示的内容缓存
 )		//高通字库测试程序
 {
-	unsigned short	MaxX	=	xe-xs;	//水平宽度
-	unsigned short	MaxY	=	ye-ys;	//垂直高度
+//	unsigned short	MaxX	=	xe-xs;	//水平宽度
+//	unsigned short	MaxY	=	ye-ys;	//垂直高度
 	unsigned short	x	=	xs;	//水平起始点
 	unsigned short	y	=	ys;	//垂直起始点
 	unsigned char 	i=0;
@@ -713,9 +713,6 @@ void ST7789V_PowerOff( void )
 *******************************************************************************/
 void ST7789V_PowerOn(void)
 {
-  u16 time=2000;
-  u16	temp=time;
-
   ST7789V_Enable();	  //
 	//----------------------------------Hardware Reset-----------------------------------------------//
 	ST7789V_RST_LOW;  	
@@ -1071,8 +1068,8 @@ void ST7789V_Fill(
 *******************************************************************************/
 void ST7789V_Clean(u16 Color)	//清除屏幕函数
 {
-	unsigned short x,y;
-	unsigned short HSX=0,HEX=0,VSY=0,VEY=0,MaxH=0,MaxV=0;
+	unsigned short HEX=0,VEY=0;
+	//unsigned short HSX=0,HEX=0,VSY=0,VEY=0,MaxH=0,MaxV=0;
 //	unsigned long	length	=	0;
 	switch(pST7789V->ST7789VRotate)
 	{

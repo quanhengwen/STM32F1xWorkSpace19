@@ -60,7 +60,6 @@ void I2C_Server(sI2CDef *sI2C)
 	
 }
 
-
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	函数功能说明 
@@ -70,62 +69,10 @@ void I2C_Server(sI2CDef *sI2C)
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void I2C_SCLHigh(sI2CDef *sI2C)
+void iic_set_sda_out(sI2CDef *sI2C)
 {
-	GPIO_SetBits(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin);
-}
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void I2C_SCLLow(sI2CDef *sI2C)
-{
-	GPIO_ResetBits(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin);
-}
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void I2C_SDAHigh(sI2CDef *sI2C)
-{
-	GPIO_SetBits(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);
-}
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void I2C_SDALow(sI2CDef *sI2C)
-{
-	GPIO_ResetBits(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);
-}
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void I2C_SDASetOut(sI2CDef *sI2C)
-{
-	I2C_SCLLow(sI2C);
-	I2C_SDALow(sI2C);
+	iic_set_scl_low(sI2C);
+	iic_set_sda_low(sI2C);
 	GPIO_RegConfiguration_OPP50	(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);	//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20190104--寄存器版本
 	//GPIO_Configuration_OOD50	(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);	//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20190104--寄存器版本
 }
@@ -138,12 +85,135 @@ void I2C_SDASetOut(sI2CDef *sI2C)
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void I2C_SDASetIn(sI2CDef *sI2C)
+void iic_set_sda_in(sI2CDef *sI2C)
 {
-	I2C_SCLLow(sI2C);
-	I2C_SDALow(sI2C);
+	iic_set_scl_low(sI2C);
+	iic_set_sda_low(sI2C);
 	GPIO_Configuration_INF	(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);			//将GPIO相应管脚配置为上拉输入模式----V20170605
 }
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_scl_out(sI2CDef *sI2C)
+{
+	iic_set_scl_low(sI2C);
+	iic_set_sda_low(sI2C);
+	GPIO_RegConfiguration_OPP50	(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin);	//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20190104--寄存器版本
+	//GPIO_Configuration_OOD50	(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);	//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20190104--寄存器版本
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_scl_in(sI2CDef *sI2C)
+{
+	iic_set_scl_low(sI2C);
+	iic_set_sda_low(sI2C);
+	GPIO_Configuration_INF	(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin);			//将GPIO相应管脚配置为上拉输入模式----V20170605
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_sda_high(sI2CDef *sI2C)
+{
+	GPIO_SetBits(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_sda_low(sI2CDef *sI2C)
+{
+	GPIO_ResetBits(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_scl_high(sI2CDef *sI2C)
+{
+	GPIO_SetBits(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin);
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void iic_set_scl_low(sI2CDef *sI2C)
+{
+	GPIO_ResetBits(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin);
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+unsigned char iic_get_sda(sI2CDef *sI2C)
+{
+	if(GPIO_ReadInputDataBit(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin))
+		return 1;
+	else
+		return 0;
+}
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+unsigned char iic_get_scl(sI2CDef *sI2C)
+{
+	if(GPIO_ReadInputDataBit(sI2C->HW.SCL_Port,sI2C->HW.SCL_Pin))
+		return 1;
+	else
+		return 0;
+}
+//-----------------------------------------------------------------------------
+
+
+
+
+
+
+
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	CPU产生一个时钟，并且读取器件的ACK应答信号 
@@ -157,11 +227,11 @@ unsigned char I2C_WaitAck(sI2CDef *sI2C)
 {
 	I2CACKDef ack=I2C_ACK;
 	unsigned long i	=	0;
-	I2C_SCLLow(sI2C);
-	I2C_SDASetIn(sI2C);	//设置为上拉输入模式
-	I2C_SCLHigh(sI2C);
+	iic_set_scl_low(sI2C);
+	iic_set_sda_in(sI2C);	//设置为上拉输入模式
+	iic_set_scl_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
-	while((I2C_ReadBit(sI2C))&&(i++<=40000))		//应答:SDA=0;无应答:SDA=1;
+	while((iic_get_sda(sI2C))&&(i++<=40000))		//应答:SDA=0;无应答:SDA=1;
 	if(i>=40000-1)		//应答超时
 	{
 		ack	= I2C_NACK;
@@ -170,9 +240,9 @@ unsigned char I2C_WaitAck(sI2CDef *sI2C)
 	{
 		ack	= I2C_ACK;
 	}
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	
 	return (unsigned char)ack;
 }
@@ -187,17 +257,17 @@ unsigned char I2C_WaitAck(sI2CDef *sI2C)
 *******************************************************************************/
 void I2C_Ack(sI2CDef *sI2C)
 {
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	
-	I2C_SDALow(sI2C);
+	iic_set_sda_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
-	I2C_SCLHigh(sI2C);
+	iic_set_scl_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
-	I2C_SDAHigh(sI2C);
+	iic_set_sda_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 }
 /*******************************************************************************
@@ -211,35 +281,20 @@ void I2C_Ack(sI2CDef *sI2C)
 *******************************************************************************/
 void I2C_NAck(sI2CDef *sI2C)
 {
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	
-	I2C_SDAHigh(sI2C);
+	iic_set_sda_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
-	I2C_SCLHigh(sI2C);
+	iic_set_scl_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
-	I2C_SDALow(sI2C);
+	iic_set_sda_low(sI2C);
 }
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-unsigned char I2C_ReadBit(sI2CDef *sI2C)
-{
-	if(GPIO_ReadInputDataBit(sI2C->HW.SDA_Port,sI2C->HW.SDA_Pin))
-		return 1;
-	else
-		return 0;
-}
+
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	开始信号：SCL为高电平时，SDA由高电平向低电平跳变，开始传送数据。
@@ -251,16 +306,16 @@ unsigned char I2C_ReadBit(sI2CDef *sI2C)
 *******************************************************************************/
 void I2C_Start(sI2CDef *sI2C)
 {
-	I2C_SCLLow(sI2C);
-	I2C_SDASetOut(sI2C);
+	iic_set_scl_low(sI2C);
+	iic_set_sda_out(sI2C);
 	//=====================================SDA,SCL设置为高
-	I2C_SDAHigh(sI2C);
-	I2C_SCLHigh(sI2C);
+	iic_set_sda_high(sI2C);
+	iic_set_scl_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	//=====================================SDA向低电平跳变
-	I2C_SDALow(sI2C);
+	iic_set_sda_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
 }
 /*******************************************************************************
@@ -274,15 +329,15 @@ void I2C_Start(sI2CDef *sI2C)
 *******************************************************************************/
 void I2C_Stop(sI2CDef *sI2C)
 {
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	//=====================================SDA设置为低,SCL设置为高
-	I2C_SDALow(sI2C);
-	I2C_SCLHigh(sI2C);
+	iic_set_sda_low(sI2C);
+	iic_set_scl_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	//=====================================SDA由低电平向高电平跳变
-	I2C_SDAHigh(sI2C);
+	iic_set_sda_high(sI2C);
 	I2C_Delayus(i2cdelaytime);
-//	I2C_SCLLow(sI2C);
+//	iic_set_scl_low(sI2C);
 //	I2C_Delay();
 }
 /*******************************************************************************
@@ -297,22 +352,22 @@ void I2C_Stop(sI2CDef *sI2C)
 void I2C_SendByte(sI2CDef *sI2C,unsigned char ucByte)
 {
 	unsigned char i	=	0;
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	for(i=0;i<8;i++)
 	{
 		if(ucByte & 0x80)
 		{
-			I2C_SDAHigh(sI2C);
+			iic_set_sda_high(sI2C);
 		}
 		else
 		{
-			I2C_SDALow(sI2C);
+			iic_set_sda_low(sI2C);
 		}
 		I2C_Delayus(i2cdelaytime);
-		I2C_SCLHigh(sI2C);
+		iic_set_scl_high(sI2C);
 		I2C_Delayus(i2cdelaytime);
-		I2C_SCLLow(sI2C);
+		iic_set_scl_low(sI2C);
 		
 		ucByte<<=1;		//左移1个bit
 		//I2C_Delayus(i2cdelaytime);
@@ -342,7 +397,7 @@ void I2C_WriteOneByte(sI2CDef *sI2C,const unsigned short address,unsigned char u
 	//---------------------------写内存地址
 	temp	=	address;
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,temp);
 	
 	if(!I2C_WaitAck(sI2C))
@@ -352,7 +407,7 @@ void I2C_WriteOneByte(sI2CDef *sI2C,const unsigned short address,unsigned char u
 	//---------------------------写数据
 	temp	=	ucByte;
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,temp);
 	
 	if(!I2C_WaitAck(sI2C))
@@ -406,7 +461,7 @@ void I2C_WritePage(sI2CDef *sI2C,unsigned short PageAddress,const unsigned char*
 	//---------------------------写内存地址
 	temp	=	PageAddress;
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,temp);
 	
 	if(!I2C_WaitAck(sI2C))
@@ -414,7 +469,7 @@ void I2C_WritePage(sI2CDef *sI2C,unsigned short PageAddress,const unsigned char*
 		goto stopI2C;
 	}
 	//---------------------------写数据
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	for(i=0;i<sI2C->DATA.PageSize;i++)
 	{
 		temp=pBuffer[i];
@@ -453,7 +508,7 @@ void I2C_WriteNbyte(sI2CDef *sI2C,unsigned short address,const unsigned char* pB
 		goto stopI2C;
 	}
 	//---------------------------写内存地址
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,address);
 	
 	if(!I2C_WaitAck(sI2C))
@@ -461,7 +516,7 @@ void I2C_WriteNbyte(sI2CDef *sI2C,unsigned short address,const unsigned char* pB
 		goto stopI2C;
 	}
 	//---------------------------写数据
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	for(i=0;i<length;i++)
 	{
 		I2C_SendByte(sI2C,pBuffer[i]);
@@ -566,18 +621,18 @@ unsigned char I2C_ReadByte(sI2CDef *sI2C)
 	for(i=0;i<8;i++)
 	{
 		ucByte<<=1;	
-		I2C_SCLLow(sI2C);
+		iic_set_scl_low(sI2C);
 		I2C_Delayus(i2cdelaytime);
 		
-		I2C_SCLHigh(sI2C);
+		iic_set_scl_high(sI2C);
 		I2C_Delayus(i2cdelaytime);
 		
-		if(I2C_ReadBit(sI2C))
+		if(iic_get_sda(sI2C))
 		{
 			ucByte+=1;
 		}		
 	}
-	I2C_SCLLow(sI2C);
+	iic_set_scl_low(sI2C);
 	I2C_Delayus(i2cdelaytime);
 	
 	return ucByte;
@@ -608,7 +663,7 @@ unsigned char I2C_ReadOneByte(sI2CDef *sI2C,unsigned short address)
 	//---------------------------写内存地址
 	temp	=	address;
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,temp);
 	if(!I2C_WaitAck(sI2C))
 	{
@@ -625,7 +680,7 @@ unsigned char I2C_ReadOneByte(sI2CDef *sI2C,unsigned short address)
 		return 0;
 	}
 	//---------------------------读数据
-	I2C_SDASetIn(sI2C);	//设置为上拉输入模式
+	iic_set_sda_in(sI2C);	//设置为上拉输入模式
 	ucByte	=	 I2C_ReadByte(sI2C);
 	
 	I2C_NAck(sI2C);								//CPU产生一个NACK信号(NACK即无应答信号)
@@ -672,7 +727,7 @@ unsigned short I2C_ReadPage(sI2CDef *sI2C,unsigned short PageAddress,unsigned ch
 	}
 	//---------------------------写内存地址
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,PageAddress);
 	if(!I2C_WaitAck(sI2C))
 	{
@@ -691,7 +746,7 @@ unsigned short I2C_ReadPage(sI2CDef *sI2C,unsigned short PageAddress,unsigned ch
 	//---------------------------读数据
 	for(i=0;i<sI2C->DATA.PageSize;i++)
 	{
-		I2C_SDASetIn(sI2C);	//设置为上拉输入模式
+		iic_set_sda_in(sI2C);	//设置为上拉输入模式
 		pBuffer[i]=I2C_ReadByte(sI2C);
 		if(i>=sI2C->DATA.PageSize-1)
 		{
@@ -732,7 +787,7 @@ unsigned short I2C_ReadBuffer(sI2CDef *sI2C,unsigned short address,unsigned char
 	//---------------------------写内存地址
 	temp	=	address;
 	
-	I2C_SDASetOut(sI2C);
+	iic_set_sda_out(sI2C);
 	I2C_SendByte(sI2C,temp);
 	if(!I2C_WaitAck(sI2C))
 	{
@@ -751,7 +806,7 @@ unsigned short I2C_ReadBuffer(sI2CDef *sI2C,unsigned short address,unsigned char
 	//---------------------------读数据
 	for(i=0;i<length;i++)
 	{
-		I2C_SDASetIn(sI2C);	//设置为上拉输入模式
+		iic_set_sda_in(sI2C);	//设置为上拉输入模式
 		pBuffer[i]=I2C_ReadByte(sI2C);
 		if(i>=length-1)
 		{
@@ -765,6 +820,106 @@ unsigned short I2C_ReadBuffer(sI2CDef *sI2C,unsigned short address,unsigned char
 	I2C_Stop(sI2C);
 
 	return ucByte;
+}
+//------------------------------------------------------------------------------
+
+
+
+//-----------------------------SLAVE
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char iic_slave_get_start(sI2CDef *sI2C)
+{
+	if(iic_get_scl(sI2C))
+	{
+		I2C_Delayus(1);
+		if(1==iic_get_sda(sI2C))
+		{
+			I2C_Delayus(1);
+			if(0==iic_get_sda(sI2C))
+			{
+				I2C_Delayus(1);
+				if(iic_get_scl(sI2C))
+				{
+					return 1;
+				}
+			}
+		}
+	}
+	return 0;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char iic_slave_read_byte(sI2CDef *sI2C,unsigned char* data)
+{
+	unsigned char i			=	0;
+	unsigned char temp	=	0;
+	for(i=0;i<8;i++)
+	{
+		iic_get_scl(sI2C);
+		
+	}	
+	return temp;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned char iic_slave_read_buffer(sI2CDef *sI2C,unsigned char* pBuffer,unsigned char len)
+{
+	
+	unsigned char i			=	0;
+	unsigned char data	=	0;
+	
+	static unsigned char start = 0;
+	static unsigned char j	=	0;
+	
+	iic_set_scl_in(sI2C);
+	iic_set_sda_in(sI2C);
+	//----------------------------------------
+	if(0==start)
+	{
+		if(0==iic_slave_get_start(sI2C))
+		{
+			return 0;
+		}
+		else
+		{
+			start	=	1;
+		}
+	}
+	//----------------------------------------
+	if(iic_slave_read_byte(sI2C,&data))
+	{
+		pBuffer[j]=data;
+		j+=1;
+		if(j>=len)
+		{
+			j=0;
+			start	=	0;
+			return len;
+		}
+	}	
+	return 0;
 }
 /*******************************************************************************
 * 函数名			:	function

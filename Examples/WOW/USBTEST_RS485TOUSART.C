@@ -122,7 +122,7 @@ void USBTEST_RS485TOUSART_Conf(void)
 	RS4851.RS485_CTL_PORT=GPIOA;
 	RS4851.RS485_CTL_Pin=GPIO_Pin_15;
 	
-	RS485_DMA_ConfigurationNR	(&RS4851,19200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_rs485_dma_configurationNR	(&RS4851,19200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
 	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer2,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
 }
 
