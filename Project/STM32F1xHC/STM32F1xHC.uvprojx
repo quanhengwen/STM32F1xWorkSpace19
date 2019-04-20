@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -952,11 +952,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -1462,7 +1457,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -2399,11 +2394,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -2909,7 +2899,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -3846,11 +3836,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -4356,7 +4341,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -5293,11 +5278,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -5803,7 +5783,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -6740,11 +6720,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -7250,7 +7225,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -8187,11 +8162,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -8697,7 +8667,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -9634,11 +9604,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -10144,7 +10109,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -11081,11 +11046,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -11591,7 +11551,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -12528,11 +12488,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -13038,7 +12993,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -13975,11 +13930,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -14485,7 +14435,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -15422,11 +15372,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -15932,7 +15877,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -16869,11 +16814,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -17379,7 +17319,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -18316,11 +18256,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -18826,7 +18761,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -19763,11 +19698,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -20273,7 +20203,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -21210,11 +21140,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -21720,7 +21645,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -21855,7 +21780,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -22657,11 +22582,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -23167,7 +23087,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -24104,11 +24024,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -24567,7 +24482,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -25504,11 +25419,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -26014,7 +25924,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -26951,11 +26861,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -27461,7 +27366,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -28398,11 +28303,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -28908,7 +28808,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -29845,11 +29745,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -30590,7 +30485,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -31527,11 +31422,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -32037,7 +31927,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -32974,11 +32864,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -33484,7 +33369,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -34421,11 +34306,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -34926,12 +34806,13 @@
       <TargetName>PD011V20</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060020::V5.06 (build 20)::ARMCC</pArmCC>
       <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -35066,7 +34947,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -35868,11 +35749,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -36137,11 +36013,105 @@
               <FileName>SSD1963.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\SSD1963.C</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>ILI9326.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\ILI9326.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>SteepMotor.C</FileName>
@@ -36177,6 +36147,53 @@
               <FileName>LCD.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\LCD.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>MX25L4006E.C</FileName>
@@ -36257,6 +36274,53 @@
               <FileName>AMP_PHY.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\AMP_PHY.C</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
           </Files>
         </Group>
@@ -36378,7 +36442,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -37315,11 +37379,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -37825,7 +37884,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -38762,11 +38821,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -39272,7 +39326,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -40209,11 +40263,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -40719,7 +40768,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -41656,11 +41705,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -42166,7 +42210,7 @@
         <TargetCommonOption>
           <Device>STM32F103VC</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x40000) IRAM(0x20000000,0xC000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -43103,11 +43147,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -43613,7 +43652,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -44550,11 +44589,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -45013,7 +45047,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -45950,11 +45984,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -46413,7 +46442,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -47350,11 +47379,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -47813,7 +47837,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -48750,11 +48774,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -49213,7 +49232,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -50150,11 +50169,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -50613,7 +50627,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -51550,11 +51564,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -52013,7 +52022,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -52950,11 +52959,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -53413,7 +53417,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -54350,11 +54354,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -54813,7 +54812,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -55750,11 +55749,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -56213,7 +56207,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -57150,11 +57144,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -57613,7 +57602,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -58550,11 +58539,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -59060,7 +59044,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -59997,11 +59981,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -60507,7 +60486,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -61444,11 +61423,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -61954,7 +61928,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -62891,11 +62865,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -63401,7 +63370,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -64338,11 +64307,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -64848,7 +64812,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -65785,11 +65749,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -66295,7 +66254,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -67232,11 +67191,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -67695,7 +67649,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -68630,11 +68584,6 @@
               <FileName>STM32_SPI.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYS.C</FileName>
@@ -70176,7 +70125,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -71113,11 +71062,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -71576,7 +71520,7 @@
         <TargetCommonOption>
           <Device>STM32F103VC</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x40000) IRAM(0x20000000,0xC000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -72513,11 +72457,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -72976,7 +72915,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -73913,11 +73852,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -74376,7 +74310,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -75313,11 +75247,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -75823,7 +75752,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -76760,11 +76689,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -77270,7 +77194,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -78207,11 +78131,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -78670,7 +78589,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -79607,11 +79526,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -80070,7 +79984,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -81007,11 +80921,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
@@ -81470,7 +81379,7 @@
         <TargetCommonOption>
           <Device>STM32F103CB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.1.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IROM(0x08000000,0x20000) IRAM(0x20000000,0x5000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -82405,11 +82314,6 @@
               <FileName>STM32_SPI.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SPI.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SPI_Struct.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SPI_Struct.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYS.C</FileName>

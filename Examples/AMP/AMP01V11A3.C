@@ -1024,7 +1024,7 @@ static void set_door(unsigned char flag)
 		ampsys.request.unlock	=	1;
 		ampsys.time.LockTime	=	ampUnlockOuttime;	//开锁时间2秒
 		ampUnLock;
-	}	
+	}
 }
 /*******************************************************************************
 *函数名			:	function

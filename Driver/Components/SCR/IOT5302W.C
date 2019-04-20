@@ -33,6 +33,8 @@ void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W)
   IOT5302W.Data.TimeOut     = 0;
   IOT5302W.Data.USART_BaudRate  = 0;
   IOT5302W.Data.BaudRateSetStep = 0;
+	
+	api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,9600,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -135,7 +137,8 @@ unsigned short api_get_iot5302w_uid(unsigned char* Buffer)
 *******************************************************************************/
 static void hw_port_configuration(unsigned long USART_BaudRate)
 {  
-  api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	//api_usart_dma_configurationNR(IOT5302W.Conf.IOT5302WPort.USARTx,USART_BaudRate,IOT5302WBufferSize);
+	api_rs485_dma_configurationNR(&IOT5302W.Conf.IOT5302WPort,USART_BaudRate,IOT5302WBufferSize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -225,7 +228,7 @@ static void iot5302w_initialize(void)
     IOT5302W.Data.Time  = 0;
   }
   //---------------------按照上面的硬件接口波特率0.5秒发送一次配置读卡器波特率命令，
-  if((50==IOT5302W.Data.Time))
+  if((100==IOT5302W.Data.Time))
   {
     
     unsigned char TxdLen  = 0;

@@ -659,7 +659,7 @@ void SPI2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART1_IRQHandler(void)
+__weak void USART1_IRQHandler(void)
 {
 	WOW_Server();
 }
@@ -671,7 +671,7 @@ void USART1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART2_IRQHandler(void)
+__weak void USART2_IRQHandler(void)
 {
 //	USART_RX_Server();
 	WOW_Server();
@@ -684,7 +684,7 @@ void USART2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_IRQHandler(void)
+__weak void USART3_IRQHandler(void)
 {
 	WOW_Server();
 }

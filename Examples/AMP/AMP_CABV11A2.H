@@ -1,5 +1,5 @@
-#ifndef __AMP_CABV11_H
-#define __AMP_CABV11_H
+#ifndef __AMP_CABV11A2_H
+#define __AMP_CABV11A2_H
 
 #include	"AMP_PHY.H"
 

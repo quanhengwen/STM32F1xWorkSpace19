@@ -32,9 +32,12 @@ void mfrc522test_Configuration(void)
 	SYS_Configuration();						//系统配置
 	sys_led_conf();
 	hardware_configuration();
-  IWDG_Configuration(2000);				//独立看门狗配置---参数单位ms
+//  IWDG_Configuration(2000);				//独立看门狗配置---参数单位ms
   SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
-
+	while(1)
+	{
+		
+	}
 }
 /*******************************************************************************
 *函数名			:	function
@@ -47,8 +50,8 @@ void mfrc522test_Configuration(void)
 *******************************************************************************/
 void mfrc522test_Server(void)
 {  
-	IWDG_Feed();								//独立看门狗喂狗
-	sys_led_run();
+//	IWDG_Feed();								//独立看门狗喂狗
+//	sys_led_run();
 	MFRC522_LOOP();
 }
 //------------------------------------------
@@ -126,7 +129,8 @@ static void sys_led_run(void)
 void MFRC522_LOOP(void)
 {
 	static unsigned short time = 0;
-	if(time<50)
+//	mfrc522_test();
+	if(time<10)
 	{
 		time++;
 		return ;
@@ -134,19 +138,28 @@ void MFRC522_LOOP(void)
 	time	=	0;
 //	api_mfrc522_self_test(&mfrc522);
 	
+//	mfrc522_test();
+//	return ;
 	
-	if(PcdRequest(&mfrc522,PICC_REQALL,mfrc522_Temp)==MI_OK)	//寻卡
+
+	if(mfrc522_PcdRequest(PICC_REQALL)!=Mifare_none)	//寻卡
 	{
 		//寻卡成功
-		if(PcdAnticoll(&mfrc522,mfrc522_UID)==MI_OK)
+		if(mfrc522_PcdAnticoll(mfrc522_UID)==MI_OK)
 		{ 
 			GPIO_Toggle(GPIOC,GPIO_Pin_13);
 		}
 	}
-		
-//	if(PcdAnticoll(&mfrc522,UID)==MI_OK)
+	
+//	if(PcdRequest(PICC_REQALL,mfrc522_Temp)==MI_OK)	//寻卡
 //	{
-//		GPIO_Toggle(GPIOC,GPIO_Pin_13);
+//		//寻卡成功
+//		if(PcdAnticoll(mfrc522_UID)==MI_OK)
+//		{ 
+//			GPIO_Toggle(GPIOC,GPIO_Pin_13);
+//		}
 //	}
+		
+
 }
 #endif
