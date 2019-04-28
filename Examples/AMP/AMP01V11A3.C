@@ -1246,7 +1246,7 @@ static void SwitchID_Server(void)
   if(0==power_on_flag)  //刚上电
   {
     power_on_flag = 1;  //已上电完成
-    id  = SWITCHID_ReadLeft(&ampSwitchID);
+    id  = api_get_SwitchId_data_left(&ampSwitchID);
 		if(id&0x80)
 			ampsys.sysdata.MB_Flag	=	1;
 		else
@@ -1255,7 +1255,7 @@ static void SwitchID_Server(void)
   else
   {
 		unsigned char new_id  = 0;
-		new_id  = SWITCHID_ReadLeft(&ampSwitchID);
+		new_id  = api_get_SwitchId_data_left(&ampSwitchID);
 		if(id != new_id)  //重新初始化
 		{
 			ampsys.sysdata.Cab_Addr	=	new_id&0x3F;	
@@ -1264,7 +1264,7 @@ static void SwitchID_Server(void)
 				ampsys.sysdata.MB_Flag	=	1;
 			else
 				ampsys.sysdata.MB_Flag	=	0;			
-			power_on_flag = 0;
+//			power_on_flag = 0;
 			id = new_id;
 		}
 		
@@ -1596,11 +1596,11 @@ static void SwitchID_Configuration(void)
   ampSwitchID.SW8_PORT	=	GPIOD;
   ampSwitchID.SW8_Pin	=	GPIO_Pin_2;
 
-	SwitchIdInitialize(&ampSwitchID);						//
+	api_SwitchId_initialize(&ampSwitchID);						//
 
-  ampsys.sysdata.Cab_Addr  = SWITCHID_ReadLeft(&ampSwitchID)&0x3F;  
+  ampsys.sysdata.Cab_Addr  = api_get_SwitchId_data_left(&ampSwitchID)&0x3F;  
   
-  if(SWITCHID_ReadLeft(&ampSwitchID)&0x80)
+  if(api_get_SwitchId_data_left(&ampSwitchID)&0x80)
   {
     ampsys.sysdata.MB_Flag=1; //0--副柜，1--主柜
   }

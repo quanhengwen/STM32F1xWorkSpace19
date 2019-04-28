@@ -238,9 +238,9 @@ void AMPCAB_SwitchIDServer(void)
   unsigned char cabaddrbac=CabAddr;
   if(0==AMPPro.Time.swicthidtime)
   {
-    CabAddr  = SWITCHID_ReadLeft(&stCbSwitch)&0x3F;
+    CabAddr  = api_get_SwitchId_data_left(&stCbSwitch)&0x3F;
   
-    if(SWITCHID_ReadLeft(&stCbSwitch)&0x80)
+    if(api_get_SwitchId_data_left(&stCbSwitch)&0x80)
     {
       MainFlag=1; //0--副柜，1--主柜
     }
@@ -459,11 +459,11 @@ void AMPCABSwitchID_Configuration(void)
   stCbSwitch.SW8_PORT	=	GPIOD;
   stCbSwitch.SW8_Pin	=	GPIO_Pin_2;
 
-	SwitchIdInitialize(&stCbSwitch);						//
+	api_SwitchId_initialize(&stCbSwitch);						//
 
-  CabAddr  = SWITCHID_ReadLeft(&stCbSwitch)&0x3F;  
+  CabAddr  = api_get_SwitchId_data_left(&stCbSwitch)&0x3F;  
   
-  if(SWITCHID_ReadLeft(&stCbSwitch)&0x80)
+  if(api_get_SwitchId_data_left(&stCbSwitch)&0x80)
   {
     MainFlag=1; //0--副柜，1--主柜
   }

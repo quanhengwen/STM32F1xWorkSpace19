@@ -21,6 +21,7 @@ SPI需要配置基本内容：
 
 #include "STM32_GPIO.H"
 
+#include "STM32_SYSTICK.H"
 //#include "stm32f10x_dma.h"
 //#include "stm32f10x_exti.h"
 //#include "STM32_EXTI.H"
@@ -34,7 +35,145 @@ SPI需要配置基本内容：
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_dma.h"
 #include "stm32f10x_nvic.h"
+
+
 #define spiBufsize  256
+
+spi_port_def*	spi_port;
+
+//-----------------------------------------------static-hardware
+#define spi_set_nss_high	(spi_port->nss_port		->BSRR	=spi_port->nss_pin)
+#define spi_set_nss_low		(spi_port->nss_port		->BRR		=spi_port->nss_pin)
+#define spi_set_clk_high	(spi_port->clk_port		->BSRR	=spi_port->clk_pin)
+#define spi_set_clk_low		(spi_port->clk_port		->BRR		=spi_port->clk_pin)
+#define spi_set_mosi_high	(spi_port->mosi_port	->BSRR	=spi_port->mosi_pin)
+#define spi_set_mosi_low	(spi_port->mosi_port	->BRR		=spi_port->mosi_pin)
+#define	spi_get_miso			(spi_port->miso_port	->IDR&spi_port->miso_pin)
+//-----------------------------------------------static-hardware-miso
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_spi_configuration_gpio(spi_def* pInfo)
+{
+	spi_port	=	&pInfo->port;
+	
+	if(spi_port->nss_port)
+		GPIO_Configuration_OPP50	(pInfo->port.nss_port,pInfo->port.nss_pin);			//NSS
+	if(spi_port->clk_port)
+		GPIO_Configuration_OPP50	(pInfo->port.clk_port,pInfo->port.clk_pin);			//CLK
+	if(spi_port->mosi_port)
+		GPIO_Configuration_OPP50	(pInfo->port.mosi_port,pInfo->port.mosi_pin);		//MOSI
+	if(spi_port->miso_port)
+		GPIO_Configuration_IPU		(pInfo->port.miso_port,pInfo->port.miso_pin);		//MISO
+}
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	写RC632寄存器
+*输入				: Address[IN]:寄存器地址
+							value[IN]:写入的值
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_spi_write_byte_gpio(unsigned char value)
+{
+	unsigned char i=0;	
+	//-----------------------------发送地址
+	for(i=8;i>0;i--)
+	{
+		spi_delay_us(5);
+		if(0x80	==	(value&0x80))
+		{
+		 spi_set_mosi_high;	//mosi=1
+		}
+		else
+		{
+		 spi_set_mosi_low;		//mosi=	0
+		}
+		spi_delay_us(5);
+		spi_set_clk_high;		//MF522_SCK = 1;
+		spi_delay_us(5);
+		spi_set_clk_low;			//MF522_SCK = 0;
+		value <<= 1;
+	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	写RC632寄存器
+*输入				: Address[IN]:寄存器地址
+							value[IN]:写入的值
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_spi_write_register_gpio(unsigned char Address,unsigned char value)
+{
+	spi_set_clk_low;		//SPI_SCK = 0;
+	spi_set_nss_low;		//SPI_NSS = 0;
+	spi_delay_us(5);
+	api_spi_write_byte_gpio(Address);
+	api_spi_write_byte_gpio(value);
+	spi_delay_us(5);
+	spi_set_nss_high;		//SPI_NSS = 1
+	spi_set_clk_high;		//SPI_SCK = 1;
+}
+/*******************************************************************************
+*函数名			:	mfrc522_read_byte
+*功能描述		:	读RC632寄存器
+*输入				: Address[IN]:寄存器地址
+*返回值			:	读出的值
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_spi_read_byte_gpio(void)
+{
+	unsigned char i	=	0;
+	unsigned char ucResult=0;
+	//-----------------------------读取数据
+	for(i=8;i>0;i--)
+	{
+		spi_set_clk_high;		//MF522_SCK = 1;
+		spi_delay_us(1);
+		ucResult <<= 1;
+		if(spi_get_miso)			//miso==1
+		{
+			ucResult|=0x01;
+		}
+		spi_set_clk_low;			//MF522_SCK = 0;
+		spi_delay_us(1);
+	}	
+	return ucResult;
+}
+
+///////////////////////////////////////////////////////////////////////
+// Delay us
+///////////////////////////////////////////////////////////////////////
+static void spi_delay_us(unsigned short us)
+{
+	
+	SysTick_DeleyuS(us);				//SysTick延时nmS
+}
+//------------------------------------------------------------------------------
+
+
+
+
+
 unsigned  char spiTxBuff[spiBufsize]={0};
 //SPIDef	*SPISYS	=	0;	//内部驱动使用，不可删除
 void SPI_CS_LOW(SPIDef *pInfo)
@@ -65,6 +204,10 @@ unsigned char SPI_MISO_In(SPIDef *pInfo)
 {
 	return(pInfo->Port.MISO_PORT->IDR 	&	pInfo->Port.MISO_Pin);
 }
+
+
+
+
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	函数功能说明 

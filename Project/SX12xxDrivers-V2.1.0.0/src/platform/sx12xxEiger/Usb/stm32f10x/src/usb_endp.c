@@ -46,6 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 uint8_t USB_Rx_Buffer[VIRTUAL_COM_PORT_DATA_SIZE];		//存放USB发送过来的数据，然后转存到FifoRx
 extern  uint8_t USART_Rx_Buffer[];
+extern uint32_t USART_Rx_ptr_in;		//串口接收数据计数器
 extern uint32_t USART_Rx_ptr_out;
 extern uint32_t USART_Rx_length;
 extern uint8_t  USB_Tx_State;
@@ -61,10 +62,10 @@ extern uint8_t  USB_Tx_State;
 *******************************************************************************/
 void EP1_IN_Callback (void)
 {
-  uint16_t USB_Tx_ptr;
-  uint16_t USB_Tx_length;
-  
-  if (USB_Tx_State == 1)
+  uint16_t USB_Tx_ptr;					//上传数据所在缓存中的起始地址
+  uint16_t USB_Tx_length;				//上传数据长度
+
+  if (USB_Tx_State == 1)				//有发送请求
   {
     if (USART_Rx_length == 0) 
     {
@@ -72,10 +73,13 @@ void EP1_IN_Callback (void)
     }
     else 
     {
-      if (USART_Rx_length > VIRTUAL_COM_PORT_DATA_SIZE){
-        USB_Tx_ptr = USART_Rx_ptr_out;
+			//-------------------------------------检查数据长度有无超过一帧64字节
+      if (USART_Rx_length > VIRTUAL_COM_PORT_DATA_SIZE)
+			{
+				//--------------------获取待发送数据的起始缓存序号及长度
+        USB_Tx_ptr = USART_Rx_ptr_out;						
         USB_Tx_length = VIRTUAL_COM_PORT_DATA_SIZE;
-        
+        //--------------------更新下次待发数据的起始缓存地址及更新剩余待发送长度
         USART_Rx_ptr_out += VIRTUAL_COM_PORT_DATA_SIZE;
         USART_Rx_length -= VIRTUAL_COM_PORT_DATA_SIZE;    
       }
@@ -86,7 +90,7 @@ void EP1_IN_Callback (void)
         
         USART_Rx_ptr_out += USART_Rx_length;
         USART_Rx_length = 0;
-      }
+      }			
       UserToPMABufferCopy(&USART_Rx_Buffer[USB_Tx_ptr], ENDP1_TXADDR, USB_Tx_length);
       SetEPTxCount(ENDP1, USB_Tx_length);
       SetEPTxValid(ENDP1); 
@@ -96,7 +100,7 @@ void EP1_IN_Callback (void)
 
 /*******************************************************************************
 * Function Name  : EP3_OUT_Callback
-* Description    :
+* Description    :	USB输出数据
 * Input          : None.
 * Output         : None.
 * Return         : None.

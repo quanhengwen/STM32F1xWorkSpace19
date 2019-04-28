@@ -131,11 +131,11 @@ static void HW_SwitchID_Configuration(void)
   stCbSwitch.SW8_PORT	=	GPIOD;
   stCbSwitch.SW8_Pin	=	GPIO_Pin_2;
 
-	SwitchIdInitialize(&stCbSwitch);						//
+	api_SwitchId_initialize(&stCbSwitch);						//
 
-//  CabAddr  = SWITCHID_ReadLeft(&stCbSwitch)&0x3F;  
+//  CabAddr  = api_get_SwitchId_data_left(&stCbSwitch)&0x3F;  
 //  
-//  if(SWITCHID_ReadLeft(&stCbSwitch)&0x80)
+//  if(api_get_SwitchId_data_left(&stCbSwitch)&0x80)
 //  {
 //    MainFlag=1; //0--¸±¹ñ£¬1--Ö÷¹ñ
 //  }

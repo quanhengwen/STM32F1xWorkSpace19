@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xWOW' 
- * Target:  'mfrc522test' 
+ * Target:  'PCM2707_TEST' 
  */
 
 #ifndef RTE_COMPONENTS_H

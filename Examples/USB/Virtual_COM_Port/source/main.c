@@ -27,10 +27,7 @@
 
 
 /* Includes ------------------------------------------------------------------*/
-#include "hw_config.h"
-#include "usb_lib.h"
-#include "usb_desc.h"
-#include "usb_pwr.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -49,10 +46,8 @@
 *******************************************************************************/
 int main(void)
 {
-  Set_System();
-  Set_USBClock();	
-  USB_Interrupts_Config();
-  USB_Init();
+	#include "STM32_WOW.H"
+	WOW_Configuration();
   while (1)
   {
   }

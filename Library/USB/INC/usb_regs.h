@@ -34,10 +34,61 @@ enum EP_BUF_NUM
   EP_BUF0,
   EP_BUF1
 };
+typedef union _u_Istr
+{
+	unsigned short istr;
+	struct
+	{
+		unsigned short EP_ID	:4;		//LSB-EP_ID[3:0]：端点ID (Endpoint Identifier)
+		unsigned short DIR		:1;		//传输方向 (Direction of transaction)
+		unsigned short REV		:3;		//保留
+		unsigned short ESOF		:1;		//期望帧首标识位 (Expected start of frame)
+		unsigned short SOF		:1;		//帧首标志 (Start of frame)
+		unsigned short RESET	:1;		//USB复位请求 (USB reset request)
+		unsigned short SUSP		:1;		//挂起模块请求 (Suspend mode request)
+		unsigned short WKUP		:1;		//唤醒请求 (Wakeup)
+		unsigned short ERR		:1;		//出错 (Error)
+		unsigned short PMAOVR	:1;		//分组缓冲区溢出 (Packet memory area over / underrun)
+		unsigned short CTR		:1;		//MSB-正确的传输 (Correct transfer)
+	}istr_flag;
+}usb_istr_def;
+typedef union _u_EP
+{
+	unsigned short wEPVal;
+	struct
+	{
+		unsigned short EA				:4;		//LSB-EA[3:0]：端点地址 (Endpoint address)
+		unsigned short STAT_TX	:2;		//用于发送数据的状态位 (Status bits, for transmission transfers)
+		unsigned short DTOG_TX	:1;		//发送数据翻转位 (Data Toggle, for transmission transfers)
+		unsigned short CTR_TX		:1;		//正确发送标志位 (Correct transfer for transmission)
+		unsigned short EP_KIND	:1;		//端点特殊类型位 (Endpoint kind)
+		unsigned short EP_TPYE	:2;		//端点类型位 (Endpoint type)
+		unsigned short SETUP		:1;		//SETUP分组传输完成标志位 (Setup transaction completed)
+		unsigned short STAT_RX	:2;		//用于数据接收的状态位 (Status bits, for reception transfers)
+		unsigned short DTOG_RX	:1;		//用于数据接收的数据翻转位 (Data Toggle, for reception transfers)
+		unsigned short CTR_RX		:1;		//MSB-正确接收标志位 (Correct Transfer for reception)
+	}wEPVal_flag;
+}usb_EP_def;
 
+
+typedef struct _USB_REG
+{
+	usb_istr_def	wIstr;
+	struct
+	{
+		usb_EP_def		EP0;
+		usb_EP_def		EP1;
+		usb_EP_def		EP2;
+		usb_EP_def		EP3;
+		usb_EP_def		EP4;
+		usb_EP_def		EP5;
+		usb_EP_def		EP6;
+		usb_EP_def		EP7;
+	}Endpoint;
+}usb_reg_def;
 /* Exported constants --------------------------------------------------------*/
 #define RegBase  (0x40005C00L)  /* USB_IP Peripheral Registers base address */
-#define PMAAddr  (0x40006000L)  /* USB_IP Packet Memory Area base address   */
+#define PMAAddr  (0x40006000L)  /* USB_IP Packet Memory Area base address   *///数据存储区基地址
 
 /******************************************************************************/
 /*                         General registers                                  */
@@ -556,8 +607,10 @@ enum EP_BUF_NUM
 
 
 /* External variables --------------------------------------------------------*/
-extern volatile u16 wIstr;  /* ISTR register last read value */
 
+//extern volatile u16 wIstr;  /* ISTR register last read value */
+//extern	usb_istr_def	wIstr;	/* ISTR register last read value */
+extern	usb_reg_def	USB_REG;	
 /* Exported functions ------------------------------------------------------- */
 void SetCNTR(u16 /*wRegValue*/);
 void SetISTR(u16 /*wRegValue*/);
@@ -635,6 +688,11 @@ EP_DBUF_DIR GetEPDblBufDir(u8 /*bEpNum*/);
 void FreeUserBuffer(u8 bEpNum/*bEpNum*/, u8 bDir);
 u16 ToWord(u8, u8);
 u16 ByteSwap(u16);
+
+
+//-------------------------------------20190424添加
+void set_endpint(u16 wSwW);
+unsigned short get_endpint(unsigned char EPindex);
 
 #endif /* __USB_REGS_H */
 

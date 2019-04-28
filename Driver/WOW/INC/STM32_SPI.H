@@ -32,6 +32,35 @@
 //#include	"stddef.h"
 //#include	"stdint.h"
 
+typedef struct	_spi_port
+{
+	//____________端口定义
+	SPI_TypeDef *		SPIx;				//SPI接口配置 x=0、1、2、3、
+
+	//____________SPI_CS定义
+	GPIO_TypeDef* 	nss_port;		//GPIOX
+	unsigned short 	nss_pin;			//GPIO_Pin_x
+
+	//____________SPI_CLK定义
+	GPIO_TypeDef* 	clk_port;		//GPIOX
+	unsigned short 	clk_pin;		//GPIO_Pin_x
+
+	//____________SPI_MISO定义
+	GPIO_TypeDef* 	miso_port;	//GPIOX
+	unsigned short 	miso_pin;		//GPIO_Pin_x
+
+	GPIO_TypeDef* 	mosi_port;	//GPIOX
+	unsigned short 	mosi_pin;		//GPIO_Pin_x
+	
+	//____________SPI_波特率
+	unsigned short 	SPI_BaudRatePrescaler_x;		//x=2/4/8/16/32/64/128/256
+	
+}spi_port_def;
+typedef struct	_spi
+{
+	spi_port_def	port;
+}spi_def;
+
 //----SPI管脚配置--------------------------------------------------------------
 typedef struct	_SPIPort
 {
@@ -87,12 +116,28 @@ typedef struct	_SPI
 //#define SPI_MOSI_LOW			(pSPIPort->MOSI_PORT->BRR 	= pSPIPort->MOSI_Pin)
 //#define SPI_MISO					(pSPIPort->MISO_PORT->IDR 	&	pSPIPort->MISO_Pin)
 
+//-------------------------------------------api
+void api_spi_configuration_gpio(spi_def* pInfo);
 
-//void SPI_Server(void);
+void api_spi_write_byte_gpio(unsigned char value);
+void api_spi_write_register_gpio(unsigned char Address,unsigned char value);
+unsigned char api_spi_read_byte_gpio(void);
 
-void SPI_Initialize(SPIDef* pInfo);		//SPI接口配置
+//-------------------------------------------static
+static void spi_delay_us(unsigned short us);
+
+
+
+
+
+
+
+
+
+
+void SPI_Initialize(SPIDef* pInfo);				//SPI接口配置
 	
-void SPI_InitializeNR(SPIDef* pInfo);							//普通SPI接口配置
+void SPI_InitializeNR(SPIDef* pInfo);			//普通SPI接口配置
 
 void SPI_InitializeSPI(SPIDef *pInfo);		//普通SPI接口配置
 void SPI_InitializeDMA(SPIDef *pInfo);			//SPI-DMA通讯方式配置---20170722未完成

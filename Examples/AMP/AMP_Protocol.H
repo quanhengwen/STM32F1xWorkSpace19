@@ -76,6 +76,16 @@ typedef enum _ampedir
 	ampDirUp  			= (unsigned char)0x80,			//上传命令
 	ampDirDown  		= (unsigned char)0x00,			//下发命令
 }ampedirdef;
+typedef union _ampcmdv2
+{
+	unsigned char cmd;
+	struct
+	{
+		unsigned char cmd:6;
+		unsigned char rv	:1;		//备用
+		unsigned char dir	:1;		//方向：0向下级发或者应答，1向上级发或者应答
+	}cmd_bit;	
+}ampcmdv2def;
 typedef struct _ampcmd
 {
 	unsigned char cmd:6;
@@ -88,6 +98,15 @@ typedef struct _ampaddr
   unsigned char address2;		//层地址
   unsigned char address3;
 }ampaddrdef;
+typedef union _ampcrc16v2
+{
+	unsigned short crc16;
+	struct
+	{
+		unsigned char crcl;
+		unsigned char crch;
+	}crc16_u8;
+}ampcrc16v2def;
 typedef struct _ampcrc16
 {
   unsigned char crcl;

@@ -47,11 +47,11 @@
 USART_InitTypeDef USART_InitStructure;
 
 uint8_t  USART_Rx_Buffer [USART_RX_DATA_SIZE]; 		//USART接收缓存，将接收到的数据发送到USB输入端点缓存
-uint32_t USART_Rx_ptr_in = 0;
-uint32_t USART_Rx_ptr_out = 0;
-uint32_t USART_Rx_length  = 0;
+uint32_t USART_Rx_ptr_in 	= 0;		//串口接收数据计数器
+uint32_t USART_Rx_ptr_out = 0;		//USB上传数据在缓存中的起始地址
+uint32_t USART_Rx_length  = 0;		//串口接收数据计数器（USB剩余待上传数据长度）
 
-uint8_t  USB_Tx_State = 0;
+uint8_t  USB_Tx_State = 0;				//发送状态：0-空闲，1-有发送请求
 
 /* Extern variables ----------------------------------------------------------*/
 extern tFifo FifoRx;
@@ -70,14 +70,15 @@ static void IntToUnicode (uint32_t value , uint8_t *pbuf , uint8_t len);
 *******************************************************************************/
 void USB_Configuration(void)					//USB配置
 {
-		USB_CONNECT_Configuration();		//USB使能控制脚配置
+	USB_CONNECT_Configuration();		//USB使能控制脚配置
+Set_USBClock( );								//USB时钟配置--48MHz
+	USB_Init( );										//USB初始化
 	/* Additional EXTI configuration (configure both edges) */
-		EXTI_Configuration( );
+	EXTI_Configuration( );
 
-		USB_Interrupts_Config( );				//USB中断配置
-		Set_USBClock( );								//USB时钟配置--48MHz
-		USB_Init( );										//USB初始化
-  
+	USB_Interrupts_Config( );				//USB中断配置
+
+	
 }
 /*******************************************************************************
 *函数名			:	function
@@ -101,6 +102,8 @@ void USB_CONNECT_Configuration(void)			//USB使能控制脚配置
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_Init(USB_DISCONNECT, &GPIO_InitStructure);
+	
+	USB_Cable_Config(DISABLE);
 }
 
 /*******************************************************************************
@@ -381,11 +384,12 @@ void USB_To_USART_Send_Data(uint8_t* data_buffer, uint8_t Nb_bytes)	//USB向USART
 void Handle_USBAsynchXfer (void)		//给USB发送数据
 {
   
-  uint16_t USB_Tx_ptr;
-  uint16_t USB_Tx_length;
-  
-  if(USB_Tx_State != 1)
+  uint16_t USB_Tx_ptr;				//USB发送起始地址
+  uint16_t USB_Tx_length;			//USB发送长度
+
+  if(USB_Tx_State != 1)				//发送空闲状态
   {
+		//-----------------------------------
     if (USART_Rx_ptr_out == USART_RX_DATA_SIZE)
     {
       USART_Rx_ptr_out = 0;
@@ -396,23 +400,23 @@ void Handle_USBAsynchXfer (void)		//给USB发送数据
       USB_Tx_State = 0; 
       return;
     }
-    
+    //-----------------------------------计算串口已接收的长度(待通过USB上传的数据个数)
     if(USART_Rx_ptr_out > USART_Rx_ptr_in) /* rollback */
     { 
-      USART_Rx_length = USART_RX_DATA_SIZE - USART_Rx_ptr_out;
+      USART_Rx_length = USART_RX_DATA_SIZE - USART_Rx_ptr_out;	//1024
     }
     else 
     {
       USART_Rx_length = USART_Rx_ptr_in - USART_Rx_ptr_out;
     }
-    
-    if (USART_Rx_length > VIRTUAL_COM_PORT_DATA_SIZE)
+    //-----------------------------------计算发送起始地址，长度，更新下次待发送起始地址和长度
+    if (USART_Rx_length > VIRTUAL_COM_PORT_DATA_SIZE)		//64
     {
       USB_Tx_ptr = USART_Rx_ptr_out;
-      USB_Tx_length = VIRTUAL_COM_PORT_DATA_SIZE;
+      USB_Tx_length = VIRTUAL_COM_PORT_DATA_SIZE;				//64
       
-      USART_Rx_ptr_out += VIRTUAL_COM_PORT_DATA_SIZE;	
-      USART_Rx_length -= VIRTUAL_COM_PORT_DATA_SIZE;	
+      USART_Rx_ptr_out += VIRTUAL_COM_PORT_DATA_SIZE;		//下一个输出起始点
+      USART_Rx_length -= VIRTUAL_COM_PORT_DATA_SIZE;		//更新待上传个数
     }
     else
     {
@@ -422,11 +426,12 @@ void Handle_USBAsynchXfer (void)		//给USB发送数据
       USART_Rx_ptr_out += USART_Rx_length;
       USART_Rx_length = 0;
     }
+		//-----------------------------------更新发送状态，将数据拷贝到PMA待USB主机获取，设置端点
     USB_Tx_State = 1; 
     UserToPMABufferCopy(&USART_Rx_Buffer[USB_Tx_ptr], ENDP1_TXADDR, USB_Tx_length);
     SetEPTxCount(ENDP1, USB_Tx_length);
     SetEPTxValid(ENDP1); 
-  }  
+  }
   
 }
 /*******************************************************************************

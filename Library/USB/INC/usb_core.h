@@ -27,16 +27,16 @@ typedef enum _CONTROL_STATE
   OUT_DATA,         /* 3 */
   LAST_IN_DATA,     /* 4 */		//最后的数据
   LAST_OUT_DATA,    /* 5 */		//最后的数据
-  WAIT_STATUS_IN,   /* 6 */		//等待状态
-  WAIT_STATUS_OUT,  /* 7 */		//等待状态
+  WAIT_STATUS_IN,   /* 6 */		//等待输入状态
+  WAIT_STATUS_OUT,  /* 7 */		//等待输出状态
   STALLED,          /* 8 */		//终止发送和接受
   PAUSE             /* 9 */
 } CONTROL_STATE;    /* The state machine states of a control pipe */
 
 typedef struct OneDescriptor
 {
-  u8 *Descriptor;
-  u16 Descriptor_Size;
+  u8 *Descriptor;				//字符串地址
+  u16 Descriptor_Size;	//字符串长度
 }
 ONE_DESCRIPTOR, *PONE_DESCRIPTOR;
 /* All the request process routines return a value of this type
@@ -50,15 +50,54 @@ typedef enum _RESULT
   USB_NOT_READY       /* The process has not been finished, endpoint will be
                          NAK to further rquest */		//请求过程还没有完成,
 } RESULT;
+typedef enum _RECIPIENT_TYPE
+{
+  DEVICE_RECIPIENT,     //DEVICE_RECIPIENT==00	接收设备/* Recipient device */
+  INTERFACE_RECIPIENT,  //INTERFACE_RECIPIENT==01	/* Recipient interface */
+  ENDPOINT_RECIPIENT,   //ENDPOINT_RECIPIENT==02	/* Recipient endpoint */
+  OTHER_RECIPIENT				//OTHER_RECIPIENT==03
+} RECIPIENT_TYPE;
+typedef enum _STANDARD_REQUESTS		//标准命令---USB规范定义了11个标准命令，所有USB设备都必需支持
+{
+  GET_STATUS = 0,			//GET_STATUS==00用来返回特定接收者的状态
+  CLEAR_FEATURE,			//CLEAR_FEATURE==01用来清除或禁止接收者的某些特性
+  RESERVED1,							
+  SET_FEATURE,				//SET_FEATURE==03用来启用或激活命令接收者的某些特性				
+  RESERVED2,
+  SET_ADDRESS,				//SET_ADDRESS==05用来给设备分配地址
+  GET_DESCRIPTOR,			//GET_DESCRIPTOR==06用于主机获取设备的特定描述符
+  SET_DESCRIPTOR,			//SET_DESCRIPTOR==07修改设备中有关的描述符，或者增加新的描述符
+  GET_CONFIGURATION,	//GET_CONFIGURATION==08用于主机获取设备当前设备的配置值（注同上面的不同） 
+  SET_CONFIGURATION,	//SET_CONFIGURATION==09用于主机指示设备采用的要求的配置
+  GET_INTERFACE,			//GET_INTERFACE==0A用于获取当前某个接口描述符编号
+  SET_INTERFACE,			//SET_INTERFACE==0B用于主机要求设备用某个描述符来描述接口
+  TOTAL_sREQUEST,  /* Total number of Standard request */
+  SYNCH_FRAME = 12		//SYNCH_FRAME==0C用于设备设置和报告一个端点的同步帧
+} STANDARD_REQUESTS;
 
+/* Definition of "USBwValue" */
+typedef enum _DESCRIPTOR_TYPE		//描述符分类（与GET_DESCRIPTOR有关）
+{
+  DEVICE_DESCRIPTOR = 1,			//DEVICE_DESCRIPTOR==01	设备描述符
+  CONFIG_DESCRIPTOR,					//CONFIG_DESCRIPTOR==02	配置描述符
+  STRING_DESCRIPTOR,					//STRING_DESCRIPTOR==03	字符串描述符
+  INTERFACE_DESCRIPTOR,				//INTERFACE_DESCRIPTOR==04	接口描述符
+  ENDPOINT_DESCRIPTOR,				//ENDPOINT_DESCRIPTOR==05	端点描述符
+	DEVICE_QUALIFIER_DESCRIPTOR	//DEVICE_QUALIFIER_DESCRIPTOR==06  设备限定符	：设备限定描述符说明了呢功能进行高速操作的设备在其他速度操作时产生的变化信息.
+} DESCRIPTOR_TYPE;
+
+/* Feature selector of a SET_FEATURE or CLEAR_FEATURE */
+typedef enum _FEATURE_SELECTOR
+{
+  ENDPOINT_STALL,
+  DEVICE_REMOTE_WAKEUP
+} FEATURE_SELECTOR;
 
 /*-*-*-*-*-*-*-*-*-*-* Definitions for endpoint level -*-*-*-*-*-*-*-*-*-*-*-*/
 typedef struct _ENDPOINT_INFO
 {
-  /* When send data out of the device,
-   CopyData() is used to get data buffer 'Length' bytes data
-   if Length is 0,
-    CopyData() returns the total length of the data
+  /* When send data out of the device,CopyData() is used to get data buffer 'Length' bytes data
+   if Length is 0, CopyData() returns the total length of the data
     if the request is not supported, returns 0
     (NEW Feature )
      if CopyData() returns -1, the calling routine should not proceed
@@ -105,11 +144,11 @@ typedef union		//为了简化对DEVICE_INFO 结构中的某些字段的访问（以u16 或u8 格式）
 
 typedef struct _DEVICE_INFO		//设备信息结构--USB 内核将主机发送过来的用于实现USB 设备的设置包保存在设备信息结构中，该结构类型是
 {
-  u8 USBbmRequestType;       /* bmRequestType */		//请求类型（包含传输方向，请求类型及接收终端信息）
-  u8 USBbRequest;            /* bRequest */					//请求代码（标准请求代码）
-  u16_u8 USBwValues;         /* wValue */						//根据不同的命令，含义也不同（例如设备描述符的索引号）
-  u16_u8 USBwIndexs;         /* wIndex */						//索引或偏移,根据不同的命令，含义也不同，主要用于传送索引或偏移
-  u16_u8 USBwLengths;        /* wLength */					//如有数据传送阶段，此为数据字节数
+  RECIPIENT_TYPE 			USBbmRequestType;  	/* bmRequestType */		//请求类型（包含传输方向，请求类型及接收终端信息）
+  STANDARD_REQUESTS 	USBbRequest;       	/* bRequest */				//请求代码（标准请求代码）
+  u16_u8 							USBwValues;         /* wValue */					//根据不同的命令，含义也不同（例如设备描述符的索引号）
+  u16_u8 							USBwIndexs;         /* wIndex */					//索引或偏移,根据不同的命令，含义也不同，主要用于传送索引或偏移
+  u16_u8 							USBwLengths;        /* wLength */					//如有数据传送阶段，此为数据字节数
 
   u8 ControlState;           /* of type CONTROL_STATE */			//内核的状态
   u8 Current_Feature;																					//反映了当前设备的特性
@@ -220,10 +259,22 @@ RESULT Standard_SetDeviceFeature(void);			//设置或使能设备指定的特性		//如果请求
 void SetDeviceAddress(u8);
 void NOP_Process(void);
 
-extern DEVICE_PROP Device_Property;
-extern  USER_STANDARD_REQUESTS User_Standard_Requests;
-extern  DEVICE  Device_Table;
-extern DEVICE_INFO Device_Info;
+extern 	DEVICE_PROP Device_Property;				//相关函数指针结构体
+extern  USER_STANDARD_REQUESTS User_Standard_Requests;	//标准请求
+extern  DEVICE  Device_Table;								//端点
+
+extern	DEVICE_INFO *pInformation;				//USB设备控制传输（包括枚举）时使用的状信息构体指针--20190425添加
+extern	DEVICE_INFO Device_Info;					//USB设备控制传输（包括枚举）时使用的状信息构体
+
+/*  Temporary save the state of Rx & Tx status. */
+/*  Whenever the Rx or Tx state is changed, its value is saved */
+/*  in this variable first and will be set to the EPRB or EPRA */
+/*  at the end of interrupt process */
+extern USER_STANDARD_REQUESTS *pUser_Standard_Requests;		//标准请求函数结构体指针
+
+/*  Points to the DEVICE_PROP structure of current device */
+/*  The purpose of this register is to speed up the execution */
+extern DEVICE_PROP*	pProperty;
 
 /* cells saving status during interrupt servicing */
 extern u16 SaveRState;

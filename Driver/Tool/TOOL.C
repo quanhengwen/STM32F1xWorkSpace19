@@ -451,4 +451,30 @@ unsigned long GetVarLong(unsigned long *pBuffer,unsigned short Length)	//ªÒ»°uns
 	}
 	return VarData;
 }
-
+/*******************************************************************************
+* Function Name  : HexToChar.
+* Description    : Convert Hex 32Bits value into char.
+* Input          : None.
+* Output         : None.
+* Return         : None.
+*******************************************************************************/
+static void IntToUnicode (unsigned long value , unsigned char *pbuf , unsigned char len)
+{
+  unsigned char idx = 0;
+  
+  for( idx = 0 ; idx < len ; idx ++)
+  {
+    if( ((value >> 28)) < 0xA )
+    {
+      pbuf[ 2* idx] = (value >> 28) + '0';
+    }
+    else
+    {
+      pbuf[2* idx] = (value >> 28) + 'A' - 10; 
+    }
+    
+    value = value << 4;
+    
+    pbuf[ 2* idx + 1] = 0;
+  }
+}

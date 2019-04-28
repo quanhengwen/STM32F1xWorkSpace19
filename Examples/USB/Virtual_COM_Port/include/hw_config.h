@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "usb_type.h"
 
+//#include "stm32f10x_gpio.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -30,18 +31,36 @@
 #define LED_ON                0xF0
 #define LED_OFF               0xFF
 
+typedef struct _usb_en
+{
+	unsigned long* 	usb_connect_port;				//GPIOX
+	unsigned short 	usb_connect_pin;				//GPIO_Pin_x
+}usb_en_def;
+
 /* Exported functions ------------------------------------------------------- */
-void Set_System(void);
-void Set_USBClock(void);
-void Enter_LowPowerMode(void);
-void Leave_LowPowerMode(void);
-void USB_Interrupts_Config(void);
-void USB_Cable_Config (FunctionalState NewState);
-void USART_Config_Default(void);
-bool USART_Config(void);
-void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes);
-void USART_To_USB_Send_Data(void);
-void Get_SerialNum(void);
+//------------------------------------------------------api
+void api_usb_virtual_com_configuration(usb_en_def* pInfo);		//–Èƒ‚¥Æø⁄≈‰÷√
+
+
+
+//------------------------------------------------------Œ¥∂®
+void set_usb_en(FunctionalState NewState);
+void set_usart_default(void);
+bool set_usart_config(void);
+void usb_to_usart_Send_data(u8* data_buffer, u8 Nb_bytes);
+void usart_to_usb_send_data(void);
+
+
+
+//------------------------------------------------------static
+static void set_usb_clock(void);				//…Ë÷√USB ±÷”
+static void set_usb_Interrupt(void);		//…Ë÷√USB÷–∂œ
+
+
+
+
+
+
 void Handle_USBAsynchXfer (void);
 
 /* External variables --------------------------------------------------------*/

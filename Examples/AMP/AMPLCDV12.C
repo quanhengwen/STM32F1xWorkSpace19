@@ -209,7 +209,7 @@ static void Read_switchid(void)
 	{
 		unsigned char temp	=	0;
 		time	=	0;
-		temp	=	SWITCHID_ReadLeft(&sAmpLcd.sSwitch);
+		temp	=	api_get_SwitchId_data_left(&sAmpLcd.sSwitch);
 		sAmpLcd.Sys.AddrLay=(temp>>4)&0X0F;  	//层地址
 		sAmpLcd.Sys.AddrSeg=temp&0x0F;      	//位地址
 	}
@@ -1272,9 +1272,9 @@ void HW_Configuration(void)
 
 	sAmpLcd.sSwitch		=	sSwitch;
 	
-	SwitchIdInitialize(&sAmpLcd.sSwitch);	
+	api_SwitchId_initialize(&sAmpLcd.sSwitch);	
 	
-	temp	=	SWITCHID_ReadLeft(&sAmpLcd.sSwitch);
+	temp	=	api_get_SwitchId_data_left(&sAmpLcd.sSwitch);
   sAmpLcd.Sys.AddrLay=(temp>>4)&0X0F;  	//层地址
   sAmpLcd.Sys.AddrSeg=temp&0x0F;      	//位地址
 }

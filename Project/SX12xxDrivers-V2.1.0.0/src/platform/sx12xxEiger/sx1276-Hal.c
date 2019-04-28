@@ -166,7 +166,7 @@ void SX1276InitIo( void )		//SX1276 GPIO≈‰÷√	NSS£¨DIO0~DIO5≈‰÷√
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 #else
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;		//‘≠Œ™GPIO_Mode_IN_FLOATING--20190422;
 #endif
 
     // Configure DIO0

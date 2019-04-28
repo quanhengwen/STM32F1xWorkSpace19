@@ -44,12 +44,39 @@ typedef	struct	_I2CDATA				//带反馈锁控制标志及吸合时间
 	unsigned char  DeviceAddr;	//设备地址：bit0=0:write;bit0=1:read
 	unsigned char* WDataAddr;		//待写入的数据起始地址
 }sI2CDATADef;
+typedef struct _slave_iic
+{
+	struct
+	{
+		unsigned char slave	:1;		//0-非从机,1-从机模式
+		unsigned char write	:1;		//0-无标识,1-主机写标识
+		unsigned char read	:1;		//0-无标识,1-主机读标识
+		unsigned char start	:1;		//0-未启动，1-已启动
+		unsigned char stop	:1;		//0-运行状态，1-已停止
+		unsigned char	sdas	:1;		//sda脚之前状态
+		unsigned char scls	:1;		//scl脚之前状态		
+	}status;
+	struct
+	{
+		unsigned char bit0	:1;		//1-已获取
+		unsigned char bit1	:1;		//1-已获取
+		unsigned char bit2	:1;		//1-已获取
+		unsigned char bit3	:1;		//1-已获取
+		unsigned char bit4	:1;		//1-已获取
+		unsigned char bit5	:1;		//1-已获取
+		unsigned char bit6	:1;		//1-已获取
+		unsigned char bit7	:1;		//1-已获取		
+	}byte_data;
+	unsigned char get_bit_count;			//获取多少个位计算
+}slave_iic_def;
 typedef	struct	_I2C				//带反馈锁控制标志及吸合时间
 {
 	//-------------------------硬件驱动
 	sI2CHWDef HW;
 	//-------------------------参数
 	sI2CDATADef	DATA;
+	//-------------------------模拟iic从机相关标识
+	slave_iic_def	slave;
 	
 }sI2CDef;
 
@@ -79,6 +106,11 @@ unsigned char iic_get_scl(sI2CDef *sI2C);
 
 
 //-----------------------------------------sw--protocol
+static void iic_slave_get_line(sI2CDef *sI2C);
+static void iic_slave_get_start(sI2CDef *sI2C);
+static void iic_slave_get_stop(sI2CDef *sI2C);
+static void iic_slave_get_bit(sI2CDef *sI2C);
+unsigned char iic_slave_get_byte(sI2CDef *sI2C,unsigned char* data);
 
 
 void I2C_Start(sI2CDef *sI2C);

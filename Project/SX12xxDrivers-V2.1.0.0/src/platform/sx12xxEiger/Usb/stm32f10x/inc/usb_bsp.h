@@ -60,7 +60,7 @@
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported define -----------------------------------------------------------*/
-#define USART_RX_DATA_SIZE   2048
+#define USART_RX_DATA_SIZE   1024
 /* Exported functions ------------------------------------------------------- */
 void Set_USBClock(void);
 void Enter_LowPowerMode(void);

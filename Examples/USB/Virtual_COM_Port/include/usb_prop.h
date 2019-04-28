@@ -68,6 +68,8 @@ u8 *Virtual_Com_Port_GetStringDescriptor(u16);
 u8 *Virtual_Com_Port_GetLineCoding(u16 Length);	//获取串口通信信息
 u8 *Virtual_Com_Port_SetLineCoding(u16 Length);	//设置串口通讯信息
 
+void Get_SerialNum(void);												//获取设备ID号
+
 #endif /* __usb_prop_H */
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

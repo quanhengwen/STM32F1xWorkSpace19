@@ -200,7 +200,7 @@ unsigned short api_rs485_dma_receive(RS485Def *pRS485,u8 *RevBuffer)	//´®¿Ú¿ÕÏĞÄ
 
 
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -212,7 +212,7 @@ unsigned short api_usart_dma_send(USART_TypeDef* USARTx,u8 *tx_buffer,u16 Buffer
 	return set_usart_tx_dma_buffer(USARTx,tx_buffer,BufferSize);		//´®¿ÚDMA·¢ËÍ³ÌĞò	
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -235,7 +235,7 @@ unsigned short api_rs485_dma_send(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize)
 *ÊäÈë			: 
 *Êä³ö			:	ÎŞ
 *·µ»ØÖµ		:	ÎŞ
-*Àı³Ì			:	USART_DMASend(USART2,"ÖĞÎÄENG=%d\n",num);
+*Àı³Ì			:	api_usart_dma_printf(USART2,"ÖĞÎÄENG=%d\n",num);
 *ÌØ±ğËµÃ÷	:	ÔÚDMA·¢ËÍÍê³ÉºóĞèÒªÊÍ·Å¶¯Ì¬¿Õ¼ä£¬free(USART_BUFFER);
 					:	USART_BUFFER¶¨ÒåÔÚSTM32_USART.H
 *******************************************************************************/
@@ -305,6 +305,18 @@ unsigned short api_rs485_dma_printf(RS485Def *pRS485,const char *format,...)
 
 
 //-----------------------------------------------------------------------------API-configuration
+/*******************************************************************************
+*º¯ÊıÃû			:	USART_DMA_ConfigurationNr
+*¹¦ÄÜÃèÊö		:	USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎŞ
+*******************************************************************************/
+void api_usart_dma_configurationST(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure,unsigned short BufferSize)	//USART_DMAÅäÖÃ--½á¹¹ÌåĞÎÊ½£¬²»¿ªÖĞ¶Ï
+{
+	usart_gpio_initialize(USARTx);										//´®¿ÚGPIOÅäÖÃ
+	usart_initialize_st(USARTx,USART_InitStructure);	//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+	usart_dma_initialize(USARTx,BufferSize);					//USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+}
 /*******************************************************************************
 *º¯ÊıÃû			:	USART_DMA_ConfigurationNr
 *¹¦ÄÜÃèÊö		:	USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
@@ -677,7 +689,27 @@ static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx)	//USART_GPIOÍêÈ«Ó
 }
 //-----------------------------------------------------------------------------
 
-
+/*******************************************************************************
+*º¯ÊıÃû			:	USART_DMA_ConfigurationNr
+*¹¦ÄÜÃèÊö		:	USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎŞ
+*******************************************************************************/
+static void usart_initialize_st(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure)	//USART±ê×¼ÅäÖÃ
+{
+	//3.3)**********³õÊ¼»¯´®¿Ú²ÎÊı
+	USART_DeInit(USARTx);
+	
+	USART_InitStructure->USART_Mode        = USART_Mode_Rx | USART_Mode_Tx;
+	USART_InitStructure->USART_HardwareFlowControl = USART_HardwareFlowControl_None;//Á÷¿Ø
+	
+	USART_Init(USARTx, USART_InitStructure);								//³õÊ¼»¯´®¿Ú
+	
+  USART_ITConfig(USARTx,USART_IT_IDLE, DISABLE);					//Ê¹ÓÃ¿ÕÏĞÖĞ¶Ï£¬DMA×Ô¶¯½ÓÊÕ£¬¼ì²âµ½×ÜÏß¿ÕÏĞ±íÊ¾·¢ËÍ¶ËÒÑ¾­·¢ËÍÍê³É£¬Êı¾İ±£´æÔÚDMA»º³åÆ÷ÖĞ
+	USART_ClearITPendingBit(USARTx,USART_IT_IDLE); 					//Çå³ı¿ÕÏĞ´®¿Ú±êÖ¾Î»
+	USART_Cmd(USARTx, ENABLE);
+  //2)******************************DMA
+}
 /*******************************************************************************
 *º¯ÊıÃû			:	USART_DMA_ConfigurationNr
 *¹¦ÄÜÃèÊö		:	USART_DMAÅäÖÃ--²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
@@ -889,7 +921,7 @@ static void usart_it_initialize(USART_TypeDef* USARTx)	//´®¿ÚGPIOÅäÖÃ
 //---------------------------------static2-------------------------------------
 //-----------------------------------------------------------------------------
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -909,7 +941,7 @@ static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type)
 		usart_type.nUART5	=	type;
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -929,7 +961,7 @@ static unsigned char get_usart_type(USART_TypeDef* USARTx)
 		return usart_type.nUART5;
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -949,7 +981,7 @@ static void set_rs485_addr(RS485Def *pRS485)		//´®¿ÚDMA·¢ËÍ³ÌĞò
 		rs485_addr.rs485_uart5	=	pRS485;
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -970,7 +1002,7 @@ static RS485Def* get_rs485_addr(USART_TypeDef* USARTx)		//´®¿ÚDMA·¢ËÍ³ÌĞò
 		return rs485_addr.rs485_uart5;
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©
@@ -993,7 +1025,7 @@ static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,u8 *tx_buffe
 	return BufferSize;
 }
 /*******************************************************************************
-*º¯ÊıÃû			:	USART_DMASend
+*º¯ÊıÃû			:	
 *¹¦ÄÜÃèÊö		:	´®¿ÚDMA·¢ËÍ³ÌĞò£¬Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0
 *ÊäÈë				: 
 *·µ»ØÖµ			:	Èç¹ûÊı¾İÒÑ¾­´«Èëµ½DMA£¬·µ»ØBuffer´óĞ¡£¬·ñÔò·µ»Ø0£¨·¢ËÍÆ÷Ã¦£©

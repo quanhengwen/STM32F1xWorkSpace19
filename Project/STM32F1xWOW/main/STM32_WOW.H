@@ -137,6 +137,10 @@
 	#include "sram_test.H"
 #endif
 
+//*********************************PCM2707_TEST*********************************//
+#ifdef PCM2707_TEST
+	#include "PCM2707_TEST.H"
+#endif
 
 
 

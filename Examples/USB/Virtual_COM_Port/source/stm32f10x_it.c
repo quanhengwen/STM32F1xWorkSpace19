@@ -171,7 +171,7 @@ void TAMPER_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void RTC_IRQHandler(void)
+__weak void RTC_IRQHandler(void)
 {}
 
 /*******************************************************************************
@@ -517,12 +517,12 @@ void SPI2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART1_IRQHandler(void)
+__weak void USART1_IRQHandler(void)
 {
   if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
     /* Send the received data to the PC Host*/
-    USART_To_USB_Send_Data();
+    usart_to_usb_send_data();
   }
 }
 
@@ -533,7 +533,7 @@ void USART1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART2_IRQHandler(void)
+__weak void USART2_IRQHandler(void)
 {}
 
 /*******************************************************************************

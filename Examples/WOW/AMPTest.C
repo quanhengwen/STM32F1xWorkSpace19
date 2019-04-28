@@ -167,7 +167,7 @@ void AMPTest_Server(void)
 {
 //  ClockServer();
   RTC_Server();
-  //USART_Server();
+	USART_Server();
   //USART_TEST();
 	SHT20MTEST();		//ÎÂÊª¶ÈÄ£¿é²âÊÔ
 }

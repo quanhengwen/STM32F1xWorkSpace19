@@ -27,12 +27,15 @@
 
 #ifdef Virtual_COM_Port
 	#include "Virtual_COM_Port.H"
-#endif
+	
+	#include "stm32f10x_gpio.h"
+	#include "STM32_SYS.H"
+	#include "STM32_PWM.H"
+	#include "hw_config.h"
+	#include "platform_config.h"
+
 /* Includes ------------------------------------------------------------------*/
-#include "hw_config.h"
-#include "usb_lib.h"
-#include "usb_desc.h"
-#include "usb_pwr.h"
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -50,15 +53,17 @@
 * Return         : None.
 *******************************************************************************/
 void Virtual_COM_Port_Configuration(void)
-{
-  Set_System();							//设置系统时钟
-  Set_USBClock();						//设置USB时钟
-  USB_Interrupts_Config();	//打开USB中断
-  USB_Init();								//USB初始化
-
-  while (1)
-  {
-  }
+{	
+	usb_en_def usb_en;		//USB使能控制端口
+	
+	SYS_Configuration();
+	
+	usb_en.usb_connect_port	=	(unsigned long*)USB_DISCONNECT;
+	usb_en.usb_connect_pin	=	USB_DISCONNECT_PIN;
+	
+	PWM_OUT(TIM2,PWM_OUTChannel1,2,500);	//PWM设定-20161127版本	占空比1/1000
+	
+	api_usb_virtual_com_configuration(&usb_en);		//虚拟串口配置
 }
 /*******************************************************************************
 *函数名			:	function
@@ -90,6 +95,8 @@ void assert_failed(uint8_t* file, uint32_t line)
   while (1)
   {}
 }
+#endif
+
 #endif
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

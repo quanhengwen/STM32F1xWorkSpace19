@@ -347,6 +347,10 @@ void WOW_Configuration(void)
 	sram_test_Configuration();
 #endif
 
+//*********************************PCM2707_TEST*********************************//
+#ifdef PCM2707_TEST
+	PCM2707_TEST_Configuration();
+#endif
 
 }
 
@@ -679,6 +683,11 @@ void WOW_Server(void)
 #ifdef sram_test
 	sram_test_Server();
 #endif
+//*********************************sram_test*********************************//
+#ifdef PCM2707_TEST
+	PCM2707_TEST_Server();
+#endif
+
 
 //IWDG_Feed();								//∂¿¡¢ø¥√≈π∑Œππ∑
 

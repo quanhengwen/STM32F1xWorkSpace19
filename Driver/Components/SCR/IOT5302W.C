@@ -15,6 +15,11 @@ IOT5302Wdef IOT5302W;
 unsigned char CmdBuffer[16]={0};
 
 
+
+
+
+
+
 /*******************************************************************************
 *函数名			:	IOT5302W_Configuration
 *功能描述		:	IOT5302W配置
@@ -187,7 +192,7 @@ static unsigned short iot5302w_read_msg(unsigned char* RxdBuffer)
 static void iot5302w_initialize(void)
 {  
   iot5302w_data_process(); 					//数据处理，接收拼包，协议检查
-  if(0!=IOT5302W.Data.Initialized)  //未初始化成功
+  if(0!=IOT5302W.Data.Initialized)  //初始化成功
   {
     return;
   }
@@ -341,7 +346,7 @@ static void iot5302w_data_check(void)
   if(IOT5302W.Data.TimeOut++>IOT5302WReadTimeOut)
   {
     memset(IOT5302W.Data.UID,0x00,4);   //清除UID记录
-    IOT5302W.Data.TimeOut = 0;    //超时计时清除
+    IOT5302W.Data.TimeOut = 0;    			//超时计时清除
   }
 }
 //------------------------------------------------------------------------------

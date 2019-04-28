@@ -19,50 +19,50 @@
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
-typedef enum _RECIPIENT_TYPE
-{
-  DEVICE_RECIPIENT,     //DEVICE_RECIPIENT==00	接收设备/* Recipient device */
-  INTERFACE_RECIPIENT,  //INTERFACE_RECIPIENT==01	/* Recipient interface */
-  ENDPOINT_RECIPIENT,   //ENDPOINT_RECIPIENT==02	/* Recipient endpoint */
-  OTHER_RECIPIENT				//OTHER_RECIPIENT==03
-} RECIPIENT_TYPE;
+//typedef enum _RECIPIENT_TYPE
+//{
+//  DEVICE_RECIPIENT,     //DEVICE_RECIPIENT==00	接收设备/* Recipient device */
+//  INTERFACE_RECIPIENT,  //INTERFACE_RECIPIENT==01	/* Recipient interface */
+//  ENDPOINT_RECIPIENT,   //ENDPOINT_RECIPIENT==02	/* Recipient endpoint */
+//  OTHER_RECIPIENT				//OTHER_RECIPIENT==03
+//} RECIPIENT_TYPE;
 
 
-typedef enum _STANDARD_REQUESTS		//标准命令---USB规范定义了11个标准命令，所有USB设备都必需支持
-{
-  GET_STATUS = 0,			//GET_STATUS==00用来返回特定接收者的状态
-  CLEAR_FEATURE,			//CLEAR_FEATURE==01用来清除或禁止接收者的某些特性
-  RESERVED1,							
-  SET_FEATURE,				//SET_FEATURE==03用来启用或激活命令接收者的某些特性				
-  RESERVED2,
-  SET_ADDRESS,				//SET_ADDRESS==05用来给设备分配地址
-  GET_DESCRIPTOR,			//GET_DESCRIPTOR==06用于主机获取设备的特定描述符
-  SET_DESCRIPTOR,			//SET_DESCRIPTOR==07修改设备中有关的描述符，或者增加新的描述符
-  GET_CONFIGURATION,	//GET_CONFIGURATION==08用于主机获取设备当前设备的配置值（注同上面的不同） 
-  SET_CONFIGURATION,	//SET_CONFIGURATION==09用于主机指示设备采用的要求的配置
-  GET_INTERFACE,			//GET_INTERFACE==0A用于获取当前某个接口描述符编号
-  SET_INTERFACE,			//SET_INTERFACE==0B用于主机要求设备用某个描述符来描述接口
-  TOTAL_sREQUEST,  /* Total number of Standard request */
-  SYNCH_FRAME = 12		//SYNCH_FRAME==0C用于设备设置和报告一个端点的同步帧
-} STANDARD_REQUESTS;
+//typedef enum _STANDARD_REQUESTS		//标准命令---USB规范定义了11个标准命令，所有USB设备都必需支持
+//{
+//  GET_STATUS = 0,			//GET_STATUS==00用来返回特定接收者的状态
+//  CLEAR_FEATURE,			//CLEAR_FEATURE==01用来清除或禁止接收者的某些特性
+//  RESERVED1,							
+//  SET_FEATURE,				//SET_FEATURE==03用来启用或激活命令接收者的某些特性				
+//  RESERVED2,
+//  SET_ADDRESS,				//SET_ADDRESS==05用来给设备分配地址
+//  GET_DESCRIPTOR,			//GET_DESCRIPTOR==06用于主机获取设备的特定描述符
+//  SET_DESCRIPTOR,			//SET_DESCRIPTOR==07修改设备中有关的描述符，或者增加新的描述符
+//  GET_CONFIGURATION,	//GET_CONFIGURATION==08用于主机获取设备当前设备的配置值（注同上面的不同） 
+//  SET_CONFIGURATION,	//SET_CONFIGURATION==09用于主机指示设备采用的要求的配置
+//  GET_INTERFACE,			//GET_INTERFACE==0A用于获取当前某个接口描述符编号
+//  SET_INTERFACE,			//SET_INTERFACE==0B用于主机要求设备用某个描述符来描述接口
+//  TOTAL_sREQUEST,  /* Total number of Standard request */
+//  SYNCH_FRAME = 12		//SYNCH_FRAME==0C用于设备设置和报告一个端点的同步帧
+//} STANDARD_REQUESTS;
 
-/* Definition of "USBwValue" */
-typedef enum _DESCRIPTOR_TYPE		//描述符分类（与GET_DESCRIPTOR有关）
-{
-  DEVICE_DESCRIPTOR = 1,			//DEVICE_DESCRIPTOR==01	设备描述符
-  CONFIG_DESCRIPTOR,					//CONFIG_DESCRIPTOR==02	配置描述符
-  STRING_DESCRIPTOR,					//STRING_DESCRIPTOR==03	字符串描述符
-  INTERFACE_DESCRIPTOR,				//INTERFACE_DESCRIPTOR==04	接口描述符
-  ENDPOINT_DESCRIPTOR,				//ENDPOINT_DESCRIPTOR==05	端点描述符
-	DEVICE_QUALIFIER_DESCRIPTOR	//DEVICE_QUALIFIER_DESCRIPTOR==06  设备限定符	：设备限定描述符说明了呢功能进行高速操作的设备在其他速度操作时产生的变化信息.
-} DESCRIPTOR_TYPE;
+///* Definition of "USBwValue" */
+//typedef enum _DESCRIPTOR_TYPE		//描述符分类（与GET_DESCRIPTOR有关）
+//{
+//  DEVICE_DESCRIPTOR = 1,			//DEVICE_DESCRIPTOR==01	设备描述符
+//  CONFIG_DESCRIPTOR,					//CONFIG_DESCRIPTOR==02	配置描述符
+//  STRING_DESCRIPTOR,					//STRING_DESCRIPTOR==03	字符串描述符
+//  INTERFACE_DESCRIPTOR,				//INTERFACE_DESCRIPTOR==04	接口描述符
+//  ENDPOINT_DESCRIPTOR,				//ENDPOINT_DESCRIPTOR==05	端点描述符
+//	DEVICE_QUALIFIER_DESCRIPTOR	//DEVICE_QUALIFIER_DESCRIPTOR==06  设备限定符	：设备限定描述符说明了呢功能进行高速操作的设备在其他速度操作时产生的变化信息.
+//} DESCRIPTOR_TYPE;
 
-/* Feature selector of a SET_FEATURE or CLEAR_FEATURE */
-typedef enum _FEATURE_SELECTOR
-{
-  ENDPOINT_STALL,
-  DEVICE_REMOTE_WAKEUP
-} FEATURE_SELECTOR;
+///* Feature selector of a SET_FEATURE or CLEAR_FEATURE */
+//typedef enum _FEATURE_SELECTOR
+//{
+//  ENDPOINT_STALL,
+//  DEVICE_REMOTE_WAKEUP
+//} FEATURE_SELECTOR;
 
 /* Exported constants --------------------------------------------------------*/
 /* Definition of "USBbmRequestType" */

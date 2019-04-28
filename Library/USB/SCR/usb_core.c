@@ -15,6 +15,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "usb_lib.h"
+#include "usb_core.h"			//USB总线数据处理的核心文件
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define ValBit(VAR,Place)    (VAR & (1 << Place))
@@ -38,9 +39,20 @@
 /* Private variables ---------------------------------------------------------*/
 u16_u8 StatusInfo;
 bool Data_Mul_MaxPacketSize = FALSE;
+
+//----------------------------------------------------------全局变量声明
+/*  Points to the DEVICE_INFO structure of current device */
+/*  The purpose of this register is to speed up the execution */
+DEVICE_INFO *pInformation;				//USB设备控制传输（包括枚举）时使用的状信息构体指针
+/*  Points to the DEVICE_PROP structure of current device */
+/*  The purpose of this register is to speed up the execution */
+DEVICE_PROP *pProperty;		//服务程序函数指针结构体
+
+USER_STANDARD_REQUESTS  *pUser_Standard_Requests;		//标准请求函数结构体指针
+
 /* Private function prototypes -----------------------------------------------*/
-static void DataStageOut(void);
-static void DataStageIn(void);
+static void DataStageOut(void);		//数据输出：PC>USB设备
+static void DataStageIn(void);		//数据输入：USB设备>PC
 static void NoData_Setup0(void);	//USB设备枚举时主从需要获取从机信息：处理USB请求---不需要返回数据
 static void Data_Setup0(void);		//USB设备枚举时主从需要获取从机信息：处理USB请求---需要返回数据
 /* Private functions ---------------------------------------------------------*/
@@ -166,7 +178,7 @@ u8 *Standard_GetStatus(u16 Length)
   StatusInfo.w = 0;
   /* Reset Status Information */
 
-  if (Type_Recipient == (STANDARD_REQUEST | DEVICE_RECIPIENT))
+  if (Type_Recipient == (STANDARD_REQUEST | DEVICE_RECIPIENT))	//
   {
     /*Get Device Status */
     u8 Feature = pInformation->Current_Feature;
@@ -188,12 +200,12 @@ u8 *Standard_GetStatus(u16 Length)
     }
   }
   /*Interface Status*/
-  else if (Type_Recipient == (STANDARD_REQUEST | INTERFACE_RECIPIENT))
+  else if (Type_Recipient == (STANDARD_REQUEST | INTERFACE_RECIPIENT))	//接口
   {
     return (u8 *)&StatusInfo;
   }
   /*Get EndPoint Status*/
-  else if (Type_Recipient == (STANDARD_REQUEST | ENDPOINT_RECIPIENT))
+  else if (Type_Recipient == (STANDARD_REQUEST | ENDPOINT_RECIPIENT))		//端点
   {
     u8 Related_Endpoint;
     u8 wIndex0 = pInformation->USBwIndex0;
@@ -526,7 +538,7 @@ void DataStageIn(void)
   pEPinfo->Usb_wOffset += Length;
   vSetEPTxStatus(EP_TX_VALID);		//使能发送
 
-  USB_StatusOut();/* Expect the host to abort the data IN stage */	//
+  USB_StatusOut();	/* Expect the host to abort the data IN stage */	//
 
 Expect_Status_Out:
   pInformation->ControlState = ControlState;
@@ -858,12 +870,12 @@ u8 Setup0_Process(void)
   } pBuf;
 	/*PMAAddr是包缓冲区起始地址，_GetEPRxAddr(ENDP0)获得端点 0描述符表里的接收缓冲区地址，为什么要乘以2 呢？大概因为描述符表里地址项为16 位，
 	使用的是相对偏移。*/
-  pBuf.b = PMAAddr + (u8 *)(_GetEPRxAddr(ENDP0) * 2); /* *2 for 32 bits addr */	////这是取得端点0 接收缓冲区的起始地址。
+  pBuf.b = PMAAddr + (u8 *)(_GetEPRxAddr(ENDP0) * 2); /* *2 for 32 bits addr */	//这是取得端点0 接收缓冲区的起始地址。
 	//更新请状态信息---分类数据
-  if (pInformation->ControlState != PAUSE)
+  if(pInformation->ControlState != PAUSE)
   {
-    pInformation->USBbmRequestType = *pBuf.b++; /* bmRequestType */		//请求类型，表明方向和接收对象（设备、接口还是端点）此时为 80，表明设备到主机
-    pInformation->USBbRequest = *pBuf.b++; /* bRequest */							//请求代码，第一次时应该是 6，表明主机要获取设备描述符。
+    pInformation->USBbmRequestType = (RECIPIENT_TYPE)*pBuf.b++; /* bmRequestType */		//请求类型，表明方向和接收对象（设备、接口还是端点）此时为 80，表明设备到主机
+    pInformation->USBbRequest = (STANDARD_REQUESTS)*pBuf.b++; 				/* bRequest */	//请求代码，第一次时应该是 6，表明主机要获取设备描述符。
     pBuf.w++;  /* word not accessed because of 32 bits addressing */
     pInformation->USBwValue = ByteSwap(*pBuf.w++); /* wValue */
     pBuf.w++;  /* word not accessed because of 32 bits addressing */
@@ -888,7 +900,7 @@ u8 Setup0_Process(void)
 
 /*******************************************************************************
 * Function Name  : In0_Process
-* Description    : Process the IN token on all default endpoint.
+* Description    : Process the IN token on all default endpoint.	
 * Input          : None.
 * Output         : None.
 * Return         : Post0_Process.
@@ -901,26 +913,23 @@ u8 In0_Process(void)
   {
     DataStageIn();				//数据写入发送寄存器
     /* ControlState may be changed outside the function */
-    ControlState = pInformation->ControlState;
+    ControlState = pInformation->ControlState;		//更新当前状态
   }
-
-  else if (ControlState == WAIT_STATUS_IN)		//设置地址
+  else if (ControlState == WAIT_STATUS_IN)				//设置地址
   {
     if ((pInformation->USBbRequest == SET_ADDRESS) &&
         (Type_Recipient == (STANDARD_REQUEST | DEVICE_RECIPIENT)))
     {
-      SetDeviceAddress(pInformation->USBwValue0);
+      SetDeviceAddress(pInformation->USBwValue0);					//设置地址
       pUser_Standard_Requests->User_SetDeviceAddress();
     }
     (*pProperty->Process_Status_IN)();
     ControlState = STALLED;
   }
-
   else
   {
     ControlState = STALLED;
   }
-
   pInformation->ControlState = ControlState;
 
   return Post0_Process();			//发送

@@ -41,7 +41,7 @@
 
 /* function prototypes Automatically built defining related macros */
 
-void EP1_IN_Callback(void);
+void EP1_IN_Callback(void);			//USB输入端点
 void EP2_IN_Callback(void);
 void EP3_IN_Callback(void);
 void EP4_IN_Callback(void);
@@ -51,7 +51,7 @@ void EP7_IN_Callback(void);
 
 void EP1_OUT_Callback(void);
 void EP2_OUT_Callback(void);
-void EP3_OUT_Callback(void);
+void EP3_OUT_Callback(void);		//USB输出数据端点
 void EP4_OUT_Callback(void);
 void EP5_OUT_Callback(void);
 void EP6_OUT_Callback(void);

@@ -20,6 +20,7 @@
 #include "hw_config.h"
 #include "usb_istr.h"
 #include "usb_pwr.h"
+//#include "usb_endp.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -48,12 +49,11 @@ void EP3_OUT_Callback(void)
 	SetEPRxValid(ENDP3);																				//使能端点3
 	
 	//----添加程序---USB发送给串口
-	USB_To_USART_Send_Data(buffer_out,count_out);
+	usb_to_usart_Send_data(buffer_out,count_out);
 	
-	buffer_out[count_out]	=	0xFF;
 	//返回数据
-	UserToPMABufferCopy(buffer_out, ENDP1_TXADDR, count_out+1);
-	SetEPTxCount(ENDP1, count_out+1);																		//设置端点数据长度
+	UserToPMABufferCopy(buffer_out, ENDP1_TXADDR, count_out);
+	SetEPTxCount(ENDP1, count_out);																		//设置端点数据长度
 	SetEPTxValid(ENDP1);																							//使能端点
 }
 
@@ -68,8 +68,7 @@ void EP1_IN_Callback(void)
 {
 //	count_in = 0;
 //	Handle_USBAsynchXfer();
-	USART_To_USB_Send_Data();
-//	USART_TX_DMAFlagClear(USART1);
+//	USART_To_USB_Send_Data();
 }
 /*******************************************************************************
 * Function Name  : SOF_Callback / INTR_SOFINTR_Callback

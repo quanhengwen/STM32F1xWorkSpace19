@@ -125,18 +125,22 @@ void Virtual_Com_Port_init(void)
   ID*/
   Get_SerialNum();
     
-  pInformation->Current_Configuration = 0;
-
-  /* Connect the device */
+  pInformation->Current_Configuration = 0;  
+	
+	bDeviceState = UNCONNECTED;
+	
+	/* Connect the device */
   PowerOn();
 
   /* Perform basic device initialization operations */
   USB_SIL_Init();
 
   /* configure the USART to the default settings */
-  USART_Config_Default();
-
-  bDeviceState = UNCONNECTED;
+  USART_Config_Default(); 
+	
+	
+	
+	
 }
 
 /*******************************************************************************

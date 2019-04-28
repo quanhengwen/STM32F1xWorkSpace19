@@ -15,7 +15,7 @@
 
 
 #include "STM32_SYS.H"
-#include "STM32_GPIO.H"
+//#include "STM32_GPIO.H"
 
 #define	HSE_USE
 
@@ -151,7 +151,7 @@ void RCC_Configuration_HSI(void)
 	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);			/*设置系统时钟（SYSCLK）*/	 
 	while(RCC_GetSYSCLKSource()!=0x08);					/*0x08：PLL作为系统时钟*/ 	
 
-	GPIO_DeInitAll();				//将所有的GPIO关闭----V20170605
+//	GPIO_DeInitAll();				//将所有的GPIO关闭----V20170605
 }
 
 /*******************************************************************************

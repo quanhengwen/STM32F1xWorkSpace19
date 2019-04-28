@@ -835,25 +835,155 @@ unsigned short I2C_ReadBuffer(sI2CDef *sI2C,unsigned short address,unsigned char
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static unsigned char iic_slave_get_start(sI2CDef *sI2C)
+static void iic_slave_get_line(sI2CDef *sI2C)
 {
-	if(iic_get_scl(sI2C))
+	unsigned char sdas	=	iic_get_sda(sI2C);			//获取SDA电平
+	unsigned char scls	=	iic_get_scl(sI2C);			//获取SCL电平
+	if((sdas	==	sI2C->slave.status.sdas)
+		&&(scls	==	sI2C->slave.status.scls))
+	return;		//SDA和SCL无变化
+	
+	//------------------------------检查是否为启动条件
+	if(0==sI2C->slave.status.start)	//0-未启动，1-已启动
 	{
-		I2C_Delayus(1);
-		if(1==iic_get_sda(sI2C))
+		iic_slave_get_start(sI2C);
+		return;
+	}
+	//------------------------------检查是否为停止条件
+	iic_slave_get_stop(sI2C);
+	if(1==sI2C->slave.status.stop)	//0-运行状态，1-已停止
+		return;
+	
+	
+	sI2C->slave.status.sdas	=	sdas;			//更新SDA状态
+	sI2C->slave.status.scls	=	scls;			//更新SCL状态
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	IIC启动,在SCL线是高电平时SDA线从高电平向低电平切换这个情况表示起始条件
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void iic_slave_get_start(sI2CDef *sI2C)
+{
+	unsigned char sdas	=	0;
+	unsigned char scls	=	0;
+	if(1==sI2C->slave.status.start)	//已启动
+	{
+		return;
+	}
+	sdas	=	iic_get_sda(sI2C);			//获取SDA电平
+	scls	=	iic_get_scl(sI2C);			//获取SCL电平	
+	if(0==sdas)
+	{
+		if((1==sI2C->slave.status.sdas)		//之前SDA为高电平,表示由高电平向低电平转换
+			&&(1==scls))				//SCL为高电平
 		{
-			I2C_Delayus(1);
-			if(0==iic_get_sda(sI2C))
-			{
-				I2C_Delayus(1);
-				if(iic_get_scl(sI2C))
-				{
-					return 1;
-				}
-			}
+			sI2C->slave.status.start	=	1;	//0-未启动，1-已启动
+			sI2C->slave.status.stop		=	0;	//0-运行状态，1-已停止		
+		}		
+	}
+	sI2C->slave.status.sdas	=	sdas;			//更新SDA状态
+	sI2C->slave.status.scls	=	scls;			//更新SCL状态
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	IIC停止,当SCL是高电平时SDA线由低电平向高电平切换表示停止条件
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void iic_slave_get_stop(sI2CDef *sI2C)
+{
+	unsigned char sdas	=	0;
+	unsigned char scls	=	0;
+	if(1==sI2C->slave.status.stop)	//已停止
+	{
+		return;
+	}
+	sdas	=	iic_get_sda(sI2C);			//获取SDA电平
+	scls	=	iic_get_scl(sI2C);			//获取SCL电平	
+	if(0!=sdas)		//高电平
+	{
+		if((0==sI2C->slave.status.sdas)		//之前SDA为低电平,表示由低电平向高电平转换
+			&&(1==scls))				//SCL为高电平
+		{
+			sI2C->slave.status.start	=	0;	//0-未启动，1-已启动
+			sI2C->slave.status.stop		=	1;	//0-运行状态，1-已停止		
 		}
 	}
-	return 0;
+	sI2C->slave.status.sdas	=	sdas;			//更新SDA状态
+	sI2C->slave.status.scls	=	scls;			//更新SCL状态
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	先传输高位,上升沿
+							在SCL呈现高电平期间，SDA上的电平必须保持稳定，低电平为数据0，高电平为数据1。
+							只有在SCL为低电平期间，才允许SDA上的电平改变状态。逻辑0的电平为低电压，
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void iic_slave_get_bit(sI2CDef *sI2C)
+{
+	unsigned char bit	=	0;
+	unsigned char sdas	=	iic_get_sda(sI2C);			//获取SDA电平
+	unsigned char scls	=	iic_get_scl(sI2C);			//获取SCL电平
+	//------------------------上升沿
+	if(0==scls)		//SCL为低电平，数据不获取
+		return;
+	if(1	==	sI2C->slave.status.scls)						//SCL原电平为高，不符合上升沿
+	{
+		return;
+	}
+	//------------------------符合上升沿条件：先传高位
+	if(0==sI2C->slave.get_bit_count)	//获取第1位
+	{
+		sI2C->slave.byte_data.bit7	=	sdas;
+		sI2C->slave.get_bit_count		=	1;		//获取到第1位
+	}
+	else if(1==sI2C->slave.get_bit_count)	//获取第2位
+	{
+		sI2C->slave.byte_data.bit6	=	sdas;
+		sI2C->slave.get_bit_count		=	2;		//获取到第2位
+	}
+	else if(2==sI2C->slave.get_bit_count)	//获取第3位
+	{
+		sI2C->slave.byte_data.bit5	=	sdas;
+		sI2C->slave.get_bit_count		=	3;		//获取到第3位
+	}
+	else if(3==sI2C->slave.get_bit_count)	//获取第4位
+	{
+		sI2C->slave.byte_data.bit4	=	sdas;
+		sI2C->slave.get_bit_count		=	4;		//获取到第4位
+	}
+	else if(4==sI2C->slave.get_bit_count)	//获取第5位
+	{
+		sI2C->slave.byte_data.bit3	=	sdas;
+		sI2C->slave.get_bit_count		=	5;		//获取到第5位
+	}
+	else if(5==sI2C->slave.get_bit_count)	//获取第6位
+	{
+		sI2C->slave.byte_data.bit2	=	sdas;
+		sI2C->slave.get_bit_count		=	6;		//获取到第6位
+	}
+	else if(6==sI2C->slave.get_bit_count)	//获取第7位
+	{
+		sI2C->slave.byte_data.bit1	=	sdas;
+		sI2C->slave.get_bit_count		=	7;		//获取到第7位
+	}
+	else if(7==sI2C->slave.get_bit_count)	//获取第8位
+	{
+		sI2C->slave.byte_data.bit0	=	sdas;
+		sI2C->slave.get_bit_count		=	8;		//获取到第8位
+	}	
 }
 /*******************************************************************************
 *函数名			:	function
@@ -864,7 +994,7 @@ static unsigned char iic_slave_get_start(sI2CDef *sI2C)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char iic_slave_read_byte(sI2CDef *sI2C,unsigned char* data)
+unsigned char iic_slave_get_byte(sI2CDef *sI2C,unsigned char* data)
 {
 	unsigned char i			=	0;
 	unsigned char temp	=	0;
@@ -898,14 +1028,14 @@ static unsigned char iic_slave_read_buffer(sI2CDef *sI2C,unsigned char* pBuffer,
 	//----------------------------------------
 	if(0==start)
 	{
-		if(0==iic_slave_get_start(sI2C))
-		{
-			return 0;
-		}
-		else
-		{
-			start	=	1;
-		}
+//		if(0==iic_slave_get_start(sI2C))
+//		{
+//			return 0;
+//		}
+//		else
+//		{
+//			start	=	1;
+//		}
 	}
 	//----------------------------------------
 	if(iic_slave_read_byte(sI2C,&data))

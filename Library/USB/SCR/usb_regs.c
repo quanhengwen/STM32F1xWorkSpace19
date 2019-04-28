@@ -21,6 +21,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Extern variables ----------------------------------------------------------*/
+usb_reg_def	USB_REG;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -219,7 +220,7 @@ void SetEPRxStatus(u8 bEpNum, u16 wState)
 void SetDouBleBuffEPStall(u8 bEpNum, u8 bDir)
 {
   u16 Endpoint_DTOG_Status;
-  Endpoint_DTOG_Status = GetENDPOINT(bEpNum);
+  Endpoint_DTOG_Status = get_endpint(bEpNum);
   if (bDir == EP_DBUF_OUT)
   { /* OUT double buffered endpoint */
     _SetENDPOINT(bEpNum, Endpoint_DTOG_Status & ~EPRX_DTOG1);
@@ -551,7 +552,7 @@ u16 GetEPTxCount(u8 bEpNum)
 }
 /*******************************************************************************
 * Function Name  : GetEPRxCount
-* Description    : Get the Rx count.
+* Description    : Get the Rx count.	//获取接收数据个数(主机发送从机接收)
 * Input          : bEpNum: Endpoint Number. 
 * Output         : None.
 * Return         : Rx count value.
@@ -744,5 +745,44 @@ u16 ByteSwap(u16 wSwW)
   wRet =  (wSwW >> 8) | ((u16)bTemp << 8);
   return(wRet);
 }
+/*******************************************************************************
+* Function Name  : ByteSwap
+* Description    : Swap two byte in a word.
+* Input          : wSwW: word to Swap.
+* Output         : None.
+* Return         : resulted word.
+*******************************************************************************/
+void set_endpint(u16 wSwW)
+{
 
+}
+/*******************************************************************************
+* Function Name  : ByteSwap
+* Description    : Swap two byte in a word.
+* Input          : wSwW: word to Swap.
+* Output         : None.
+* Return         : resulted word.
+*******************************************************************************/
+unsigned short get_endpint(unsigned char EPindex)
+{
+	u32 wEPVal = 0;
+	if(EPindex>7)
+		return 0;
+	
+	wEPVal = _GetENDPOINT(EPindex);
+
+	switch(EPindex)
+	{
+		case ENDP0:	USB_REG.Endpoint.EP0.wEPVal	=	wEPVal;break;
+		case ENDP1:	USB_REG.Endpoint.EP1.wEPVal	=	wEPVal;break;
+		case ENDP2:	USB_REG.Endpoint.EP2.wEPVal	=	wEPVal;break;
+		case ENDP3:	USB_REG.Endpoint.EP3.wEPVal	=	wEPVal;break;
+		case ENDP4:	USB_REG.Endpoint.EP4.wEPVal	=	wEPVal;break;
+		case ENDP5:	USB_REG.Endpoint.EP5.wEPVal	=	wEPVal;break;
+		case ENDP6:	USB_REG.Endpoint.EP6.wEPVal	=	wEPVal;break;
+		case ENDP7:	USB_REG.Endpoint.EP7.wEPVal	=	wEPVal;break;
+		default:break;
+	}
+  return(wEPVal);
+}
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

@@ -55,6 +55,8 @@ unsigned short api_rs485_dma_printf(RS485Def *pRS485,const char *format,...);
 
 
 //------------------------------------------------------API-configuration
+void api_usart_dma_configurationST(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure,unsigned short BufferSize);	//USART_DMA配置--结构体形式，不开中断
+	
 void api_usart_dma_configurationNR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
 
 void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);
@@ -71,7 +73,9 @@ void api_usart_configuration_it(USART_TypeDef* USARTx,u32 USART_BaudRate);
 //------------------------------------------------------static1
 static void	usart_gpio_initialize(USART_TypeDef* USARTx);
 static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx);
-	
+
+static void usart_initialize_st(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure);	//USART标准配置
+
 static void usart_initialize_nr(USART_TypeDef* USARTx,unsigned long USART_BaudRate);
 static void usart_initialize_even(USART_TypeDef* USARTx,unsigned long USART_BaudRate);	//偶校验
 static void usart_initialize_odd(USART_TypeDef* USARTx,unsigned long USART_BaudRate);		//奇校验

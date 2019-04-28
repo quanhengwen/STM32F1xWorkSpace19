@@ -11,13 +11,12 @@
 
 #include "STM32_GPIO.H"
 
-
 /****************************************************************
 *函数名:
 *描述:
 *
 ******************************************************************/
-void SwitchIdInitialize(SwitchDef *pSwitch)
+void api_SwitchId_initialize(SwitchDef *pSwitch)
 {
 	unsigned char NumOfSW=pSwitch->NumOfSW;			//拉入的拔码开关位数
 	//根据接入的拔码开关位数从低位到高位进行上拉输入配置
@@ -101,7 +100,7 @@ void SwitchIdInitialize(SwitchDef *pSwitch)
 		GPIO_Configuration_IPU	(pSwitch->SW16_PORT,	pSwitch->SW16_Pin);			//将GPIO相应管脚配置为上拉输入模式----V20170605
 		NumOfSW-=1;
 	}
-	SWITCHID_ReadRight(pSwitch);
+	api_get_SwitchId_data_left(pSwitch);		//按拨码最左边为最高位读取ID
 }
 /*******************************************************************************
 *函数名			:	SWITCHID_Read
@@ -112,11 +111,11 @@ void SwitchIdInitialize(SwitchDef *pSwitch)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short SWITCHID_ReadRight(SwitchDef *pSwitch)
+unsigned short api_get_SwitchId_data_right(SwitchDef *pSwitch)
 {
 	unsigned short	reValue=0;	
 	
-	unsigned long *P=(unsigned long*)&(pSwitch->SWData);		//获取数据结构体地址,以便将读取的数据保存	
+//	unsigned long *P=(unsigned long*)&(pSwitch->SWData);		//获取数据结构体地址,以便将读取的数据保存	
 	unsigned char NumOfSW=pSwitch->NumOfSW;		//接入的拔码开关位数
 
 	unsigned short	Temp	=	0xFFFF<<NumOfSW;
@@ -219,9 +218,10 @@ unsigned short SWITCHID_ReadRight(SwitchDef *pSwitch)
 			reValue|=0x0001<<15;
 	}
 	reValue	|=	Temp;
+	
 	reValue=~reValue;		//拔码开关低有效,需要取反
-	*P=reValue;
-	pSwitch->nSWITCHID=reValue;
+//	*P=reValue;
+	pSwitch->SWData.id_u16	=	reValue;
 	
 	return	reValue;	//将数据返回(如果需要直接获取读取值可以使用返回值)
 }
@@ -234,15 +234,14 @@ unsigned short SWITCHID_ReadRight(SwitchDef *pSwitch)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short SWITCHID_ReadLeft(SwitchDef *pSwitch)
+unsigned short api_get_SwitchId_data_left(SwitchDef *pSwitch)
 {
-  	unsigned short	reValue=0;	
-	
-	unsigned short *P=(unsigned short*)&(pSwitch->SWData);		//获取数据结构体地址,以便将读取的数据保存	
-	unsigned char NumOfSW=pSwitch->NumOfSW;		//接入的拔码开关位数
+	unsigned short	reValue=0;	
 
-	unsigned short	Temp	=	0x0000;
+	unsigned char NumOfSW=pSwitch->NumOfSW;		//接入的拔码开关位数
 	
+	unsigned short	Temp	=	0xFFFF<<NumOfSW;
+
 	//根据接入的拔码开关位数从低位到高位进行读取
 	if(NumOfSW)	//SW1
 	{
@@ -356,11 +355,14 @@ unsigned short SWITCHID_ReadLeft(SwitchDef *pSwitch)
 		if(pSwitch->SW16_PORT-> IDR	&pSwitch->SW16_Pin)
 			reValue|=0x0001;
 	}
-	reValue	|=	Temp;
-	reValue=~reValue;		//拔码开关低有效,需要取反
-	*P=reValue;
-	pSwitch->nSWITCHID=reValue;
 	
+	reValue	|=	Temp;
+
+	reValue=~reValue;		//拔码开关低有效,需要取反
+
+	pSwitch->SWData.id_u16	=	reValue;
 	return	reValue;	//将数据返回(如果需要直接获取读取值可以使用返回值)
 }
+
+
 

@@ -36,7 +36,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-u8 Request = 0;
+u8 Request = 0;			//请求
 
 LINE_CODING linecoding =
   {
@@ -124,7 +124,7 @@ ONE_DESCRIPTOR String_Descriptor[4] =
 /* Private functions ---------------------------------------------------------*/
 /*******************************************************************************
 * Function Name  : Virtual_Com_Port_init.
-* Description    : Virtual COM Port Mouse init routine.	初始化
+* Description    : Virtual COM Port Mouse init routine.
 * Input          : None.
 * Output         : None.
 * Return         : None.
@@ -132,28 +132,25 @@ ONE_DESCRIPTOR String_Descriptor[4] =
 void Virtual_Com_Port_init(void)
 {
 
-  /* Update the serial number string descriptor with the data from the unique
-  ID*/
+  /* Update the serial number string descriptor with the data from the unique  ID*/
   Get_SerialNum();	//**************************************获取序列号,设置芯片序列号，将描述符中的例如STM 等字符串修改没太大意义。
 
   pInformation->Current_Configuration = 0;	//配置状态
 
   /* Connect the device */
   PowerOn();				//*******上电usb_pwr.c->Line59:开启USB上拉，强制USB复位，开启相关中断使能标志；CNTR_RESETM | CNTR_SUSPM | CNTR_WKUPM;		//允许以下中断
-  /* USB interrupts initialization */
-  /* clear pending interrupts */
-  _SetISTR(0);			//**************************************执行基本的初始化操作，比如说设备IP和端点0的初始化
+	//---------------------------------USB中断初始化
+	//-----------------清除所有中断标识
+  _SetISTR(0);
+	//-----------------设置中断标识
   wInterrupt_Mask = IMR_MSK;		//#define IMR_MSK (CNTR_CTRM  | CNTR_SOFM  | CNTR_RESETM )
 																//CNTR_CTRM：正确传输(CTR)中断屏蔽位 (Correct transfer interrupt mask)
 																//CNTR_SOFM：帧首中断屏蔽位 (Start of frame interrupt mask)
 																//CNTR_RESETM：USB复位中断屏蔽位 (USB reset interrupt mask)
-  /* set interrupts mask */
+  //-----------------使能相应中断
   _SetCNTR(wInterrupt_Mask);		////使能相应中断
-
-  /* configure the USART 1 to the default settings */
-  USART_Config_Default();		//配置串口至缺省状态---在这里波特率被设为9600，并且允许了接收中断。发送中断没有允许。
-
-  bDeviceState = UNCONNECTED;		//usb_pwr.h->DEVICE_STATE**************************将当前的状态定义为未连接状态
+	//-----------------更新USB状态为未连接
+	bDeviceState = UNCONNECTED;		//usb_pwr.h->DEVICE_STATE**************************将当前的状态定义为未连接状态
 }
 
 /*******************************************************************************
@@ -210,7 +207,7 @@ void Virtual_Com_Port_Reset(void)
   /* Set this device to response on default address */
   SetDeviceAddress(0);																	//设置设备为默认地址为0
 
-  bDeviceState = ATTACHED;
+  bDeviceState = ATTACHED;		//状态--已插入USB设备
 }
 
 /*******************************************************************************
@@ -223,12 +220,12 @@ void Virtual_Com_Port_Reset(void)
 *******************************************************************************/
 void Virtual_Com_Port_SetConfiguration(void)
 {
-  DEVICE_INFO *pInfo = &Device_Info;
-
+	DEVICE_INFO *pInfo = pInformation;
+	
   if (pInfo->Current_Configuration != 0)
   {
     /* Device configured */
-    bDeviceState = CONFIGURED;
+    bDeviceState = CONFIGURED;	//状态--已配置
   }
 }
 
@@ -241,7 +238,7 @@ void Virtual_Com_Port_SetConfiguration(void)
 *******************************************************************************/
 void Virtual_Com_Port_SetDeviceAddress (void)
 {
-  bDeviceState = ADDRESSED;
+  bDeviceState = ADDRESSED;	//状态--已分配地址
 }
 
 /*******************************************************************************
@@ -255,7 +252,7 @@ void Virtual_Com_Port_Status_In(void)
 {
   if (Request == SET_LINE_CODING)
   {
-    USART_Config();
+    set_usart_config();
     Request = 0;
   }
 }
@@ -282,7 +279,7 @@ RESULT Virtual_Com_Port_Data_Setup(u8 RequestNo)
   u8    *(*CopyRoutine)(u16);
 
   CopyRoutine = NULL;
-	//请求的字段
+	//获取LineCoding地址：
   if (RequestNo == GET_LINE_CODING)		//****************************获取串口通信信息请求														
   {
     if (Type_Recipient == (CLASS_REQUEST | INTERFACE_RECIPIENT))	//类请求，请求的接收者是接口
@@ -290,6 +287,7 @@ RESULT Virtual_Com_Port_Data_Setup(u8 RequestNo)
       CopyRoutine = Virtual_Com_Port_GetLineCoding;	//**************指针函数指向Virtual_Com_Port_GetLineCoding函数
     }
   }
+	//写入LineCoding地址：
   else if (RequestNo == SET_LINE_CODING)	//************************设置串口通讯信息请求
   {
     if (Type_Recipient == (CLASS_REQUEST | INTERFACE_RECIPIENT))	//类请求，请求的接收者是接口
@@ -444,6 +442,38 @@ u8 *Virtual_Com_Port_SetLineCoding(u16 Length)
   }
   return(u8 *)&linecoding;
 }
+/*******************************************************************************
+* Function Name  : Get_SerialNum.
+* Description    : Create the serial number string descriptor.
+* Input          : None.
+* Output         : None.
+* Return         : None.
+*******************************************************************************/
+void Get_SerialNum(void)
+{
+  u32 Device_Serial0, Device_Serial1, Device_Serial2;
 
+  Device_Serial0 = *(vu32*)(0x1FFFF7E8);
+  Device_Serial1 = *(vu32*)(0x1FFFF7EC);
+  Device_Serial2 = *(vu32*)(0x1FFFF7F0);
+
+  if (Device_Serial0 != 0)
+  {
+    Virtual_Com_Port_StringSerial[2] 	= (u8)(Device_Serial0 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[4] 	= (u8)((Device_Serial0 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[6] 	= (u8)((Device_Serial0 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[8] 	= (u8)((Device_Serial0 & 0xFF000000) >> 24);
+
+    Virtual_Com_Port_StringSerial[10] = (u8)(Device_Serial1 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[12] = (u8)((Device_Serial1 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[14] = (u8)((Device_Serial1 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[16] = (u8)((Device_Serial1 & 0xFF000000) >> 24);
+
+    Virtual_Com_Port_StringSerial[18] = (u8)(Device_Serial2 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[20] = (u8)((Device_Serial2 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[22] = (u8)((Device_Serial2 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[24] = (u8)((Device_Serial2 & 0xFF000000) >> 24);
+  }
+}
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/
 

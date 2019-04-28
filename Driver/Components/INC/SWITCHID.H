@@ -8,27 +8,47 @@
 
 
 
-typedef struct _SwitchData
+//typedef struct _SwitchData
+//{
+//	unsigned short SW1:1;
+//	unsigned short SW2:1;
+//	unsigned short SW3:1;
+//	unsigned short SW4:1;
+//	unsigned short SW5:1;
+//	unsigned short SW6:1;
+//	unsigned short SW7:1;
+//	unsigned short SW8:1;
+//	unsigned short SW9:1;
+//	unsigned short SW10:1;
+//	unsigned short SW11:1;
+//	unsigned short SW12:1;
+//	unsigned short SW13:1;
+//	unsigned short SW14:1;
+//	unsigned short SW15:1;
+//	unsigned short SW16:1;	
+//}SwitchDataType;			//根据输入的时间相关参数计算出来的相关运行参数值
+typedef union _SwitchData
 {
-	unsigned short SW1:1;
-	unsigned short SW2:1;
-	unsigned short SW3:1;
-	unsigned short SW4:1;
-	unsigned short SW5:1;
-	unsigned short SW6:1;
-	unsigned short SW7:1;
-	unsigned short SW8:1;
-	unsigned short SW9:1;
-	unsigned short SW10:1;
-	unsigned short SW11:1;
-	unsigned short SW12:1;
-	unsigned short SW13:1;
-	unsigned short SW14:1;
-	unsigned short SW15:1;
-	unsigned short SW16:1;
-	
+	unsigned short id_u16;
+	struct{
+		unsigned short SW1:1;		//LSB
+		unsigned short SW2:1;
+		unsigned short SW3:1;
+		unsigned short SW4:1;
+		unsigned short SW5:1;
+		unsigned short SW6:1;
+		unsigned short SW7:1;
+		unsigned short SW8:1;
+		unsigned short SW9:1;
+		unsigned short SW10:1;
+		unsigned short SW11:1;
+		unsigned short SW12:1;
+		unsigned short SW13:1;
+		unsigned short SW14:1;
+		unsigned short SW15:1;
+		unsigned short SW16:1;	//MSB
+	}id_bit;
 }SwitchDataType;			//根据输入的时间相关参数计算出来的相关运行参数值
-
 
 typedef struct _SwitchConf
 {
@@ -98,16 +118,13 @@ typedef struct _SwitchConf
 	unsigned short 	SW16_Pin;					//GPIO_Pin_x	
 		
 	unsigned char		NumOfSW;					//接的拔码开关位数,最大16位:配置时需要填入所接的拔码开关位数
-	unsigned short	nSWITCHID;				//常规数值形式:读取的拔码开关值---不需要配置
+
 	SwitchDataType	SWData;						//结构体位形式:读取的拔码开关值---不需要配置
 }SwitchDef;
 
-
-
-
-void SwitchIdInitialize(SwitchDef *pSwitch);					//
-unsigned short SWITCHID_ReadRight(SwitchDef *pSwitch);	  //按拨码最右边为最高位读取ID
-unsigned short SWITCHID_ReadLeft(SwitchDef *pSwitch);			//按拨码最左边为最高位读取ID
+void api_SwitchId_initialize(SwitchDef *pSwitch);
+unsigned short api_get_SwitchId_data_right(SwitchDef *pSwitch);	//按拨码最右边为最高位读取ID
+unsigned short api_get_SwitchId_data_left(SwitchDef *pSwitch);	//按拨码最左边为最高位读取ID
 
 
 #endif

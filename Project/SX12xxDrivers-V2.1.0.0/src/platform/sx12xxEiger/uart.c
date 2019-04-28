@@ -103,7 +103,7 @@ void UartProcess( void )		//´®¿ÚÊý¾Ý´¦Àí----¼ì²éFifoTxÄÚÊÇ·ñÓÐÊý¾Ý£¬ÈçÓÐÊý¾Ý£¬×ª
 				USART_Rx_Buffer[USART_Rx_ptr_in] = FifoPop( &FifoTx );					//³öÕ»
 		}
 
-		USART_Rx_ptr_in++;
+		USART_Rx_ptr_in++;		//´®¿Ú½ÓÊÕ¼ÆÊý
 
 		/* To avoid buffer overflow */
 		if( USART_Rx_ptr_in == USART_RX_DATA_SIZE )
@@ -114,7 +114,7 @@ void UartProcess( void )		//´®¿ÚÊý¾Ý´¦Àí----¼ì²éFifoTxÄÚÊÇ·ñÓÐÊý¾Ý£¬ÈçÓÐÊý¾Ý£¬×ª
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	º¯Êý¹¦ÄÜËµÃ÷
+*¹¦ÄÜÃèÊö		:	Í¨¹ýUSBÉÏ´«Êý¾Ý
 *ÊäÈë				: 
 *·µ»ØÖµ			:	ÎÞ
 *ÐÞ¸ÄÊ±¼ä		:	ÎÞ
@@ -133,7 +133,7 @@ uint8_t UartPutChar( uint8_t data )		//¼ì²éFifoTxÊý¾ÝÊÇ·ñÎªÂú²¢ÇÒ½«RF½ÓÊÕµ½ÐÂÊý¾
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	º¯Êý¹¦ÄÜËµÃ÷
+*¹¦ÄÜÃèÊö		:	»ñÈ¡USBÊý¾Ý
 *ÊäÈë				: 
 *·µ»ØÖµ			:	ÎÞ
 *ÐÞ¸ÄÊ±¼ä		:	ÎÞ
