@@ -26,7 +26,7 @@
 //#include "bmp.h"
 
 
-sI2CDef At24c02;
+iic_def At24c02;
 
 unsigned	char *teststr="I2C_WriteBuffer(&At24c02,0,WriteBuffer,5);";
 unsigned	char WriteBuffer[300]={0xF5,0xFF};

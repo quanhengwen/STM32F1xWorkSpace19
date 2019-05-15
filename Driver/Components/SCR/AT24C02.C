@@ -21,23 +21,23 @@
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void AT24C02_Write(sI2CDef *sI2C,unsigned char Addr,unsigned char Data)
+void AT24C02_Write(iic_def *sI2C,unsigned char Addr,unsigned char Data)
 {
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
-	I2C_SendByte(sI2C,Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
-	I2C_SendByte(sI2C,Data);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Data);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
-	I2C_Stop(sI2C);
+	iic_master_set_stop(sI2C);
 }
 /*******************************************************************************
 * 函数名			:	function
@@ -48,35 +48,35 @@ void AT24C02_Write(sI2CDef *sI2C,unsigned char Addr,unsigned char Data)
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-unsigned char AT24C02_Read(sI2CDef *sI2C,unsigned char Addr)
+unsigned char AT24C02_Read(iic_def *sI2C,unsigned char Addr)
 {
 	unsigned char Data	=	0;
 	
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
-	I2C_SendByte(sI2C,Addr);						//发送待读取地址
+	iic_master_write_byte(sI2C,Addr);						//发送待读取地址
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Read_24C02Addr);	//发送待读取地址
+	iic_master_write_byte(sI2C,Read_24C02Addr);	//发送待读取地址
 	
-	I2C_WaitAck(sI2C);
+	api_iic_get_ack(sI2C);
 	
 	
 	
 	iic_set_sda_in(sI2C);
 	
-	Data	=	I2C_ReadByte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
+	Data	=	iic_master_read_byte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
 	
-	I2C_NAck(sI2C);								//CPU产生一个NACK信号(NACK即无应答信号)
+	api_iic_set_nack(sI2C);								//CPU产生一个NACK信号(NACK即无应答信号)
 	
-	I2C_Stop(sI2C);
+	iic_master_set_stop(sI2C);
 	
 	return Data;
 }
@@ -89,32 +89,32 @@ unsigned char AT24C02_Read(sI2CDef *sI2C,unsigned char Addr)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void AT24C02_WritePage(sI2CDef *sI2C,unsigned char StartAddr,unsigned char *Buffer)
+void AT24C02_WritePage(iic_def *sI2C,unsigned char StartAddr,unsigned char *Buffer)
 {
 	unsigned char i	=	0;
 
 	
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+	if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return;
 	
-	I2C_SendByte(sI2C,StartAddr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,StartAddr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+	if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return;
 	
 	for(i=0;i<8;i++)
 	{
-		I2C_SendByte(sI2C,Buffer[i]);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+		iic_master_write_byte(sI2C,Buffer[i]);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-		if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+		if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return;
 	}
 	
-	I2C_Stop(sI2C);
+	iic_master_set_stop(sI2C);
 }
 
 /*******************************************************************************
@@ -126,44 +126,44 @@ void AT24C02_WritePage(sI2CDef *sI2C,unsigned char StartAddr,unsigned char *Buff
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char AT24C02_ReadBuffer(sI2CDef *sI2C,unsigned char Addr,unsigned char *Buffer,unsigned char Length)
+unsigned char AT24C02_ReadBuffer(iic_def *sI2C,unsigned char Addr,unsigned char *Buffer,unsigned char Length)
 {
 	unsigned char i	=	0;
 		
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
+	iic_master_write_byte(sI2C,Write_24C02Addr);	//向I2C总线设备发送8bits的数据 ,首先传输的是数据的最高位（MSB）
 	
-	if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+	if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return 0;
 	
-	I2C_SendByte(sI2C,Addr);						//发送待读取地址
+	iic_master_write_byte(sI2C,Addr);						//发送待读取地址
 	
-	if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+	if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return 0;
 	
-	I2C_Start(sI2C);
+//	iic_master_start(sI2C);
 	
-	I2C_SendByte(sI2C,Read_24C02Addr);	//发送待读取地址
+	iic_master_write_byte(sI2C,Read_24C02Addr);	//发送待读取地址
 	
-	if(I2C_WaitAck(sI2C)	==	I2C_NACK)
+	if(api_iic_get_ack(sI2C)	==	I2C_NACK)
 			return 0;	
 	
 	for(i=0;i<Length;i++)
 	{
 		iic_set_sda_in(sI2C);
 		
-		Buffer[i]	=	I2C_ReadByte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
+		Buffer[i]	=	iic_master_read_byte(sI2C);					//从I2C总线读取8个bits的数据  ,首先读出的是数据的最高位（MSB）
 	
 		iic_set_sda_out(sI2C);
 		
-		I2C_Ack(sI2C);											//CPU产生一个ACK信号
+		api_iic_set_ack(sI2C);											//CPU产生一个ACK信号
 	}
 	iic_set_sda_out(sI2C);
 	
-	I2C_NAck(sI2C);											//CPU产生一个NACK信号(NACK即无应答信号)
+	api_iic_set_nack(sI2C);											//CPU产生一个NACK信号(NACK即无应答信号)
 	
-	I2C_Stop(sI2C);
+	iic_master_set_stop(sI2C);
 
 	return 0;
 }

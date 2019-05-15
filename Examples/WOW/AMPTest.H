@@ -46,4 +46,7 @@ void SSD1963_Init(void);
 
 void ImageDisp(unsigned char* buffer,unsigned long len);
 
+
+
+static void sht20_configuration(void);
 #endif

@@ -1,6 +1,7 @@
 #include "MFRC522.H"
 
 #include "string.h"
+#include "STM32_GPIO.H"
 
 #define MAXRLEN 18
 
@@ -1041,7 +1042,7 @@ static void mfrc522_delay_ms(unsigned short ms)
 *******************************************************************************/
 static void mfrc522_port_configuration(mfrc522def* pInfo)
 {  
-	#include "STM32_GPIO.H"
+	
 	GPIO_Configuration_OPP50	(pInfo->port.nss_port,pInfo->port.nss_pin);			//NSS
 	GPIO_Configuration_OPP50	(pInfo->port.clk_port,pInfo->port.clk_pin);			//CLK
 	GPIO_Configuration_OPP50	(pInfo->port.mosi_port,pInfo->port.mosi_pin);		//MOSI

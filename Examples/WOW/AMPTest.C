@@ -8,6 +8,7 @@
 #include "LCD.H"
 #include "NAND.H"
 #include "SHT20M.H"
+#include "SHT20.H"
 
 
 #include "STM32F10x_BitBand.H"
@@ -48,6 +49,7 @@
 
 LCDDef	sLCD;
 
+sht20def sht20;
 
 #define ussize  256     //串口缓存大小
 unsigned char u1txbuffer[ussize];
@@ -109,6 +111,9 @@ unsigned char ClosLed[]={0x7E,0x09,0x03,0x01,0x01,0x01,0x01,0x00,0x00,0x00,0x00,
  u8 second;
 u16 millisecond=0;
 
+float	Temperature	=	0.0;
+float	humidity	=	0.0;
+
 unsigned short crc16mbs = 0;
 
 RS485Def RS485A;
@@ -119,6 +124,7 @@ void ClockServer(void);
 void SYSLED(void);
 void USART_TEST(void);
 void RS485Configuration(void);
+static void SHT20TEST(void);
 static void SHT20MTEST(void);
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
 //->函数名		:	
@@ -129,12 +135,13 @@ static void SHT20MTEST(void);
 //<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
 void AMPTest_Configuration(void)
 {	
-  RCC_ClocksTypeDef RCC_ClocksStatus;							//时钟状态---时钟值
+//  RCC_ClocksTypeDef RCC_ClocksStatus;							//时钟状态---时钟值
 	SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
   Power_Configuration();
   LCD_Configuration();
   RTC_Configuration();
 //  SD_Configuration();
+	sht20_configuration();
   GetTime();
   
   LCD_SetBackground(LCD565_WHITE);
@@ -150,7 +157,7 @@ void AMPTest_Configuration(void)
   api_usart_dma_configurationNR	(USART3,19200,ussize);	//USART_DMA配置--查询方式，不开中断
   RS485Configuration();
 	PWM_OUT(TIM2,PWM_OUTChannel1,100,900);						//PWM设定-20161127版本
-
+	
 	
 //  IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
   SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
@@ -167,9 +174,40 @@ void AMPTest_Server(void)
 {
 //  ClockServer();
   RTC_Server();
-	USART_Server();
+//	USART_Server();
   //USART_TEST();
 	SHT20MTEST();		//温湿度模块测试
+	
+	SHT20TEST();
+	
+	
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void SHT20TEST(void)
+{
+	unsigned char RxNum	=	0;
+	static unsigned short time	=	0;
+	api_sht20_server();
+	
+	if(time++<500)
+	{
+		return ;
+	}
+	time=	0;
+//	api_sht20_set_mode_slave();
+//	return ;
+	Temperature	=	api_sht20_get_temperature();
+	humidity	=	api_sht20_get_humidity();
+	LCD_Printf(500,u1dsp,16,LCD565_BLACK,"SHT20:温度%0.5f℃  湿度%0.5f%%",Temperature,humidity);
+
 }
 /*******************************************************************************
 *函数名			:	function
@@ -186,19 +224,19 @@ static void SHT20MTEST(void)
 	static unsigned short time	=	0;
 	if(time++>500)
 	{
-		u3txbuffer[0]=0x01;
-		u3txbuffer[1]=0x04;
-		u3txbuffer[2]=0x00;
-		u3txbuffer[3]=0x01;
-		u3txbuffer[4]=0x00;
-		u3txbuffer[5]=0x02;
-		u3txbuffer[6]=0x20;
-		u3txbuffer[7]=0x0B;
+		u2txbuffer[0]=0x01;
+		u2txbuffer[1]=0x04;
+		u2txbuffer[2]=0x00;
+		u2txbuffer[3]=0x01;
+		u2txbuffer[4]=0x00;
+		u2txbuffer[5]=0x02;
+		u2txbuffer[6]=0x20;
+		u2txbuffer[7]=0x0B;
 		
-		RxNum	=	api_rs485_dma_send(&RS485B,u3txbuffer,8);	//RS485-DMA发送程序
+		RxNum	=	api_rs485_dma_send(&RS485B,u2txbuffer,8);	//RS485-DMA发送程序
 		if(RxNum)
 		{
-			LCD_ShowHex(260,u1dsp,16,u1dspcolr,8,8,u3txbuffer);			
+//			LCD_ShowHex(260,u1dsp,16,u1dspcolr,8,8,u2txbuffer);			
 			time = 0;
 			return;
 		}		
@@ -220,9 +258,9 @@ static void SHT20MTEST(void)
 		
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
     api_usart_dma_send(USART1,u1txbuffer,RxNum);
-    LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
+//    LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		
-		LCD_Printf(500,u1dsp,16,LCD565_BLACK,"温度%0.2f℃  湿度%0.2f%%",t1,t2);
+		LCD_Printf(10,u1dsp,16,LCD565_BLACK,"SHT20M:温度%0.5f℃  湿度%0.5f%%",t1,t2);
 		
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)
@@ -238,9 +276,26 @@ static void SHT20MTEST(void)
       LCD_Fill(0,32,800,480,sLCD.Data.BColor);				//在指定区域内填充指定颜色;区域大小:(xend-xsta)*(yend-ysta)
       u1dsp=32;
       u3dsp=32;
-    }
-		
+    }		
 	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void sht20_configuration(void)
+{
+	sht20.iic.port.SCL_Port	=	GPIOC;
+	sht20.iic.port.SCL_Pin	=	GPIO_Pin_8;
+	sht20.iic.port.SDA_Port	=	GPIOC;
+	sht20.iic.port.SDA_Pin	=	GPIO_Pin_9;
+	
+	api_sht20_configuration(&sht20);
 }
 /*******************************************************************************
 *函数名			:	function
@@ -694,7 +749,7 @@ void LCD_Configuration(void)
 void SD_Configuration(void)
 {
   u16 da=0;
-  u16 color;
+//  u16 color;
   
   
   
