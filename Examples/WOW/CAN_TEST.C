@@ -52,7 +52,7 @@ void CAN_TEST_Server(void)
 		CANdata[2]=0x0A;
 		CANdata[3]=0x0B;
 		
-		CAN_StdTX_DATA(0x08,4,CANdata);			//CAN使用标准帧发送数据---发送传感器数据 0.5ms发送间隔
+		api_can_std_send(0x08,4,CANdata);			//CAN使用标准帧发送数据---发送传感器数据 0.5ms发送间隔
 	}
 }
 

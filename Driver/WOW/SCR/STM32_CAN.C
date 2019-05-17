@@ -85,6 +85,223 @@ bxCANÊÇ»ù±¾À©Õ¹CAN(Basic Extended CAN)µÄËõĞ´£¬ËüÖ§³ÖCANĞ­Òé2.0AºÍ2.0B¡£ËüµÄÉè¼ÆÄ
 
 //CanRxMsg *RxMessage;
 
+//*****************CAN³õÊ¼»¯
+static void CAN_Configuration_NR(u32 CAN_BaudRate);				//CAN1ÅäÖÃ---±êÖ¾Î»²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+static void CAN_Configuration_IT(u32 CAN_BaudRate);				//CAN1ÅäÖÃ---ÖĞ¶Ï·½Ê½
+//*****************CANÂË²¨Æ÷ÅäÖÃ
+static void CAN_FilterInitConfiguration_StdData(u8 CAN_GROUP,u16 CAN_ID,u16 MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---±ê×¼Êı¾İÖ¡Ä£Ê½
+static void CAN_FilterInitConfiguration_ExtData(u8 CAN_GROUP,u32 CAN_ID,u32 MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---À©Õ¹Êı¾İÖ¡Ä£Ê½
+static unsigned char CAN_PinSet(CANRemap_TypeDef CANRemap_Status);		//CANÒı½ÅÅäÖÃº¯Êı
+
+
+/*******************************************************************************
+*º¯ÊıÃû			:	api_can_configuration_std_NR
+*¹¦ÄÜÃèÊö		:	can±ê×¼Êı¾İÖ¡Ä£Ê½ÅäÖÃ--Ê¹ÓÃ²éÑ¯·½Ê½»ñÈ¡Êı¾İ
+*ÊäÈë				: CAN_BaudRate---CAN²¨ÌØÂÊ
+							CAN_Group------CAN¹ıÂËÆ÷·Ö×é£¬¿ÉÅäÖÃ14¸ö(0~13)
+							CAN_ID---------CAN¹ıÂËID
+							MaskId---------¹ıÂË±êÊ¶£¬°´Î»Æ¥Åä£¬ÀıÈçCAN_IDÎª0x0001,Èç¹ûMaskIdÒ²Îª0x0001Ôò±íÊ¾Ö»´Ë·Ö×éÖ»½ÓÊÕ0x0001IDµÄÏûÏ¢
+														ÈôMaskIdÎª0xFFFF,±íÊ¾½ÓÊÕÓëCAN_IDËùÓĞµÄÎ»¶¼Ïàµ±µÄÏûÏ¢£¬
+														ÈôMaskIdÎª0x0000,±íÊ¾½ÓÊÕËùÓĞµÄÏûÏ¢			: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_can_configuration_std_NR(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId)
+{
+	CAN_Configuration_NR(CAN_BaudRate);				//CAN1ÅäÖÃ---±êÖ¾Î»²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+	CAN_FilterInitConfiguration_StdData(CAN_Group,CAN_ID,MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---±ê×¼Êı¾İÖ¡Ä£Ê½
+}
+/*******************************************************************************
+*º¯ÊıÃû			:	api_can_configuration_ext_NR
+*¹¦ÄÜÃèÊö		:	canÀ©Õ¹Êı¾İÖ¡Ä£Ê½ÅäÖÃ--Ê¹ÓÃ²éÑ¯·½Ê½»ñÈ¡Êı¾İ
+*ÊäÈë				: CAN_BaudRate---CAN²¨ÌØÂÊ
+							CAN_Group------CAN¹ıÂËÆ÷·Ö×é£¬¿ÉÅäÖÃ14¸ö(0~13)
+							CAN_ID---------CAN¹ıÂËID
+							MaskId---------¹ıÂË±êÊ¶£¬°´Î»Æ¥Åä£¬ÀıÈçCAN_IDÎª0x0001,Èç¹ûMaskIdÒ²Îª0x0001Ôò±íÊ¾Ö»´Ë·Ö×éÖ»½ÓÊÕ0x0001IDµÄÏûÏ¢
+														ÈôMaskIdÎª0xFFFF,±íÊ¾½ÓÊÕÓëCAN_IDËùÓĞµÄÎ»¶¼Ïàµ±µÄÏûÏ¢£¬
+														ÈôMaskIdÎª0x0000,±íÊ¾½ÓÊÕËùÓĞµÄÏûÏ¢			: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_can_configuration_ext_NR(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId)
+{
+	CAN_Configuration_NR(CAN_BaudRate);				//CAN1ÅäÖÃ---±êÖ¾Î»²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+	CAN_FilterInitConfiguration_ExtData(CAN_Group,CAN_ID,MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---±ê×¼Êı¾İÖ¡Ä£Ê½
+}
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+*º¯ÊıÃû			:	api_can_configuration_std_IT
+*¹¦ÄÜÃèÊö		:	can±ê×¼Êı¾İÖ¡Ä£Ê½ÅäÖÃ--Ê¹ÓÃÖĞ¶Ï·½Ê½»ñÈ¡Êı¾İ
+*ÊäÈë				: CAN_BaudRate---CAN²¨ÌØÂÊ
+							CAN_Group------CAN¹ıÂËÆ÷·Ö×é£¬¿ÉÅäÖÃ14¸ö(0~13)
+							CAN_ID---------CAN¹ıÂËID
+							MaskId---------¹ıÂË±êÊ¶£¬°´Î»Æ¥Åä£¬ÀıÈçCAN_IDÎª0x0001,Èç¹ûMaskIdÒ²Îª0x0001Ôò±íÊ¾Ö»´Ë·Ö×éÖ»½ÓÊÕ0x0001IDµÄÏûÏ¢
+														ÈôMaskIdÎª0xFFFF,±íÊ¾½ÓÊÕÓëCAN_IDËùÓĞµÄÎ»¶¼Ïàµ±µÄÏûÏ¢£¬
+														ÈôMaskIdÎª0x0000,±íÊ¾½ÓÊÕËùÓĞµÄÏûÏ¢				: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_can_configuration_std_IT(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId)
+{
+	CAN_Configuration_IT(CAN_BaudRate);				//CAN1ÅäÖÃ---±êÖ¾Î»²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+	CAN_FilterInitConfiguration_StdData(CAN_Group,CAN_ID,MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---±ê×¼Êı¾İÖ¡Ä£Ê½
+}
+/*******************************************************************************
+*º¯ÊıÃû			:	api_can_configuration_ext_IT
+*¹¦ÄÜÃèÊö		:	canÀ©Õ¹Êı¾İÖ¡Ä£Ê½ÅäÖÃ--Ê¹ÓÃÖĞ¶Ï·½Ê½»ñÈ¡Êı¾İ
+*ÊäÈë				: CAN_BaudRate---CAN²¨ÌØÂÊ
+							CAN_Group------CAN¹ıÂËÆ÷·Ö×é£¬¿ÉÅäÖÃ14¸ö(0~13)
+							CAN_ID---------CAN¹ıÂËID
+							MaskId---------¹ıÂË±êÊ¶£¬°´Î»Æ¥Åä£¬ÀıÈçCAN_IDÎª0x0001,Èç¹ûMaskIdÒ²Îª0x0001Ôò±íÊ¾Ö»´Ë·Ö×éÖ»½ÓÊÕ0x0001IDµÄÏûÏ¢
+														ÈôMaskIdÎª0xFFFF,±íÊ¾½ÓÊÕÓëCAN_IDËùÓĞµÄÎ»¶¼Ïàµ±µÄÏûÏ¢£¬
+														ÈôMaskIdÎª0x0000,±íÊ¾½ÓÊÕËùÓĞµÄÏûÏ¢
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_can_configuration_ext_IT(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId)
+{
+	CAN_Configuration_IT(CAN_BaudRate);				//CAN1ÅäÖÃ---±êÖ¾Î»²éÑ¯·½Ê½£¬²»¿ªÖĞ¶Ï
+	CAN_FilterInitConfiguration_ExtData(CAN_Group,CAN_ID,MaskId);	//CANÂË²¨Æ÷ÅäÖÃ---±ê×¼Êı¾İÖ¡Ä£Ê½
+}
+//------------------------------------------------------------------------------
+
+
+/*******************************************************************************
+* º¯ÊıÃû			:	CAN_StdTX_DATA
+* ¹¦ÄÜÃèÊö		: CANÊ¹ÓÃ±ê×¼Ö¡·¢ËÍÊı¾İ
+* ÊäÈë			: ÎŞ
+* Êä³ö			: ÎŞ
+* ·µ»Ø			: ÎŞ
+*******************************************************************************/
+void api_can_std_send(
+										u16 CAN_ID,			//CANµØÖ·
+										u8 length,			//Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
+										u8 *Data				//Êı¾İ										
+)
+{
+	CanTxMsg TxMessage;
+	u8	TransmitMailbox = 0;
+	u32	i;
+
+	TxMessage.StdId=CAN_ID;						//±ê×¼Ö¡ID
+	TxMessage.IDE=CAN_ID_STD;					//Ê¹ÓÃ±ê×¼±êÊ¶·û
+	
+//	TxMessage.ExtId=CAN_ID;					//À©Õ¹Ö¡ID
+//	TxMessage.IDE=CAN_ID_EXT;				//Ê¹ÓÃÀ©Õ¹Ö¡±êÊ¶·û
+	
+	TxMessage.RTR=CAN_RTR_DATA;				//Êı¾İÖ¡
+	
+	TxMessage.DLC=length;							//DLCÓÃÀ´Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
+	
+	for(	i	=	0;i<length;i++)
+	{
+		TxMessage.Data[i]=Data[i];
+	}
+	TransmitMailbox = CAN_Transmit(&TxMessage);
+	i = 0;
+	// ÓÃÓÚ¼ì²éÏûÏ¢´«ÊäÊÇ·ñÕı³£
+	while((CAN_TransmitStatus(TransmitMailbox) != CANTXOK) && (i <= 0xFF))
+	{
+		i++;
+	}
+	i = 0;
+	// ¼ì²é·µ»ØµÄ¹ÒºÅµÄĞÅÏ¢ÊıÄ¿
+	while((CAN_MessagePending(CAN_FIFO0) < 1) && (i <= 0xFF))
+	{
+		i++;
+	}
+
+}
+/*******************************************************************************
+* º¯ÊıÃû			:	CAN_ExtTX_DATA
+* ¹¦ÄÜÃèÊö		: CANÊ¹ÓÃÀ©Õ¹Ö¡·¢ËÍÊı¾İ
+* ÊäÈë			: ÎŞ
+* Êä³ö			: ÎŞ
+* ·µ»Ø			: ÎŞ
+*******************************************************************************/
+void api_can_ext_send(
+										u32 CAN_ID,			//CANµØÖ·
+										u8 length,			//Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
+										u8 *Data				//Êı¾İÊı×éµØÖ·														
+)
+{
+	CanTxMsg TxMessage;
+	u8	TransmitMailbox = 0;
+	u32	i;
+
+//	TxMessage.StdId=CAN_ID;				//±ê×¼Ö¡ID
+//	TxMessage.IDE=CAN_ID_STD;			//Ê¹ÓÃ±ê×¼±êÊ¶·û
+	
+	TxMessage.ExtId=CAN_ID;					//À©Õ¹Ö¡ID	
+	TxMessage.IDE=CAN_ID_EXT;				//Ê¹ÓÃÀ©Õ¹Ö¡±êÊ¶·û
+	
+	TxMessage.RTR=CAN_RTR_DATA;			//Êı¾İÖ¡	
+	
+	TxMessage.DLC=length;						//DLCÓÃÀ´Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
+	
+	for(	i	=	0;i<length;i++)
+	{
+		TxMessage.Data[i]=Data[i];
+	}
+	
+	TransmitMailbox = CAN_Transmit(&TxMessage);			//¿ªÊ¼Ò»¸öÏûÏ¢µÄ´«Êä
+	i = 0;
+	// ÓÃÓÚ¼ì²éÏûÏ¢´«ÊäÊÇ·ñÕı³£
+	while((CAN_TransmitStatus(TransmitMailbox) != CANTXOK) && (i != 0xFF))
+	{
+		i++;
+	}
+	i = 0;
+	// ¼ì²é·µ»ØµÄ¹ÒºÅµÄĞÅÏ¢ÊıÄ¿
+	while((CAN_MessagePending(CAN_FIFO0) < 1) && (i != 0xFF))
+	{
+		i++;
+	}
+
+}
+/*******************************************************************************
+* º¯ÊıÃû		:
+* ¹¦ÄÜÃèÊö	: 
+* ÊäÈë			: ÎŞ
+* Êä³ö			: ÎŞ
+* ·µ»Ø			: ÎŞ
+*******************************************************************************/
+unsigned char api_can_receive(CanRxMsg *RxMessage)
+{
+		CAN_ClearITPendingBit(CAN_IT_FF0);
+		CAN_ClearITPendingBit(CAN_IT_FF0);
+		//========================¼ì²éÊÕ¼şÏä0ÊÇ·ñÓĞÊı¾İ
+		if(0	!=	(CAN->RF0R&0x03))	//FMP0[1:0]: FIFO 0 ±¨ÎÄÊıÄ¿ (FIFO 0 message pending) FIFO 0±¨ÎÄÊıÄ¿Õâ2Î»·´Ó³ÁËµ±Ç°½ÓÊÕFIFO 0ÖĞ´æ·ÅµÄ±¨ÎÄÊıÄ¿¡£
+		{
+			
+			CAN_Receive(CAN_FIFO0, RxMessage);
+			
+			return 1;
+		}
+		//========================¼ì²éÊÕ¼şÏä1ÊÇ·ñÓĞÊı¾İ
+		else if(0	!=	(CAN->RF1R&0x03))	//FMP0[1:0]: FIFO 0 ±¨ÎÄÊıÄ¿ (FIFO 0 message pending) FIFO 0±¨ÎÄÊıÄ¿Õâ2Î»·´Ó³ÁËµ±Ç°½ÓÊÕFIFO 0ÖĞ´æ·ÅµÄ±¨ÎÄÊıÄ¿¡£
+		{
+			CAN_Receive(CAN_FIFO1, RxMessage);
+			return 1;
+		}
+	return 0;
+}
+
+
+
+
+
 /*******************************************************************************
 * º¯ÊıÃû			:	function
 * ¹¦ÄÜÃèÊö		:	º¯Êı¹¦ÄÜËµÃ÷ 
@@ -563,7 +780,7 @@ void CAN_FilterInitConfiguration_ExtData(
 						ERROR:	·µ»ØÅäÖÃÊ§°Ü
 *Àı³Ì			:
 *******************************************************************************/
-ErrorStatus CAN_PinSet(CANRemap_TypeDef CANRemap_Status)						//
+unsigned char CAN_PinSet(CANRemap_TypeDef CANRemap_Status)						//
 {
 	GPIO_InitTypeDef GPIO_InitStructure;					//GPIO½á¹¹Ìå	
 	
@@ -582,7 +799,7 @@ ErrorStatus CAN_PinSet(CANRemap_TypeDef CANRemap_Status)						//
 		GPIO_InitStructure.GPIO_Mode	= GPIO_Mode_AF_PP;
 		GPIO_Init(GPIOA, &GPIO_InitStructure);
 		//1.3)**********·µ»ØÅäÖÃ×´Ì¬
-		return SUCCESS;				//·µ»ØÅäÖÃ³É¹¦
+		return 1;				//·µ»ØÅäÖÃ³É¹¦
 	}
 	
 //*****************************CANÖØ¶¨ÒåµØÖ·1Ä£Ê½Òı½ÅÅäÖÃ**********************************
@@ -601,7 +818,7 @@ ErrorStatus CAN_PinSet(CANRemap_TypeDef CANRemap_Status)						//
 		//1.3)********** Configure CAN Remap ÖØÓ°Éä
 		GPIO_PinRemapConfig(GPIO_Remap1_CAN, ENABLE);
 		//1.4)**********·µ»ØÅäÖÃ×´Ì¬
-		return SUCCESS;				//·µ»ØÅäÖÃ³É¹¦
+		return 1;				//·µ»ØÅäÖÃ³É¹¦
 		
 	}
 
@@ -621,165 +838,15 @@ ErrorStatus CAN_PinSet(CANRemap_TypeDef CANRemap_Status)						//
 		//1.3)********** Configure CAN Remap ÖØÓ°Éä
 		GPIO_PinRemapConfig(GPIO_Remap2_CAN, ENABLE);
 		//1.4)**********·µ»ØÅäÖÃ×´Ì¬
-		return SUCCESS;				//·µ»ØÅäÖÃ³É¹¦
+		return 1;				//·µ»ØÅäÖÃ³É¹¦
 	}
 	else
-		return ERROR;			//·µ»ØÅäÖÃÊ§°Ü
+		return 0;			//·µ»ØÅäÖÃÊ§°Ü
 }
 
 
 
-/*******************************************************************************
-* º¯ÊıÃû			:	CAN_StdTX_DATA
-* ¹¦ÄÜÃèÊö		: CANÊ¹ÓÃ±ê×¼Ö¡·¢ËÍÊı¾İ
-* ÊäÈë			: ÎŞ
-* Êä³ö			: ÎŞ
-* ·µ»Ø			: ÎŞ
-*******************************************************************************/
-void CAN_StdTX_DATA(
-										u16 CAN_ID,			//CANµØÖ·
-										u8 length,			//Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
-										u8 *Data				//Êı¾İ										
-)
-{
-	CanTxMsg TxMessage;
-	u8	TransmitMailbox = 0;
-	u32	i;
 
-	TxMessage.StdId=CAN_ID;						//±ê×¼Ö¡ID
-	TxMessage.IDE=CAN_ID_STD;					//Ê¹ÓÃ±ê×¼±êÊ¶·û
-	
-//	TxMessage.ExtId=CAN_ID;					//À©Õ¹Ö¡ID
-//	TxMessage.IDE=CAN_ID_EXT;				//Ê¹ÓÃÀ©Õ¹Ö¡±êÊ¶·û
-	
-	TxMessage.RTR=CAN_RTR_DATA;				//Êı¾İÖ¡
-	
-	TxMessage.DLC=length;							//DLCÓÃÀ´Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
-	
-	for(	i	=	0;i<length;i++)
-	{
-		TxMessage.Data[i]=Data[i];
-	}
-	
-//	TxMessage.Data[0]=Data[0];
-//	TxMessage.Data[1]=Data[1];
-//	TxMessage.Data[2]=Data[2];
-//	TxMessage.Data[3]=Data[3];
-//	TxMessage.Data[4]=Data[4];
-//	TxMessage.Data[5]=Data[5];
-//	TxMessage.Data[6]=Data[6];
-//	TxMessage.Data[7]=Data[7];
-	TransmitMailbox = CAN_Transmit(&TxMessage);
-	i = 0;
-	// ÓÃÓÚ¼ì²éÏûÏ¢´«ÊäÊÇ·ñÕı³£
-	while((CAN_TransmitStatus(TransmitMailbox) != CANTXOK) && (i <= 0xFF))
-	{
-		i++;
-	}
-	i = 0;
-	// ¼ì²é·µ»ØµÄ¹ÒºÅµÄĞÅÏ¢ÊıÄ¿
-	while((CAN_MessagePending(CAN_FIFO0) < 1) && (i <= 0xFF))
-	{
-		i++;
-	}
-
-}
-/*******************************************************************************
-* º¯ÊıÃû			:	CAN_ExtTX_DATA
-* ¹¦ÄÜÃèÊö		: CANÊ¹ÓÃÀ©Õ¹Ö¡·¢ËÍÊı¾İ
-* ÊäÈë			: ÎŞ
-* Êä³ö			: ÎŞ
-* ·µ»Ø			: ÎŞ
-*******************************************************************************/
-void CAN_ExtTX_DATA(
-										u32 CAN_ID,			//CANµØÖ·
-										u8 length,			//Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
-										u8 *Data				//Êı¾İÊı×éµØÖ·														
-)
-{
-	CanTxMsg TxMessage;
-	u8	TransmitMailbox = 0;
-	u32	i;
-
-//	TxMessage.StdId=CAN_ID;				//±ê×¼Ö¡ID
-//	TxMessage.IDE=CAN_ID_STD;			//Ê¹ÓÃ±ê×¼±êÊ¶·û
-	
-	TxMessage.ExtId=CAN_ID;					//À©Õ¹Ö¡ID	
-	TxMessage.IDE=CAN_ID_EXT;				//Ê¹ÓÃÀ©Õ¹Ö¡±êÊ¶·û
-	
-	TxMessage.RTR=CAN_RTR_DATA;			//Êı¾İÖ¡	
-	
-	TxMessage.DLC=length;						//DLCÓÃÀ´Éè¶¨´ı´«ÊäÏûÏ¢µÄÖ¡³¤¶È¡£ËüµÄÈ¡Öµ·¶Î§ÊÇ0µ½8¡£
-	
-	for(	i	=	0;i<length;i++)
-	{
-		TxMessage.Data[i]=Data[i];
-	}
-//	TxMessage.Data[0]=Data[0];
-//	TxMessage.Data[1]=Data[1];
-//	TxMessage.Data[2]=Data[2];
-//	TxMessage.Data[3]=Data[3];
-//	TxMessage.Data[4]=Data[4];
-//	TxMessage.Data[5]=Data[5];
-//	TxMessage.Data[6]=Data[6];
-//	TxMessage.Data[7]=Data[7];
-	
-	TransmitMailbox = CAN_Transmit(&TxMessage);			//¿ªÊ¼Ò»¸öÏûÏ¢µÄ´«Êä
-	i = 0;
-	// ÓÃÓÚ¼ì²éÏûÏ¢´«ÊäÊÇ·ñÕı³£
-	while((CAN_TransmitStatus(TransmitMailbox) != CANTXOK) && (i != 0xFF))
-	{
-		i++;
-	}
-	i = 0;
-	// ¼ì²é·µ»ØµÄ¹ÒºÅµÄĞÅÏ¢ÊıÄ¿
-	while((CAN_MessagePending(CAN_FIFO0) < 1) && (i != 0xFF))
-	{
-		i++;
-	}
-
-}
-/*******************************************************************************
-* º¯ÊıÃû		:
-* ¹¦ÄÜÃèÊö	: 
-* ÊäÈë			: ÎŞ
-* Êä³ö			: ÎŞ
-* ·µ»Ø			: ÎŞ
-*******************************************************************************/
-u8 CAN_RX_DATA(CanRxMsg *RxMessage)
-{
-//	if(SET == CAN_GetITStatus(CAN_IT_FF0))
-//	{
-//		CAN_ClearITPendingBit(CAN_IT_FF0);
-//		return 0;
-//	}
-//	else if(SET == CAN_GetITStatus(CAN_IT_FOV0))
-//	{
-//		CAN_ClearITPendingBit(CAN_IT_FOV0);
-//		return 0;
-//	}
-//	else
-//	{
-		CAN_ClearITPendingBit(CAN_IT_FF0);
-		CAN_ClearITPendingBit(CAN_IT_FF0);
-		//========================¼ì²éÊÕ¼şÏä0ÊÇ·ñÓĞÊı¾İ
-		if(0	!=	(CAN->RF0R&0x03))	//FMP0[1:0]: FIFO 0 ±¨ÎÄÊıÄ¿ (FIFO 0 message pending) FIFO 0±¨ÎÄÊıÄ¿Õâ2Î»·´Ó³ÁËµ±Ç°½ÓÊÕFIFO 0ÖĞ´æ·ÅµÄ±¨ÎÄÊıÄ¿¡£
-		{
-			
-			CAN_Receive(CAN_FIFO0, RxMessage);
-			
-			return 1;
-		}
-		//========================¼ì²éÊÕ¼şÏä1ÊÇ·ñÓĞÊı¾İ
-		else if(0	!=	(CAN->RF1R&0x03))	//FMP0[1:0]: FIFO 0 ±¨ÎÄÊıÄ¿ (FIFO 0 message pending) FIFO 0±¨ÎÄÊıÄ¿Õâ2Î»·´Ó³ÁËµ±Ç°½ÓÊÕFIFO 0ÖĞ´æ·ÅµÄ±¨ÎÄÊıÄ¿¡£
-		{
-			CAN_Receive(CAN_FIFO1, RxMessage);
-			return 1;
-		}
-//	}
-	
-	return 0;
-}
 
 
 

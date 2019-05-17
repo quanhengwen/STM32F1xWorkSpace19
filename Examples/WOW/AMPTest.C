@@ -197,7 +197,7 @@ static void SHT20TEST(void)
 	static unsigned short time	=	0;
 	api_sht20_server();
 	
-	if(time++<500)
+	if(time++<200)
 	{
 		return ;
 	}

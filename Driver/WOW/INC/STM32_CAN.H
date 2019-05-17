@@ -39,24 +39,30 @@ typedef enum
 #define IS_CANRemap_Status(CANRemap_Status) (((CANRemap_Status) == CANRemapNone) || ((CANRemap_Status) == CANRemap1) || \
                               ((CANRemap_Status) == CANRemap2))
 
-//*****************CAN初始化
-void CAN_Configuration_NR(u32 CAN_BaudRate);				//CAN1配置---标志位查询方式，不开中断
-void CAN_Configuration_IT(u32 CAN_BaudRate);				//CAN1配置---中断方式
-
-//*****************CAN滤波器配置
-void CAN_FilterInitConfiguration_StdData(u8 CAN_GROUP,u16 CAN_ID,u16 MaskId);	//CAN滤波器配置---标准数据帧模式
-void CAN_FilterInitConfiguration_ExtData(u8 CAN_GROUP,u32 CAN_ID,u32 MaskId);	//CAN滤波器配置---扩展数据帧模式
 
 
-ErrorStatus CAN_PinSet(CANRemap_TypeDef CANRemap_Status);		//CAN引脚配置函数
 
-//*****************CAN发送数据
-void CAN_StdTX_DATA(u16 CAN_ID,u8 length,u8 *Data);			//CAN使用标准帧发送数据
-void CAN_ExtTX_DATA(u32 CAN_ID,u8 length,u8 *Data);			//CAN使用扩展帧发送数据
+//------------------------------------------------------API-配置
+void api_can_configuration_std_NR(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId);		//can标准数据帧模式配置--使用查询方式获取数据
+void api_can_configuration_ext_NR(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId);		//can扩展数据帧模式配置--使用查询方式获取数据
 
-//void CAN_Server(void);
+void api_can_configuration_std_IT(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId);		//can标准数据帧模式配置--使用中断方式获取数据
+void api_can_configuration_ext_IT(u32 CAN_BaudRate,u8 CAN_Group,u16 CAN_ID,u16 MaskId);		//can扩展数据帧模式配置--使用中断方式获取数据
 
-u8  CAN_RX_DATA(CanRxMsg *RxMessage);									//检查CAN接收有无数据
+//------------------------------------------------------API-数据发送
+void api_can_std_send(u16 CAN_ID,u8 length,u8 *Data);			//CAN使用标准帧发送数据
+void api_can_ext_send(u32 CAN_ID,u8 length,u8 *Data);			//CAN使用扩展帧发送数据
+//------------------------------------------------------API-数据读取
+unsigned char api_can_receive(CanRxMsg *RxMessage);									//检查CAN接收有无数据
+
+
+
+
+
+
+
+
+
 #endif
 
 

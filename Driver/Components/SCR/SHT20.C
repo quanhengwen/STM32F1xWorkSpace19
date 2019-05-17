@@ -42,7 +42,7 @@ void api_sht20_configuration(sht20def *sht20)
 void api_sht20_server(void)
 {
 	static unsigned short time = 0;
-	if(time++<500)
+	if(time++<200)
 		return;
 	time = 0;
 	if(pSHT20->flag.t)
