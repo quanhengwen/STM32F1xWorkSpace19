@@ -71,7 +71,7 @@ void SD_SPI_SpeedHigh(void);
 u8 SD_WaitReady(void);							//等待SD卡准备
 
 
-u8 SD_Initialize(SPIDef *SpiPort);							//初始化
+u8 SD_Initialize(spi_def *SpiPort);							//初始化
 
 
 

@@ -28,7 +28,7 @@
 
 /* Private functions ---------------------------------------------------------*/
 
-SPIDef		*pSPI = NULL;       //ÄÚ²¿Çý¶¯Ê¹ÓÃ£¬²»¿ÉÉ¾³ý
+spi_def		*pSPI = NULL;       //ÄÚ²¿Çý¶¯Ê¹ÓÃ£¬²»¿ÉÉ¾³ý
 
 u8 BAR_PIC_Addr[64]={0XFF};
 u8 GBCode[64]={0XFF};
@@ -61,10 +61,10 @@ u32 GT32L32_BIG5_To_GBK(u16 BIG5_Code,u8 *GetBuffer);									//BIG5×ªGBK×ª»»Ëã·
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void GT32L32_Initialize(SPIDef *SpiPort)
+void GT32L32_Initialize(spi_def *SpiPort)
 {
   pSPI  = SpiPort;
-  SPI_Initialize(pSPI);				//ÆÕÍ¨SPIÍ¨Ñ¶·½Ê½ÅäÖÃ
+  api_spi_configurationNR(pSPI);				//ÆÕÍ¨SPIÍ¨Ñ¶·½Ê½ÅäÖÃ
 	SPI_CS_LOW(pSPI);
 	SPI_CS_HIGH(pSPI);
 }
@@ -681,7 +681,7 @@ u8 GT32L32_ReadStatus(GT32L32Def *pInfo)
 	u8	Address=0x05;	//0X60 OR 0XC7
 	//____________Ê¹ÄÜÆ¬Ñ¡
 	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
-	SPI_Cmd(pInfo->SPI.Port.SPIx, ENABLE);
+	SPI_Cmd(pInfo->SPI.port.SPIx, ENABLE);
 	//____________·¢ËÍµØÖ·Êý¾Ý	
 	SPI_ReadWriteByteSPI(&pInfo->SPI,Address);						//·¢ËÍµØÖ·
 	//____________½ÓÊÕÊý¾Ý	
@@ -690,7 +690,7 @@ u8 GT32L32_ReadStatus(GT32L32Def *pInfo)
 
 	//____________È¡ÏûÆ¬Ñ¡	
 	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	SPI_Cmd(pInfo->SPI.Port.SPIx, DISABLE);
+	SPI_Cmd(pInfo->SPI.port.SPIx, DISABLE);
 
 	return ChipStatus;
 }
@@ -787,7 +787,7 @@ void GT32L32_ChipErase(GT32L32Def *pInfo)
 	}
 	//____________È¡ÏûÆ¬Ñ¡	
 	SPI_CS_HIGH(pSPI);
-	SPI_Cmd(pInfo->SPI.Port.SPIx,DISABLE);
+	SPI_Cmd(pInfo->SPI.port.SPIx,DISABLE);
 }
 /*******************************************************************************
 * º¯ÊýÃû			:	GT32L32_ReadBuffer

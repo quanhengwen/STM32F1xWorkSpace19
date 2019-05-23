@@ -42,7 +42,7 @@
 
 #include "stm32f10x_gpio.h"
 
-#include	"IIC.H"
+#include "I2C.H"	
 
 
 //可以帮助你，从arduino网站获得
@@ -125,7 +125,7 @@ typedef struct _vl53l0x
 		GPIO_TypeDef* 	SCL_Port;				//GPIOX
 		unsigned short 	SCL_Pin;				//GPIO_Pin_x
 	}Port;
-	I2CHWdef i2c;
+	iic_def iic;
 }stvl53l0xDef;
 
 

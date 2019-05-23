@@ -13,7 +13,7 @@
 
 
 
-SPIDef	sSDFatFsPort;
+spi_def	sSDFatFsPort;
 
 /*******************************************************************************
 *函数名			:	SD_disk_initialize
@@ -28,10 +28,10 @@ int SD_disk_initialize(void)
 { 
   unsigned char result  = 0;
   //========================硬件接口配置
-  sSDFatFsPort.Port.SPIx = SPI2;
-  sSDFatFsPort.Port.CS_PORT  = GPIOG;
-  sSDFatFsPort.Port.CS_Pin   = GPIO_Pin_6;
-  sSDFatFsPort.Port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_256;
+  sSDFatFsPort.port.SPIx = SPI2;
+  sSDFatFsPort.port.nss_port  = GPIOG;
+  sSDFatFsPort.port.nss_pin   = GPIO_Pin_6;
+  sSDFatFsPort.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_256;
   //========================初始化SD卡
   result  = SD_Initialize(&sSDFatFsPort);
 

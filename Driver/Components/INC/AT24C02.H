@@ -6,7 +6,7 @@
 #include "stm32f10x_gpio.h"
 
 
-#include "I2C.H"
+#include "IIC.H"
 
 
 

@@ -49,4 +49,5 @@ void ImageDisp(unsigned char* buffer,unsigned long len);
 
 
 static void sht20_configuration(void);
+static void xpt2046_configuration(void);
 #endif

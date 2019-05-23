@@ -121,7 +121,7 @@ typedef struct      /*Card Identification Data*/
 //----消息结构体------------------------------------------------------------
 typedef struct      _GT32L32/*Card Identification Data*/
 {
-	SPIDef								SPI;
+	spi_def								SPI;
 	GT32L32DataDef				Data;	
 	GT32L32FlagDef				Flag;			//错误列表
 }GT32L32Def;			//GT32L32M0180
@@ -134,7 +134,7 @@ typedef struct      _GT32L32/*Card Identification Data*/
 
 /* Exported functions ------------------------------------------------------- */
 
-void GT32L32_Initialize(SPIDef *SpiPort);  
+void GT32L32_Initialize(spi_def *SpiPort);  
 u8 GT32L32_ReadStatus(GT32L32Def *pInfo);			//读取芯片状态
 void GT32L32_ChipErase(GT32L32Def *pInfo);		//擦除用户区数据
 

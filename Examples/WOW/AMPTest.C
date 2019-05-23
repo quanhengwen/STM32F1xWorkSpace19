@@ -9,7 +9,7 @@
 #include "NAND.H"
 #include "SHT20M.H"
 #include "SHT20.H"
-
+#include "BT459A.H"
 
 #include "STM32F10x_BitBand.H"
 #include "STM32_GPIO.H"
@@ -24,6 +24,7 @@
 #include "STM32_USART.H"
 #include "STM32_RTC.H"
 #include 	"CRC.H"
+#include "XPT2046.H"
 
 //#include 	"Image.H"
 //#include "MMC_SD.h"
@@ -49,7 +50,9 @@
 
 LCDDef	sLCD;
 
-sht20def sht20;
+sht20def 		sht20;
+spi_def			xpt2046;
+//spi_def* pInfo
 
 #define ussize  256     //串口缓存大小
 unsigned char u1txbuffer[ussize];
@@ -116,6 +119,9 @@ float	humidity	=	0.0;
 
 unsigned short crc16mbs = 0;
 
+unsigned short xpt2046x,xpt2046y;
+
+
 RS485Def RS485A;
 RS485Def RS485B;
 
@@ -124,6 +130,8 @@ void ClockServer(void);
 void SYSLED(void);
 void USART_TEST(void);
 void RS485Configuration(void);
+static void xpt2046TEST(void);
+static void BT459ATEST(void);
 static void SHT20TEST(void);
 static void SHT20MTEST(void);
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
@@ -137,20 +145,28 @@ void AMPTest_Configuration(void)
 {	
 //  RCC_ClocksTypeDef RCC_ClocksStatus;							//时钟状态---时钟值
 	SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
+	
+
   Power_Configuration();
-  LCD_Configuration();
+	
+	//xpt2046_configuration();
+	
+  LCD_Configuration();	
+	
   RTC_Configuration();
 //  SD_Configuration();
 	sht20_configuration();
   GetTime();
   
+	
+	
   LCD_SetBackground(LCD565_WHITE);
   LCD_ShowBattery(780,2,2,LCD565_GRED);   //显示12x12电池
   LCD_ShowAntenna(760,2,3,LCD565_GRED);   //显示12x12天线
 
   
-//  LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
-//    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
+  LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
+    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
   
   
   api_usart_dma_configurationNR	(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
@@ -175,12 +191,56 @@ void AMPTest_Server(void)
 //  ClockServer();
   RTC_Server();
 //	USART_Server();
-  //USART_TEST();
+  //USART_TEST();	
+		
+	BT459ATEST();
+	
 	SHT20MTEST();		//温湿度模块测试
 	
 	SHT20TEST();
 	
+	//xpt2046TEST();
 	
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void xpt2046TEST(void)
+{
+	static unsigned short time=0;
+	if(time++<200)
+		return;
+	time =0;
+	Read_ADS(&xpt2046x,&xpt2046y);
+//	LCD_Printf(600,0,16,LCD565_BLACK,"x轴%0.6d  y轴%0.6d",xpt2046x,xpt2046y);
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void BT459ATEST(void)
+{
+	unsigned char* frame	=	NULL;
+	unsigned char len	=	0;
+	len	=	api_bt459a_get_frame_ReadQuantity(0x01,frame);
+	
+	len	=	api_bt459a_get_frame_SetQuantity(0x01,50,frame);
+	len	=	api_bt459a_get_frame_SetQuantity(0x02,50,frame);
+	len	=	api_bt459a_get_frame_SetQuantity(0x03,50,frame);
+	len	=	api_bt459a_get_frame_SetQuantity(0x04,50,frame);
+	
+	//api_rs485_dma_send(&RS485B,frame,len);	//RS485-DMA发送程序
 }
 /*******************************************************************************
 *函数名			:	function
@@ -197,7 +257,7 @@ static void SHT20TEST(void)
 	static unsigned short time	=	0;
 	api_sht20_server();
 	
-	if(time++<200)
+	if(time++<10)
 	{
 		return ;
 	}
@@ -206,7 +266,8 @@ static void SHT20TEST(void)
 //	return ;
 	Temperature	=	api_sht20_get_temperature();
 	humidity	=	api_sht20_get_humidity();
-	LCD_Printf(500,u1dsp,16,LCD565_BLACK,"SHT20:温度%0.5f℃  湿度%0.5f%%",Temperature,humidity);
+	//LCD_Printf(500,u1dsp,16,LCD565_BLACK,"SHT20:温度%0.2f℃  湿度%0.2f%%",Temperature,humidity);
+	LCD_Printf(500,32,16,LCD565_BLACK,"SHT20:温度%0.2f℃  湿度%0.2f%%",Temperature,humidity);
 
 }
 /*******************************************************************************
@@ -260,7 +321,7 @@ static void SHT20MTEST(void)
     api_usart_dma_send(USART1,u1txbuffer,RxNum);
 //    LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		
-		LCD_Printf(10,u1dsp,16,LCD565_BLACK,"SHT20M:温度%0.5f℃  湿度%0.5f%%",t1,t2);
+		LCD_Printf(10,u1dsp,16,LCD565_BLACK,"SHT20M:温度%0.2f℃  湿度%0.2f%%",t1,t2);
 		
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)
@@ -288,12 +349,55 @@ static void SHT20MTEST(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
+static void xpt2046_configuration(void)
+{
+	
+//	xpt2046.Port.CLK_PORT		=	GPIOB;
+//	xpt2046.Port.CLK_Pin		=	GPIO_Pin_13;
+//	
+//	xpt2046.Port.MISO_PORT	=	GPIOB;
+//	xpt2046.Port.MISO_Pin		=	GPIO_Pin_14;
+//	
+//	xpt2046.Port.MOSI_PORT	=	GPIOB;
+//	xpt2046.Port.MOSI_Pin		=	GPIO_Pin_15;
+//	
+//	xpt2046.Port.CS_PORT		=	GPIOG;
+//	xpt2046.Port.CS_Pin			=	GPIO_Pin_7;
+//	
+//	//=======================字库端口
+//	xpt2046.Port.SPIx	    	=	SPI2;
+//	xpt2046.Port.CS_PORT	  =	GPIOG;
+//	xpt2046.Port.CS_Pin			=	GPIO_Pin_7;
+//	xpt2046.Port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
+	
+	xpt2046.port.clk_port	=	GPIOB;
+	xpt2046.port.clk_pin	=	GPIO_Pin_13;
+	xpt2046.port.miso_port	= GPIOB;
+	xpt2046.port.miso_pin		=	GPIO_Pin_14;
+	xpt2046.port.mosi_port	=	GPIOB;
+	xpt2046.port.mosi_pin		=	GPIO_Pin_15;
+	xpt2046.port.nss_port		=	GPIOG;
+	xpt2046.port.nss_pin		= GPIO_Pin_7;
+	
+	api_xpt2046_configuration(&xpt2046);
+	
+	SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 static void sht20_configuration(void)
 {
 	sht20.iic.port.SCL_Port	=	GPIOC;
 	sht20.iic.port.SCL_Pin	=	GPIO_Pin_8;
 	sht20.iic.port.SDA_Port	=	GPIOC;
-	sht20.iic.port.SDA_Pin	=	GPIO_Pin_9;
+	sht20.iic.port.SDA_Pin	=	GPIO_Pin_9;	
 	
 	api_sht20_configuration(&sht20);
 }
@@ -730,10 +834,10 @@ void LCD_Configuration(void)
 	sLCD.Flag.Rotate	=	Draw_Rotate_0D;
 	
 	//=======================字库端口
-	sLCD.GT32L32.SPI.Port.SPIx	    =	SPI2;
-	sLCD.GT32L32.SPI.Port.CS_PORT	  =	GPIOB;
-	sLCD.GT32L32.SPI.Port.CS_Pin		=	GPIO_Pin_12;
-	sLCD.GT32L32.SPI.Port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
+	sLCD.GT32L32.SPI.port.SPIx	    =	SPI2;
+	sLCD.GT32L32.SPI.port.nss_port	=	GPIOB;
+	sLCD.GT32L32.SPI.port.nss_pin		=	GPIO_Pin_12;
+	sLCD.GT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
   
   LCDFsmc_Initialize(&sLCD);  
 }

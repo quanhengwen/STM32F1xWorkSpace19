@@ -11,10 +11,10 @@
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void api_IS62WV51216BLL_configuration(mfrc522def* pMfrc522)
-{
+//void api_IS62WV51216BLL_configuration(mfrc522def* pMfrc522)
+//{
 
-}
+//}
 
 
 

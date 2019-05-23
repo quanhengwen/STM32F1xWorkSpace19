@@ -69,14 +69,14 @@ void SPI_TEST_Server(void)
 void SPI_Configuration(void)
 {
   GPIO_InitTypeDef	GPIO_InitStructure;
-SPI_InitTypeDef  SPI_InitStructure;
-DMA_InitTypeDef	DMA_Initstructure;
+	SPI_InitTypeDef  SPI_InitStructure;
+	DMA_InitTypeDef	DMA_Initstructure;
   
   stSpi.Port.SPIx = SPI2;
   
   stSpi.Port.CS_PORT  = GPIOB;
   stSpi.Port.CS_Pin   = GPIO_Pin_12;
-  SPI_InitializeDMA(&stSpi);
+  api_spi_configurationDMA(&stSpi);
   
   return;
   

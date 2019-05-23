@@ -22,7 +22,7 @@
 
 
 unsigned char  SD_Type=0;//SD卡的类型
-SPIDef		*pSDSPI = 0;       //内部驱动使用，不可删除
+spi_def		*pSDSPI = 0;       //内部驱动使用，不可删除
 ////////////////////////////////////移植修改区///////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 //取消选择,释放SPI总线
@@ -261,7 +261,7 @@ u32 SD_GetSectorCount(void)
   return Capacity;
 }
 //初始化SD卡
-u8 SD_Initialize(SPIDef *SpiPort)
+u8 SD_Initialize(spi_def *SpiPort)
 {
   u8 r1;      // 存放SD卡的返回值
   u16 retry;  // 用来进行超时计数
@@ -269,7 +269,7 @@ u8 SD_Initialize(SPIDef *SpiPort)
   u16 i;
   pSDSPI  = SpiPort;
   //========================硬件初始化
-  SPI_Initialize(pSDSPI);   //初始化GPIO
+  api_spi_configurationNR(pSDSPI);   //初始化GPIO
  	SD_SPI_SpeedLow();	      //设置到低速模式
   //========================发送大于74个时钟等待SD卡上电稳定  
  	for(i=0;i<10;i++)
@@ -447,15 +447,15 @@ unsigned char SD_SPI_ReadWriteByte(u8 data)
 //SD卡初始化的时候,需要低速
 void SD_SPI_SpeedLow(void)
 {
-  pSDSPI->Port.SPIx->CR1 &= 0xFFC7;
-  pSDSPI->Port.SPIx->CR1 |= SPI_BaudRatePrescaler_256;
+  pSDSPI->port.SPIx->CR1 &= 0xFFC7;
+  pSDSPI->port.SPIx->CR1 |= SPI_BaudRatePrescaler_256;
 // 	SPI1_SetSpeed(SPI_BaudRatePrescaler_256);//设置到低速模式	
 }
 //SD卡正常工作的时候,可以高速了
 void SD_SPI_SpeedHigh(void)
 {
-  pSDSPI->Port.SPIx->CR1 &= 0xFFC7;
-  pSDSPI->Port.SPIx->CR1 |= SPI_BaudRatePrescaler_2;
+  pSDSPI->port.SPIx->CR1 &= 0xFFC7;
+  pSDSPI->port.SPIx->CR1 |= SPI_BaudRatePrescaler_2;
 // 	SPI1_SetSpeed(SPI_BaudRatePrescaler_2);//设置到高速模式	
 }
 

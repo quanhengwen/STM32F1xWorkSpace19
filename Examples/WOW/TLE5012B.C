@@ -346,7 +346,7 @@ void hw_configuration(void)
 	
 	TLE5012.Port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_8;
 	
-	SPI_Initialize(&TLE5012);
+	api_spi_configurationNR(&TLE5012);
 	MCO_Initialize();
 }
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>

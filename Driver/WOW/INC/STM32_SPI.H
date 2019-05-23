@@ -56,6 +56,7 @@ typedef struct	_spi_port
 	unsigned short 	SPI_BaudRatePrescaler_x;		//x=2/4/8/16/32/64/128/256
 	
 }spi_port_def;
+
 typedef struct	_spi
 {
 	spi_port_def	port;
@@ -103,25 +104,13 @@ typedef struct	_SPI
 	//SPIDriverDef	SPIDr;	
 }SPIDef;
 
-
-//extern SPIDef	*SPISYS;			//内部驱动使用，不可删除	
-
-//#define	pSPIPort	(&(SPISYS->Port))
-
-//#define SPI_CS_HIGH				(pSPIPort->CS_PORT->BSRR		= pSPIPort->CS_Pin)
-//#define SPI_CS_LOW				(pSPIPort->CS_PORT->BRR 		= pSPIPort->CS_Pin)
-//#define SPI_CLK_HIGH			(pSPIPort->CLK_PORT->BSRR 	= pSPIPort->CLK_Pin)
-//#define SPI_CLK_LOW				(pSPIPort->CLK_PORT->BRR 		= pSPIPort->CLK_Pin)
-//#define SPI_MOSI_HIGH			(pSPIPort->MOSI_PORT->BSRR 	= pSPIPort->MOSI_Pin)
-//#define SPI_MOSI_LOW			(pSPIPort->MOSI_PORT->BRR 	= pSPIPort->MOSI_Pin)
-//#define SPI_MISO					(pSPIPort->MISO_PORT->IDR 	&	pSPIPort->MISO_Pin)
-
 //-------------------------------------------api
 void api_spi_configuration_gpio(spi_def* pInfo);
 
 void api_spi_write_byte_gpio(unsigned char value);
 void api_spi_write_register_gpio(unsigned char Address,unsigned char value);
 unsigned char api_spi_read_byte_gpio(void);
+unsigned char api_spi_read_register_gpio(unsigned char Address);
 
 //-------------------------------------------static
 static void spi_delay_us(unsigned short us);
@@ -129,42 +118,36 @@ static void spi_delay_us(unsigned short us);
 
 
 
+void api_spi_configurationNR(spi_def* pInfo);				//SPI接口配置
+void api_spi_configurationDMA(spi_def* pInfo);				//SPI接口配置
 
 
 
-
-
-
-void SPI_Initialize(SPIDef* pInfo);				//SPI接口配置
 	
-void SPI_InitializeNR(SPIDef* pInfo);			//普通SPI接口配置
 
-void SPI_InitializeSPI(SPIDef *pInfo);		//普通SPI接口配置
-void SPI_InitializeDMA(SPIDef *pInfo);			//SPI-DMA通讯方式配置---20170722未完成
+void spi_initialize_nr(spi_def *pInfo);		//普通SPI接口配置
+void spi_dma_initialize(SPI_TypeDef *SPIx);			//SPI-DMA通讯方式配置---20170722未完成
 
 
 unsigned short SPI_DMASend(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned short BufferSize);
 unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned char *rx_buffer,unsigned short BufferSize);
 
 
-void SPI_CS_LOW(SPIDef *pInfo);
-void SPI_CS_HIGH(SPIDef *pInfo);
-void SPI_CLK_LOW(SPIDef *pInfo);
-void SPI_CLK_HIGH(SPIDef *pInfo);
-void SPI_MOSI_LOW(SPIDef *pInfo);
-void SPI_MOSI_HIGH(SPIDef *pInfo);
-unsigned char SPI_MISO_In(SPIDef *pInfo);
+void SPI_CS_LOW(spi_def *pInfo);
+void SPI_CS_HIGH(spi_def *pInfo);
 
-unsigned char	SPI_ReadWriteByteNR(SPIDef *pInfo,unsigned char Byte);
-unsigned char	SPI_ReadWriteByteSPI(SPIDef *pInfo,unsigned char Byte);
+
+
+
+unsigned char	SPI_ReadWriteByteSPI(spi_def *pInfo,unsigned char Byte);
 
 
 //unsigned char	SPI_ReadWriteOneByteNR(SPIDef *pInfo,unsigned char Byte);
 //unsigned char	SPI_ReadWriteOneByteSPI(SPIDef *pInfo,unsigned char Byte);
 
 
-void SPI_WriteBufferSPI(SPIDef *pInfo,u8 *Buffer,u16 BufferSize);
-void SPI_ReadBufferSPI(SPIDef *pInfo,u8 *Buffer,u16 BufferSize);
+void SPI_WriteBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize);
+void SPI_ReadBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize);
 
 
 

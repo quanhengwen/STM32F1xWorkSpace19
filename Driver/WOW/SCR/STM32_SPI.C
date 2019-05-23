@@ -159,7 +159,30 @@ unsigned char api_spi_read_byte_gpio(void)
 	}	
 	return ucResult;
 }
-
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	写RC632寄存器
+*输入				: Address[IN]:寄存器地址
+							value[IN]:写入的值
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_spi_read_register_gpio(unsigned char Address)
+{
+	unsigned char value;
+	spi_set_clk_low;		//SPI_SCK = 0;
+	spi_set_nss_low;		//SPI_NSS = 0;
+	spi_delay_us(5);
+	api_spi_write_byte_gpio(Address);
+	value	=	api_spi_read_byte_gpio();
+	spi_delay_us(5);
+	spi_set_nss_high;		//SPI_NSS = 1
+	spi_set_clk_high;		//SPI_SCK = 1;
+	
+	return value;
+}
 ///////////////////////////////////////////////////////////////////////
 // Delay us
 ///////////////////////////////////////////////////////////////////////
@@ -176,34 +199,15 @@ static void spi_delay_us(unsigned short us)
 
 unsigned  char spiTxBuff[spiBufsize]={0};
 //SPIDef	*SPISYS	=	0;	//内部驱动使用，不可删除
-void SPI_CS_LOW(SPIDef *pInfo)
+void SPI_CS_LOW(spi_def *pInfo)
 {
-	pInfo->Port.CS_PORT->BRR		= pInfo->Port.CS_Pin;
+	pInfo->port.nss_port->BRR		= pInfo->port.nss_pin;
 }
-void SPI_CS_HIGH(SPIDef *pInfo)
+void SPI_CS_HIGH(spi_def *pInfo)
 {
-	pInfo->Port.CS_PORT->BSRR		= pInfo->Port.CS_Pin;
+	pInfo->port.nss_port->BSRR		= pInfo->port.nss_pin;
 }
-void SPI_CLK_LOW(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_CLK_HIGH(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_MOSI_LOW(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BRR 	= pInfo->Port.CLK_Pin;
-}
-void SPI_MOSI_HIGH(SPIDef *pInfo)
-{
-	pInfo->Port.CLK_PORT->BSRR 	= pInfo->Port.CLK_Pin;
-}
-unsigned char SPI_MISO_In(SPIDef *pInfo)
-{
-	return(pInfo->Port.MISO_PORT->IDR 	&	pInfo->Port.MISO_Pin);
-}
+
 
 
 
@@ -230,32 +234,29 @@ void SPI_Delay(unsigned long Time)
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void SPI_Initialize(SPIDef* pInfo)
+void api_spi_configurationNR(spi_def* pInfo)
 {
 //	SPISYS	=	pInfo;						//指针指向
-	SPI_InitializeSPI(pInfo);	//普通SPI接口配置
-//	SPI_InitializeNR(pInfo);
-	GPIO_Configuration_OPP50	(pInfo->Port.CS_PORT,pInfo->Port.CS_Pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
+	spi_initialize_nr(pInfo);	//普通SPI接口配置
+//	api_spi_configuration_gpio(pInfo);
+	GPIO_Configuration_OPP50(pInfo->port.nss_port,pInfo->port.nss_pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 }
 /*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
 *******************************************************************************/
-void SPI_InitializeNR(SPIDef* pInfo)					//普通SPI接口配置
+void api_spi_configurationDMA(spi_def* pInfo)
 {
-	SPIPortDef		*Port;	
-//	SPISYS		=	pInfo;
-	Port			=	&(pInfo->Port);
+	SPI_TypeDef *SPIx	=	pInfo->port.SPIx;
 	
-	GPIO_Configuration_OPP50	(Port->CS_PORT,				Port->CS_Pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_Configuration_OPP50	(Port->CLK_PORT,			Port->CLK_Pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_Configuration_OPP50	(Port->MOSI_PORT,			Port->MOSI_Pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_Configuration_IPU		(Port->MISO_PORT,			Port->MISO_Pin);				//将GPIO相应管脚配置为上拉输入模式----V20170605
+	spi_initialize_nr(pInfo);
+	GPIO_Configuration_OPP50(pInfo->port.nss_port,pInfo->port.nss_pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605	
+	spi_dma_initialize(SPIx);		//SPI_FLASH_DMA方式配置
 }
 /*******************************************************************************
 *函数名			:	function
@@ -263,12 +264,12 @@ void SPI_InitializeNR(SPIDef* pInfo)					//普通SPI接口配置
 *输入				: 
 *返回值			:	无
 *******************************************************************************/
-void SPI_InitializeSPI(SPIDef *pInfo)
+void spi_initialize_nr(spi_def *pInfo)
 {
 	//1)**********定义相关结构体
 	SPI_InitTypeDef  SPI_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
-	SPI_TypeDef *SPIx	=	pInfo->Port.SPIx;
+	SPI_TypeDef *SPIx	=	pInfo->port.SPIx;
 	unsigned char SPIx_CsFlg=1;		//如果使用纯硬件SPIx（含CS脚），SPIx_CsFlg=1，否则SPIx_CsFlg=0；
 
 	//2)**********相关GPIO配置
@@ -308,18 +309,18 @@ void SPI_InitializeSPI(SPIDef *pInfo)
 	//3)**********SPI配置选项
 	//3.1)----------SPI波特率检查
 	if(
-			(SPI_BaudRatePrescaler_2  !=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_4		!=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_8		!=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_16  !=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_32  !=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_64  !=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_128	!=	pInfo->Port.SPI_BaudRatePrescaler_x)
-		&(SPI_BaudRatePrescaler_256	!=	pInfo->Port.SPI_BaudRatePrescaler_x)
+			(SPI_BaudRatePrescaler_2  !=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_4		!=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_8		!=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_16  !=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_32  !=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_64  !=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_128	!=	pInfo->port.SPI_BaudRatePrescaler_x)
+		&(SPI_BaudRatePrescaler_256	!=	pInfo->port.SPI_BaudRatePrescaler_x)
 		)
 	{
 		//未设置波特率使用最高
-		pInfo->Port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_2;
+		pInfo->port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_2;
 	}
 	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;				//设置方向				（2线全双工、2线只接收、一线发送、一线接收）
 	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;															//模式         	（从或主设备）
@@ -329,16 +330,16 @@ void SPI_InitializeSPI(SPIDef *pInfo)
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;												//最先发送的位 	（最低位，还是最高位在先）
 	SPI_InitStructure.SPI_CRCPolynomial = 7;																	//设置crc多项式	（数字）如7
 	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;																	//片选方式     	（硬件或软件方式）
-	SPI_InitStructure.SPI_BaudRatePrescaler = pInfo->Port.SPI_BaudRatePrescaler_x;				//波特率预分频 	（从2---256分频）
-	SPI_Init(pInfo->Port.SPIx,&SPI_InitStructure);
+	SPI_InitStructure.SPI_BaudRatePrescaler = pInfo->port.SPI_BaudRatePrescaler_x;				//波特率预分频 	（从2---256分频）
+	SPI_Init(pInfo->port.SPIx,&SPI_InitStructure);
 	
 
 //	//3)**********使能SPIx_NESS为主输出模式，NSS主输出模式需要外接上拉电阻，否则无法实现关闭SPI时NSS脚上拉为高电平
-	if((pInfo->Port.SPIx->CR1&0X0200)!=SPI_NSS_Soft)						//如果在主机模式下的片选方式为硬件（SPI_NSS_Hard）方式，此处必须打开，否则NSS无信号
+	if((pInfo->port.SPIx->CR1&0X0200)!=SPI_NSS_Soft)						//如果在主机模式下的片选方式为硬件（SPI_NSS_Hard）方式，此处必须打开，否则NSS无信号
 	{
-		SPI_SSOutputCmd(pInfo->Port.SPIx, ENABLE);			//如果在主机模式下的片选方式为硬件（SPI_NSS_Hard）方式，此处必须打开，否则NSS无信号,需要在SPI_Cmd(pInfo->Port.SPIx, ENABLE)开启
+		SPI_SSOutputCmd(pInfo->port.SPIx, ENABLE);			//如果在主机模式下的片选方式为硬件（SPI_NSS_Hard）方式，此处必须打开，否则NSS无信号,需要在SPI_Cmd(pInfo->Port.SPIx, ENABLE)开启
 	}
-  SPI_Cmd(pInfo->Port.SPIx, ENABLE);				//使能SPI
+  SPI_Cmd(pInfo->port.SPIx, ENABLE);				//使能SPI
 }
 /*******************************************************************************
 *函数名		:	SPI_DMA_Configuration
@@ -348,7 +349,7 @@ void SPI_InitializeSPI(SPIDef *pInfo)
 *返回值		:	无
 *例程			:
 *******************************************************************************/
-void SPI_InitializeDMA(SPIDef *pInfo)		//SPI_FLASH_DMA方式配置
+void spi_dma_initialize(SPI_TypeDef *SPIx)		//SPI_FLASH_DMA方式配置
 {
 /**-----------------------------------------------------------------------------------------------------
 	********SPI_DMA的通信过程********
@@ -367,9 +368,6 @@ void SPI_InitializeDMA(SPIDef *pInfo)		//SPI_FLASH_DMA方式配置
 	DMA_InitTypeDef	DMA_Initstructure;
 	DMA_Channel_TypeDef* DMAx_Channeltx=0;				//DMA发送通道请求信号---当DMA串口发送数据完成时，会发起DMA中断
 	DMA_Channel_TypeDef* DMAx_Channelrx=0;				//DMA接收通道请求信号---DMA串口接收由串口发起中断，因此此处接收通道中断不使用
-	SPI_TypeDef *	SPIx	=	pInfo->Port.SPIx;
-	//2)**********基本SPI配置
-	SPI_InitializeSPI(pInfo);					//普通SPI接口配置--未开中断和DMA
 
 	//3)**********SPI通道选择
 	switch(*(u32*)&SPIx)
@@ -447,7 +445,7 @@ void SPI_InitializeDMA(SPIDef *pInfo)		//SPI_FLASH_DMA方式配置
 //		SPI_SSOutputCmd(SPIx, DISABLE);								//如果在主机模式下的片选方式为硬件（SPI_NSS_Hard）方式，此处必须打开，否则NSS无信号
 //	}
 }
-
+//------------------------------------------------------------------------------
 
 
 
@@ -541,71 +539,41 @@ unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsig
   }
   return 0xFFFF;
 }
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	先传高位
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-unsigned char	SPI_ReadWriteByteNR(SPIDef *pInfo,unsigned char Byte)
-{
-	unsigned char i	=	0;	
-	unsigned char Recv	=	0;	
+//------------------------------------------------------------------------------
 
-	for(i=0;i<8;i++)
-	{
-		Recv<<=1;
-		SPI_CLK_LOW(pInfo);
-		if((Byte&0x80)	==	0x80)
-		{
-			SPI_MOSI_HIGH(pInfo);
-		}
-		else
-		{
-			SPI_MOSI_LOW(pInfo);
-		}
-		if(SPI_MISO_In(pInfo))
-		{
-			Recv	|=	0x01;
-		}		
-		SPI_CLK_HIGH(pInfo);
-		Byte<<=1;		
-	}
-	return Recv;
-}
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	函数功能说明
 *输入				: 
 *返回值			:	无
 *******************************************************************************/
-u8	SPI_ReadWriteByteSPI(SPIDef *pInfo,unsigned char Data)
+u8	SPI_ReadWriteByteSPI(spi_def *pInfo,unsigned char Data)
 {
 //____________定义变量
 	u16 retry=0;													//用来进行超时计数
 	//____________等待发送缓冲区为空
-	while(SPI_I2S_GetFlagStatus(pInfo->Port.SPIx, SPI_I2S_FLAG_TXE) == RESET) 		//检查指令SPI发送标志是否为空
+	while(SPI_I2S_GetFlagStatus(pInfo->port.SPIx, SPI_I2S_FLAG_TXE) == RESET) 		//检查指令SPI发送标志是否为空
 	{
 		retry++;
 		if(retry>5000)
 			return 0;
 	}	
 	//____________发送数据
-	SPI_I2S_SendData(pInfo->Port.SPIx, Data);				//发送数据
+	SPI_I2S_SendData(pInfo->port.SPIx, Data);				//发送数据
 	//____________等待接收数据
 	retry=0;	
-	while(SPI_I2S_GetFlagStatus(pInfo->Port.SPIx, SPI_I2S_FLAG_RXNE) == RESET)		//检查指令SPI接收完成标志设置与否
+	while(SPI_I2S_GetFlagStatus(pInfo->port.SPIx, SPI_I2S_FLAG_RXNE) == RESET)		//检查指令SPI接收完成标志设置与否
 	{
 		retry++;
 		if(retry>5000)
 			return 0;
 	}
-	while (SPI_I2S_GetFlagStatus(pInfo->Port.SPIx, SPI_I2S_FLAG_BSY) == SET);
+	while (SPI_I2S_GetFlagStatus(pInfo->port.SPIx, SPI_I2S_FLAG_BSY) == SET);
 	//____________返回接收到的数据
-	return SPI_I2S_ReceiveData(pInfo->Port.SPIx); 			//返回接收到的数据	
+	return SPI_I2S_ReceiveData(pInfo->port.SPIx); 			//返回接收到的数据	
 }
 /*******************************************************************************
 * 函数名			:	function
@@ -616,11 +584,7 @@ u8	SPI_ReadWriteByteSPI(SPIDef *pInfo,unsigned char Data)
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void SPI_WriteBufferSPI(
-										SPIDef *pInfo,
-										u8 *Buffer,
-										u16 BufferSize										
-										)
+void SPI_WriteBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize)
 {
 	unsigned short bufferNum=0;
 //	SPI_Cmd(SPIx, ENABLE);
@@ -641,11 +605,7 @@ void SPI_WriteBufferSPI(
 * 修改内容		: 无
 * 其它			: wegam@sina.com
 *******************************************************************************/
-void SPI_ReadBufferSPI(
-										SPIDef *pInfo,
-										u8 *Buffer,
-										u16 BufferSize										
-										)
+void SPI_ReadBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize)
 {
 	unsigned short bufferNum=0;
 //	SPI_Cmd(SPIx, ENABLE);
@@ -659,127 +619,7 @@ void SPI_ReadBufferSPI(
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//------------------------------------------------------------------------------
 
 
 

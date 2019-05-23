@@ -86,7 +86,7 @@ typedef struct
 } SPIFlashMemoryDef;
 typedef struct	_SPIFlash
 {
-	SPIDef							SPI;				//SPIÇý¶¯
+	spi_def							SPI;				//SPIÇý¶¯
 	SPIFlashCmdDef			Cmd;
 	SPIFlashStatusDef 	Flag;
 	SPIFlashMemoryDef		Memory;

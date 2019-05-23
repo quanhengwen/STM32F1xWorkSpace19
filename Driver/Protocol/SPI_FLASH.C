@@ -55,10 +55,10 @@ SPIFlashDef *FlashSYS	=	0;		//内部驱动使用，不可删除
 *******************************************************************************/
 void SPI_FLASH_Initialize(SPIFlashDef *Flash)
 {
-	SPIDef	*SPIx	=	0;
+	spi_def	*SPIx	=	0;
   SPIx	=	&Flash->SPI;
 	FlashSYS	=	Flash;
-	SPI_Initialize(SPIx);		//SPI接口配置
+	api_spi_configurationNR(SPIx);		//SPI接口配置
 }
 
 /*******************************************************************************

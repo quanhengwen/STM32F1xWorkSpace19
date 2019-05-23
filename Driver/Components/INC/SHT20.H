@@ -1,7 +1,7 @@
 #ifndef __SHT20_H
 #define __SHT20_H
 
-#include "I2C.H"
+#include "IIC.H"
 
 #define  SHT2X_ADR_W 0x80  //SHT2X IIC ∂¡µÿ÷∑
 #define  SHT2X_ADR_R 0x81  //SHT2X IIC –¥µÿ÷∑

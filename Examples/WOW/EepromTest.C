@@ -12,7 +12,7 @@
 
 
 #include "AT24C02.H"
-#include "I2C.H"	
+#include "IIC.H"	
 
 #include	"stdio.h"			//用于printf
 #include	"string.h"		//用于printf
@@ -55,7 +55,7 @@ void EepromTest_Configuration(void)
 	At24c02.HW.SDA_Pin		=	GPIO_Pin_7;
 	At24c02.HW.SCL_Port		=	GPIOB;
 	At24c02.HW.SCL_Pin		=	GPIO_Pin_6;
-	I2C_Configuration(&At24c02);	//启用锁--配置
+	api_iic_configuration_gpio(&At24c02);	//启用锁--配置
 	
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	PWM_OUT(TIM2,PWM_OUTChannel1,1,990);						//PWM设定-20161127版本
