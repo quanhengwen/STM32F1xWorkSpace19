@@ -37,11 +37,11 @@ u8 GBCode[64]={0XFF};
 //---------Ë½ÓÐº¯Êý
 
 
-u32 GT32L32_GetAddress(u8 font, u8 c1, u8 c2, u8 c3, u8 c4);//»ñÈ¡µØÖ·
-u32 GT32L32_GetBufferLen(u8 font, u8 c1, u8 c2, u8 c3, u8 c4);//»ñÈ¡³¤¶È
-u16 r_dat_bat(u32 Address,u32 lengh,u8 *ReadBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
+u32 gt32l32_get_address(u8 font, u8 c1, u8 c2, u8 c3, u8 c4);//»ñÈ¡µØÖ·
+u32 gt32l32_get_length(u8 font, u8 c1, u8 c2, u8 c3, u8 c4);//»ñÈ¡³¤¶È
+u16 gt32l32_read_buffer(u32 start_address,u32 lengh,u8 *ReadBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
 
-u32 GT32L32_GetGB18030(u8 c1, u8 c2, u8 c3, u8 c4);		//12x12µãÕóGB18030ºº×Ö&×Ö·ûµØÖ·¼ÆËã
+u32 gt32l32_get_address_GB18030(u8 c1, u8 c2, u8 c3, u8 c4);		//12x12µãÕóGB18030ºº×Ö&×Ö·ûµØÖ·¼ÆËã
 
 
 u32 GT32L32_GetBarCode_13(u8 * BAR_NUM);															//EAN13ÌõÐÎÂëµ÷ÓÃ³ÌÐò
@@ -61,245 +61,89 @@ u32 GT32L32_BIG5_To_GBK(u16 BIG5_Code,u8 *GetBuffer);									//BIG5×ªGBK×ª»»Ëã·
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void GT32L32_Initialize(spi_def *SpiPort)
+void api_gt32l32_configuration(GT32L32Def *pInfo)
 {
-  pSPI  = SpiPort;
+  pSPI  = &pInfo->SPI;
   api_spi_configurationNR(pSPI);				//ÆÕÍ¨SPIÍ¨Ñ¶·½Ê½ÅäÖÃ
-	SPI_CS_LOW(pSPI);
-	SPI_CS_HIGH(pSPI);
+	spi_set_nss_low(pSPI);
+	spi_set_nss_high(pSPI);
 }
+//------------------------------------------------------------------------------
 
-/*************************************************************************************************** 
-32x32µãÕóGB18030ºº×Ö&×Ö·û
-º¯Êý£ºu32 GB18030_32_GetData (u8 c1, u8 c2, u8 c3, u8 c4)  
-¹¦ÄÜ£º¼ÆËãºº×ÖµãÕóÔÚÐ¾Æ¬ÖÐµÄµØÖ· 
-²ÎÊý£ºc1,c2,c3,c4£º4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2´« Èë£¬c3=0,c4=0 
-·µ»Ø£ººº×ÖµãÕóµÄ×Ö½ÚµØÖ·(byte address)¡£Èç¹ûÓÃ»§ÊÇ°´ word mode ¶ÁÈ¡µãÕóÊý¾Ý£¬
-ÔòÆäµØ Ö·(word address)Îª×Ö½ÚµØÖ·³ýÒÔ2£¬¼´£ºword address = byte address / 2 . 
-ÀýÈç£ºBaseAdd: ËµÃ÷ºº×ÖµãÕóÊý¾ÝÔÚ×Ö¿âÐ¾Æ¬ÖÐµÄÆðÊ¼µØÖ·£¬¼´BaseAdd£½0x47AE10; ¡°°¡¡±×ÖµÄÄÚÂëÎª0xb0a1,
-Ôòbyte address = gt(0xb0,0xa1,0x00,0x00) *128+BaseAdd word address = byte address / 2 
-¡°.¡±×ÖµÄÄÚÂëÎª0x8139ee39,Ôòbyte address = gt(0x81, 0x39,0xee,0x39) *128+ BaseAdd word address = byte address / 2 
-****************************************************************************************************/
-u32 GT32L32_GetGB18030(u8 c1, u8 c2, u8 c3, u8 c4) 
-{ 
-	u32 Address=0;						//Address£º¶ÔÓ¦×Ö·ûµãÕóÔÚÐ¾Æ¬ÖÐµÄ×Ö½ÚµØÖ·¡£
-	u32  BaseAdd=0x47AE10;		//32x32µãÕó×Ö¿âÆðÊ¼µØÖ·£ºBaseAdd£½0x47AE10£¬
-	if(c2==0x7f) 
-	{
-		return (BaseAdd);
-	}
-	//====================Section 1
-	if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
-	{
-		Address= (c1 - 0xA1) * 94 + (c2 - 0xA1);
-	}
-	//====================Section 5	
-//	else if((c1>=0xa8 && c1 <= 0xa9) && c2<0xa1) 	//Section 5
-//	{ 
-//		if(c2>0x7f)
-//			c2--; 
-//		Address=(c1-0xa8)*96 + (c2-0x40)+846; 
-//	}
-	else if((c1>=0xa8 && c1 <= 0xa9)) 	//Section 5
-	{ 
-		if(c2>0x7f)
-			c2--; 
-		Address=(c1-0xa8)*96 + (c2-0x40)+846; 
-	}
-	//====================Section 2
-	if((c1>=0xb0 && c1 <= 0xf7) && c2>=0xa1) 			//Section 2
-	{
-		Address= (c1 - 0xB0) * 94 + (c2 - 0xA1)	+	1038-192;
-	}
-	//====================Section 3
-	else if((c1<0xa1 && c1>=0x81) && c2>=0x40 ) 	//Section 3
-	{ 
-		if(c2>0x7f) 
-			c2--;
-		Address=(c1-0x81)*190 + (c2-0x40) + 1038 +	6768-192;
-	}
-	//====================Section 4
-	else if(c1>=0xaa && c2<0xa1) 								//Section 4
-	{ 
-		if(c2>0x7f) 
-			c2--; 
-		Address=(c1-0xaa)*96 + (c2-0x40) + 1038 +	12848-192; 
-	}
-	else if(c1==0x81 && c2>=0x39) 							//ËÄ×Ö½ÚÇø1 
-	{ 
-		Address =1038 + 21008+(c3-0xEE)*10+c4-0x39; 
-	} 
-	else if(c1==0x82)														//ËÄ×Ö½ÚÇø2 
-	{ 
-		Address =1038 + 21008+161+(c2-0x30)*1260+(c3-0x81)*10+c4-0x30; 
-	} 
-	return	Address;  
-}
+
+
 /*******************************************************************************
-*º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	º¯Êý¹¦ÄÜËµÃ÷
-*ÊäÈë				: 4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2 ´«Èë£¬c3=0,c4=0 
-*·µ»ØÖµ			:	ºº×ÖµãÕóµÄ×Ö½ÚµØÖ·(Address)¡£
+* º¯ÊýÃû			:	api_gt32l32_get_code
+* ¹¦ÄÜÃèÊö		:	´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È 
+* ÊäÈë			: font 			×ÖÌå´óÐ¡
+							word			×Ö·ûÄÚÂëÖµ
+							rxBuffer	½ÓÊÕÊý¾ÝµÄ»º´æ
+* ·µ»ØÖµ			: »ñÈ¡µÄ×Ö½ÚÊý
+* ÐÞ¸ÄÊ±¼ä		: ÎÞ
+* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
+* ÆäËü			: wegam@sina.com
 *******************************************************************************/
-u32 GT32L32_GetAddress(u8 font, u8 c1, u8 c2, u8 c3, u8 c4)
+u16 api_gt32l32_get_code(u8 font,u16 word,u8 *rxBuffer)
 {
-	u32 Address=0;	//ºº×ÖµãÕóµÄ×Ö½ÚµØÖ·(Address)
-	u32 BaseAddr=0;
-	//ÅÐ¶Ïµ¥×Ö½ÚÓëË«×Ö½Ú×Ö·û£¨ºº×ÖÍ¨³£ÎªË«×Ö½Ú£©
-	if(c1>0x80)				//Ë«×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
-	{
-		//×ÖÌå´óÐ¡ÅÐ¶Ï
-		if(font==12)				//(u32)0x113D0E,			//12x12µãÕóGB18030ºº×Ö/
-		{			
-			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*24+0x113D0E;
-			}
-			else
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	0,	0)*24+0x113D0E+192*24;
-			}
-		}
-		else if(font==16)		//(u32)0x194FDE,			//16x16µãÕóGB18030ºº×Ö
-		{
-			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*32+0x194FDE;
-			}
-			else if((c1>=0xA8 && c1 <= 0xA9)) 			
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*32+0x194FDE;
-			}
-			else
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*32+0x194FDE+192*32;
-			}
-		}
-		else if(font==24)		//(u32)0x2743DE,			//24x24µãÕóGB18030ºº×Ö
-		{
-			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*72+0x2743DE;
-			}
-			else
-			{
-				Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*72+0x2743DE+192*72;
-			}
-		}
-		else if(font==32)		//(u32)0x47AE10,			//32x32µãÕóGB18030ºº×Ö
-		{
-			Address=GT32L32_GetGB18030(c1,	c2,	c3,	c4)*128+0x47AE10;
-		}
-	}
-	else							//µ¥×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
-	{
-		if  ((c1 >0x20)&&(c1<=0x7e))		//ASCIICode ASCIIÂë±íÎª£¨0x00~0x7F)	£¨0x00~0x20Îª¿ØÖÆ·û)
-		{	
-			switch(font)
-			{
-				case 0x100000:	Address=(c1-0x20)*8+0x100000;		//(u32)0x100000,			//5x7µãÕóASCII±ê×¼×Ö·û
-							break ;
-				case 0x100300:	Address=(c1-0x20)*8+0x100300;		//(u32)0x100300,			//7x8µãÕóASCII±ê×¼×Ö·û
-							break ;
-				case 0x100600:	Address=(c1-0x20)*8+0x100600;		//(u32)0x100600,			//7x8µãÕóASCII´ÖÌå×Ö·û
-							break ;
-				case 12:	      Address=(c1-0x20)*12+0x100900;  //(u32)0x100900,			//6x12µãÕóASCII×Ö·û
-								break ;
-				case 0x100D80:	Address=(c1-0x20)*16+0x100D80;  //(u32)0x100D80,			//8x16µãÕóASCII±ê×¼×Ö·û
-							break ;  
-				case 16:				Address=(c1-0x20)*16+0x101580;  //(u32)0x101580,			//8x16µãÕóASCII´ÖÌå×Ö·û
-							break ;
-				case 24:				Address=(c1-0x20)*48+0x101B80;  //(u32)0x101B80,			//12x24µãÕóASCII±ê×¼×Ö·û
-							break ;  
-				case 32: 				Address=(c1-0x20)*64+0x102D80;  //(u32)0x102D80,			//16x32µãÕóASCII±ê×¼×Ö·û
-							break ;
-				case 52: 	      Address=(c1-0x20)*64+0x104580;  //(u32)0x104580,			//16x32µãÕóASCII´ÖÌå×Ö·û
-							break ;
-				case 62: 	      Address=(c1-0x20)*26+0x105D80;  //(u32)0x105D80,			//12µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
-							break ;
-				case 0x106740: 	Address=(c1-0x20)*34+0x106740;  //(u32)0x106740,			//16µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
-							break ; 
-				case 0x107400: 	Address=(c1-0x20)*74+0x107400;  //(u32)0x107400,			//24µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
-							break ;
-				case 0x108FC0: 	Address=(c1-0x20)*130+0x108FC0; //(u32)0x108FC0,			//32µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
-							break ;
-				case 121: 	    Address=(c1-0x20)*26+0x10C080;  //(u32)0x10C080,			//12µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
-							break ;
-				case 56: 	      Address=(c1-0x20)*34+0x10CA50;  //(u32)0x10CA50,			//16µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
-							break ;
-				case 54: 	      Address=(c1-0x20)*74+0x10D740;  //(u32)0x10D740,			//24µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
-							break ;
-				case 36: 	      Address=(c1-0x20)*130+0x10F340; //(u32)0x10F340,			//32µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
-							break ;  
-				default: 
-							break ;
-			}
-		}	
-	}	
-	return(Address);
-}
-/*************************************************************************************************** 
-16x16µãÕóGB18030ºº×Ö&×Ö·û
-º¯Êý£ºu8 GB18030_16_GetData(u8 c1, u8 c2, u8 c3, u8 c4) 
-¹¦ÄÜ£º¼ÆËãºº×ÖµãÕóÔÚÐ¾Æ¬ÖÐµÄµØÖ·,¶ÁÈ¡µãÕóÊý¾Ýµ½Ö¸¶¨Êý×é¡£ 
-²ÎÊý£ºc1,c2,c3,c4£º
-4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2 ´«Èë£¬c3=0,c4=0 
-·µ»Ø£ººº×ÖµãÕóµÄ×Ö½ÚµØÖ·(byte address)¡£
-Èç¹ûÓÃ»§ÊÇ°´ word mode ¶ÁÈ¡µãÕóÊý¾Ý£¬ÔòÆäµØÖ·(word address)Îª×Ö½ÚµØÖ·³ýÒÔ2£¬
-¼´£ºword address = byte address / 2 . ÀýÈç£º
-BaseAdd: ËµÃ÷ºº×ÖµãÕóÊý¾ÝÔÚ×Ö¿âÐ¾Æ¬ÖÐµÄÆðÊ¼µØÖ·£¬¼´BaseAdd£½0x114FDE;
- ¡°°¡¡±×ÖµÄÄÚÂëÎª0xb0a1,Ôòbyte address = GB18030_16_GetData(0xb0,0xa1,0x00,0x00) *32+BaseAdd; 
-word address = byte address / 2 
-¡°.¡±×ÖµÄÄÚÂëÎª0x8139ee39,Ôòbyte address = GB18030_16_GetData(0x81,0x39,0xee,0x39) *32+ BaseAdd
-word address = byte address / 2 
-****************************************************************************************************/
-u32 GT32L32_GetBufferLen(u8 font, u8 c1, u8 c2, u8 c3, u8 c4) 
-{	
+	//____________¶¨Òå±äÁ¿
+	u32 i=0;
+	u32 Address=0;
 	u32 lengh=0;
-	//ÅÐ¶Ïµ¥×Ö½ÚÓëË«×Ö½Ú×Ö·û£¨ºº×ÖÍ¨³£ÎªË«×Ö½Ú£©
-	if(c1>0x80)				//Ë«×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
-	{	
-		//×ÖÌå´óÐ¡ÅÐ¶Ï
-		if(font==12)
-		{
-			lengh=24;		//12/8/1(ÁÐ£©x12£¨ÐÐ£©
-		}
-		else if(font==16)
-		{
-			lengh=32;		//16/8/1(ÁÐ£©x16£¨ÐÐ£©
-		}
-		else if(font==24)
-		{
-			lengh=72;		//24/8/1(ÁÐ£©x24£¨ÐÐ£©
-		}
-		else if(font==32)
-		{
-			lengh=128;	//32/8/1(ÁÐ£©x32£¨ÐÐ£©
-		}
+	//Çø·Öµ¥Ë«×Ö½Ú
+	if(word>>8>=0x80)
+	{
+		Address	=	gt32l32_get_address(font, (u8)(word>>8), (u8)word, 0, 0);		//»ñÈ¡µØÖ·
+		lengh= gt32l32_get_length(font, (u8)(word>>8), (u8)word, 0, 0);			//»ñÈ¡³¤¶È
 	}
 	else
 	{
-		//×ÖÌå´óÐ¡ÅÐ¶Ï
-		if(font==12)
-		{
-			lengh=16;		//12/8/2(ÁÐ£©x12£¨ÐÐ£©
-		}
-		else if(font==16)
-		{
-			lengh=16;		//16/8/2(ÁÐ£©x16£¨ÐÐ£©
-		}
-		else if(font==24)
-		{
-			lengh=48;		//24/8/2(ÁÐ£©x24£¨ÐÐ£©
-		}
-		else if(font==32)
-		{
-			lengh=64;	//32/8/2(ÁÐ£©x32£¨ÐÐ£©
-		}
-	}
-	return lengh;	 
+		Address	=	gt32l32_get_address(font, (u8)word, 0, 0, 0);			//»ñÈ¡µØÖ·
+		lengh= gt32l32_get_length(font, (u8)word, 0, 0, 0);			//»ñÈ¡³¤¶È
+	}	
+  gt32l32_read_buffer(Address,lengh,rxBuffer);		//¶ÁÈ¡Êý¾Ý
+	return lengh;
 }
+/*******************************************************************************
+* º¯ÊýÃû			:	api_gt32l32_get_antenna
+* ¹¦ÄÜÃèÊö		:	ÌìÏß·ûºÅ¶ÁÈ¡³ÌÐò£¬»ñÈ¡12X12ÌìÏßµ÷ÓÃµØÖ·,È¡³öµãÕóÊý¾Ý
+* ÊäÈë			: NUM 0123´ø±íÌìÏßÐÅºÅÇ¿¶È
+							GetBuffer Êý¾Ý½ÓÊÕ»º´æ
+* ·µ»ØÖµ			: ¶ÁÈ¡µÄÊý¾Ý³¤¶È
+* ÐÞ¸ÄÊ±¼ä		: ÎÞ
+* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
+* ÆäËü			: wegam@sina.com
+*******************************************************************************/
+u32 api_gt32l32_get_antenna(u8	NUM,u8 *GetBuffer)
+{
+  u32 lengh=24;
+	u32 Address,BaseAdd=0x47AD32;  
+	Address=NUM*24+BaseAdd;
 
+  gt32l32_read_buffer(Address,lengh,GetBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
+  
+	return lengh;
+}
+/*******************************************************************************
+* º¯ÊýÃû			:	GT32L32_GetBatteryCode
+* ¹¦ÄÜÃèÊö		:	µç³Ø·ûºÅ¶ÁÈ¡³ÌÐò£¬»ñÈ¡12X12µç³Øµ÷ÓÃµØÖ·,È¡³öµãÕóÊý¾Ý
+* ÊäÈë			: NUM 0123´ø±íµç³ØµçÁ¿
+							GetBuffer Êý¾Ý½ÓÊÕ»º´æ
+* ·µ»ØÖµ			: ¶ÁÈ¡µÄÊý¾Ý³¤¶È
+* ÐÞ¸ÄÊ±¼ä		: ÎÞ
+* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
+* ÆäËü			: wegam@sina.com
+*******************************************************************************/
+u32 api_gt32l32_get_battery(u8	NUM,u8 *GetBuffer)
+{
+  u32 lengh=24;
+	u32 Address, BaseAdd=0x47ADAA;
+	Address=BaseAdd+NUM*24;
+  
+  gt32l32_read_buffer(Address,lengh,GetBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
+  
+	return lengh;
+}
+//------------------------------------------------------------------------------
 
 
 /**********************************************************************
@@ -482,6 +326,247 @@ u32 GT32L32_GetBarCode_128(u8	*BAR_NUM,u8	flag)
 }
 
 
+//------------------------------------------------------------------------------
+
+
+
+
+
+/*************************************************************************************************** 
+32x32µãÕóGB18030ºº×Ö&×Ö·û
+º¯Êý£ºu32 gt32l32_get_address_GB18030 (u8 c1, u8 c2, u8 c3, u8 c4)  
+¹¦ÄÜ£º¼ÆËãºº×ÖµãÕóÔÚÐ¾Æ¬ÖÐµÄµØÖ· 
+²ÎÊý£ºc1,c2,c3,c4£º4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2´« Èë£¬c3=0,c4=0 
+·µ»Ø£ººº×ÖµãÕóµÄ×Ö½ÚµØÖ·(byte address)¡£Èç¹ûÓÃ»§ÊÇ°´ word mode ¶ÁÈ¡µãÕóÊý¾Ý£¬
+ÔòÆäµØ Ö·(word address)Îª×Ö½ÚµØÖ·³ýÒÔ2£¬¼´£ºword address = byte address / 2 . 
+ÀýÈç£ºBaseAdd: ËµÃ÷ºº×ÖµãÕóÊý¾ÝÔÚ×Ö¿âÐ¾Æ¬ÖÐµÄÆðÊ¼µØÖ·£¬¼´BaseAdd£½0x47AE10; ¡°°¡¡±×ÖµÄÄÚÂëÎª0xb0a1,
+Ôòbyte address = gt(0xb0,0xa1,0x00,0x00) *128+BaseAdd word address = byte address / 2 
+¡°.¡±×ÖµÄÄÚÂëÎª0x8139ee39,Ôòbyte address = gt(0x81, 0x39,0xee,0x39) *128+ BaseAdd word address = byte address / 2 
+****************************************************************************************************/
+u32 gt32l32_get_address_GB18030(u8 c1, u8 c2, u8 c3, u8 c4) 
+{ 
+	u32 Address=0;						//Address£º¶ÔÓ¦×Ö·ûµãÕóÔÚÐ¾Æ¬ÖÐµÄ×Ö½ÚµØÖ·¡£
+	u32  BaseAdd=0x47AE10;		//32x32µãÕó×Ö¿âÆðÊ¼µØÖ·£ºBaseAdd£½0x47AE10£¬
+	if(c2==0x7f) 
+	{
+		return (BaseAdd);
+	}
+	//====================Section 1
+	if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
+	{
+		Address= (c1 - 0xA1) * 94 + (c2 - 0xA1);
+	}
+	//====================Section 5	
+//	else if((c1>=0xa8 && c1 <= 0xa9) && c2<0xa1) 	//Section 5
+//	{ 
+//		if(c2>0x7f)
+//			c2--; 
+//		Address=(c1-0xa8)*96 + (c2-0x40)+846; 
+//	}
+	else if((c1>=0xa8 && c1 <= 0xa9)) 	//Section 5
+	{ 
+		if(c2>0x7f)
+			c2--; 
+		Address=(c1-0xa8)*96 + (c2-0x40)+846; 
+	}
+	//====================Section 2
+	if((c1>=0xb0 && c1 <= 0xf7) && c2>=0xa1) 			//Section 2
+	{
+		Address= (c1 - 0xB0) * 94 + (c2 - 0xA1)	+	1038-192;
+	}
+	//====================Section 3
+	else if((c1<0xa1 && c1>=0x81) && c2>=0x40 ) 	//Section 3
+	{ 
+		if(c2>0x7f) 
+			c2--;
+		Address=(c1-0x81)*190 + (c2-0x40) + 1038 +	6768-192;
+	}
+	//====================Section 4
+	else if(c1>=0xaa && c2<0xa1) 								//Section 4
+	{ 
+		if(c2>0x7f) 
+			c2--; 
+		Address=(c1-0xaa)*96 + (c2-0x40) + 1038 +	12848-192; 
+	}
+	else if(c1==0x81 && c2>=0x39) 							//ËÄ×Ö½ÚÇø1 
+	{ 
+		Address =1038 + 21008+(c3-0xEE)*10+c4-0x39; 
+	} 
+	else if(c1==0x82)														//ËÄ×Ö½ÚÇø2 
+	{ 
+		Address =1038 + 21008+161+(c2-0x30)*1260+(c3-0x81)*10+c4-0x30; 
+	} 
+	return	Address;  
+}
+/*******************************************************************************
+*º¯ÊýÃû			:	gt32l32_get_address
+*¹¦ÄÜÃèÊö		:	º¯Êý¹¦ÄÜËµÃ÷
+*ÊäÈë				: 4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2 ´«Èë£¬c3=0,c4=0 
+*·µ»ØÖµ			:	ºº×ÖµãÕóµÄ×Ö½ÚµØÖ·(Address)¡£
+*******************************************************************************/
+u32 gt32l32_get_address(u8 font, u8 c1, u8 c2, u8 c3, u8 c4)
+{
+	u32 Address=0;	//ºº×ÖµãÕóµÄ×Ö½ÚµØÖ·(Address)
+	u32 BaseAddr=0;
+	//ÅÐ¶Ïµ¥×Ö½ÚÓëË«×Ö½Ú×Ö·û£¨ºº×ÖÍ¨³£ÎªË«×Ö½Ú£©
+	if(c1>0x80)				//Ë«×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
+	{
+		//×ÖÌå´óÐ¡ÅÐ¶Ï
+		if(font==12)				//(u32)0x113D0E,			//12x12µãÕóGB18030ºº×Ö/
+		{			
+			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*24+0x113D0E;
+			}
+			else
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	0,	0)*24+0x113D0E+192*24;
+			}
+		}
+		else if(font==16)		//(u32)0x194FDE,			//16x16µãÕóGB18030ºº×Ö
+		{
+			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*32+0x194FDE;
+			}
+			else if((c1>=0xA8 && c1 <= 0xA9)) 			
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*32+0x194FDE;
+			}
+			else
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*32+0x194FDE+192*32;
+			}
+		}
+		else if(font==24)		//(u32)0x2743DE,			//24x24µãÕóGB18030ºº×Ö
+		{
+			if((c1>=0xA1 && c1 <= 0xAB) && c2>=0xA1) 			//Section 1
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*72+0x2743DE;
+			}
+			else
+			{
+				Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*72+0x2743DE+192*72;
+			}
+		}
+		else if(font==32)		//(u32)0x47AE10,			//32x32µãÕóGB18030ºº×Ö
+		{
+			Address=gt32l32_get_address_GB18030(c1,	c2,	c3,	c4)*128+0x47AE10;
+		}
+	}
+	else							//µ¥×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
+	{
+		if  ((c1 >0x20)&&(c1<=0x7e))		//ASCIICode ASCIIÂë±íÎª£¨0x00~0x7F)	£¨0x00~0x20Îª¿ØÖÆ·û)
+		{	
+			switch(font)
+			{
+				case 0x100000:	Address=(c1-0x20)*8+0x100000;		//(u32)0x100000,			//5x7µãÕóASCII±ê×¼×Ö·û
+							break ;
+				case 0x100300:	Address=(c1-0x20)*8+0x100300;		//(u32)0x100300,			//7x8µãÕóASCII±ê×¼×Ö·û
+							break ;
+				case 0x100600:	Address=(c1-0x20)*8+0x100600;		//(u32)0x100600,			//7x8µãÕóASCII´ÖÌå×Ö·û
+							break ;
+				case 12:	      Address=(c1-0x20)*12+0x100900;  //(u32)0x100900,			//6x12µãÕóASCII×Ö·û
+								break ;
+				case 0x100D80:	Address=(c1-0x20)*16+0x100D80;  //(u32)0x100D80,			//8x16µãÕóASCII±ê×¼×Ö·û
+							break ;  
+				case 16:				Address=(c1-0x20)*16+0x101580;  //(u32)0x101580,			//8x16µãÕóASCII´ÖÌå×Ö·û
+							break ;
+				case 24:				Address=(c1-0x20)*48+0x101B80;  //(u32)0x101B80,			//12x24µãÕóASCII±ê×¼×Ö·û
+							break ;  
+				case 32: 				Address=(c1-0x20)*64+0x102D80;  //(u32)0x102D80,			//16x32µãÕóASCII±ê×¼×Ö·û
+							break ;
+				case 52: 	      Address=(c1-0x20)*64+0x104580;  //(u32)0x104580,			//16x32µãÕóASCII´ÖÌå×Ö·û
+							break ;
+				case 62: 	      Address=(c1-0x20)*26+0x105D80;  //(u32)0x105D80,			//12µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
+							break ;
+				case 0x106740: 	Address=(c1-0x20)*34+0x106740;  //(u32)0x106740,			//16µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
+							break ; 
+				case 0x107400: 	Address=(c1-0x20)*74+0x107400;  //(u32)0x107400,			//24µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
+							break ;
+				case 0x108FC0: 	Address=(c1-0x20)*130+0x108FC0; //(u32)0x108FC0,			//32µãÕó²»µÈ¿íASCII·½Í·£¨Arial£©×Ö·û
+							break ;
+				case 121: 	    Address=(c1-0x20)*26+0x10C080;  //(u32)0x10C080,			//12µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
+							break ;
+				case 56: 	      Address=(c1-0x20)*34+0x10CA50;  //(u32)0x10CA50,			//16µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
+							break ;
+				case 54: 	      Address=(c1-0x20)*74+0x10D740;  //(u32)0x10D740,			//24µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
+							break ;
+				case 36: 	      Address=(c1-0x20)*130+0x10F340; //(u32)0x10F340,			//32µãÕó²»µÈ¿íASCII°×Õý£¨Times New Roman£©×Ö·û
+							break ;  
+				default: 
+							break ;
+			}
+		}	
+	}	
+	return(Address);
+}
+/*************************************************************************************************** 
+16x16µãÕóGB18030ºº×Ö&×Ö·û
+º¯Êý£ºu8 GB18030_16_GetData(u8 c1, u8 c2, u8 c3, u8 c4) 
+¹¦ÄÜ£º¼ÆËãºº×ÖµãÕóÔÚÐ¾Æ¬ÖÐµÄµØÖ·,¶ÁÈ¡µãÕóÊý¾Ýµ½Ö¸¶¨Êý×é¡£ 
+²ÎÊý£ºc1,c2,c3,c4£º
+4×Ö½Úºº×ÖÄÚÂëÍ¨¹ý²ÎÊýc1,c2,c3,c4´«Èë£¬Ë«×Ö½ÚÄÚÂëÍ¨¹ý²ÎÊýc1,c2 ´«Èë£¬c3=0,c4=0 
+·µ»Ø£ººº×ÖµãÕóµÄ×Ö½ÚµØÖ·(byte address)¡£
+Èç¹ûÓÃ»§ÊÇ°´ word mode ¶ÁÈ¡µãÕóÊý¾Ý£¬ÔòÆäµØÖ·(word address)Îª×Ö½ÚµØÖ·³ýÒÔ2£¬
+¼´£ºword address = byte address / 2 . ÀýÈç£º
+BaseAdd: ËµÃ÷ºº×ÖµãÕóÊý¾ÝÔÚ×Ö¿âÐ¾Æ¬ÖÐµÄÆðÊ¼µØÖ·£¬¼´BaseAdd£½0x114FDE;
+ ¡°°¡¡±×ÖµÄÄÚÂëÎª0xb0a1,Ôòbyte address = GB18030_16_GetData(0xb0,0xa1,0x00,0x00) *32+BaseAdd; 
+word address = byte address / 2 
+¡°.¡±×ÖµÄÄÚÂëÎª0x8139ee39,Ôòbyte address = GB18030_16_GetData(0x81,0x39,0xee,0x39) *32+ BaseAdd
+word address = byte address / 2 
+****************************************************************************************************/
+u32 gt32l32_get_length(u8 font, u8 c1, u8 c2, u8 c3, u8 c4) 
+{	
+	u32 lengh=0;
+	//ÅÐ¶Ïµ¥×Ö½ÚÓëË«×Ö½Ú×Ö·û£¨ºº×ÖÍ¨³£ÎªË«×Ö½Ú£©
+	if(c1>0x80)				//Ë«×Ö½Ú£¬ASCIIÂë±íÎª£¨0x00~0x7F)
+	{	
+		//×ÖÌå´óÐ¡ÅÐ¶Ï
+		if(font==12)
+		{
+			lengh=24;		//12/8/1(ÁÐ£©x12£¨ÐÐ£©
+		}
+		else if(font==16)
+		{
+			lengh=32;		//16/8/1(ÁÐ£©x16£¨ÐÐ£©
+		}
+		else if(font==24)
+		{
+			lengh=72;		//24/8/1(ÁÐ£©x24£¨ÐÐ£©
+		}
+		else if(font==32)
+		{
+			lengh=128;	//32/8/1(ÁÐ£©x32£¨ÐÐ£©
+		}
+	}
+	else
+	{
+		//×ÖÌå´óÐ¡ÅÐ¶Ï
+		if(font==12)
+		{
+			lengh=16;		//12/8/2(ÁÐ£©x12£¨ÐÐ£©
+		}
+		else if(font==16)
+		{
+			lengh=16;		//16/8/2(ÁÐ£©x16£¨ÐÐ£©
+		}
+		else if(font==24)
+		{
+			lengh=48;		//24/8/2(ÁÐ£©x24£¨ÐÐ£©
+		}
+		else if(font==32)
+		{
+			lengh=64;	//32/8/2(ÁÐ£©x32£¨ÐÐ£©
+		}
+	}
+	return lengh;	 
+}
+
+//------------------------------------------------------------------------------
+
+
+
 /**********************************************************
 UNICODE×ªGBKÂë±íÓ³ÉäËã·¨,½ö1&3×Ö·ûÇø 
 º¯Êý£ºWORD U2G(WORD Unicode) 
@@ -491,7 +576,6 @@ UNICODE×ªGBKÂë±íÓ³ÉäËã·¨,½ö1&3×Ö·ûÇø
 ·µ»Ø£º¶ÔÓ¦µÄGBÂëÔÚ×Ö¿âÖÐ´æ·ÅµÄµØÖ·¡£
 £¨×¢:¶ÁÈ¡¶ÔÓ¦µØÖ·2×Ö½ÚÊý¾Ý¼´Îªunicode¶ÔÓ¦µÄGBÂë£©¡£
 ***********************************************************/ 
-
 u16 GT32L32_U2G_13(u16 Unicode) 
 {
 	u16 GB_Code; 
@@ -664,7 +748,12 @@ u32 GT32L32_BIG5_To_GBK(u16 BIG5_Code,u8 *GetBuffer)
 	}
 	return Address; 
 }
+//------------------------------------------------------------------------------
 
+
+
+
+//==============Ó²¼þÇý¶¯²ã
 /*******************************************************************************
 * º¯ÊýÃû			:	GT32L32_ReadStatus
 * ¹¦ÄÜÃèÊö		:	¶ÁÈ¡Ð¾Æ¬×´Ì¬ 
@@ -680,17 +769,17 @@ u8 GT32L32_ReadStatus(GT32L32Def *pInfo)
 	u8	ChipStatus=0;
 	u8	Address=0x05;	//0X60 OR 0XC7
 	//____________Ê¹ÄÜÆ¬Ñ¡
-	GPIO_ResetBits(GPIOC,GPIO_Pin_6);
-	SPI_Cmd(pInfo->SPI.port.SPIx, ENABLE);
+	spi_set_nss_low(pSPI);
+//	SPI_Cmd(pInfo->SPI.port.SPIx, ENABLE);
 	//____________·¢ËÍµØÖ·Êý¾Ý	
-	SPI_ReadWriteByteSPI(&pInfo->SPI,Address);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(&pInfo->SPI,Address);						//·¢ËÍµØÖ·
 	//____________½ÓÊÕÊý¾Ý	
 	
-	ChipStatus=SPI_ReadWriteByteSPI(&pInfo->SPI,0XFF);// ´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
+	ChipStatus=api_spi_ReadWrite_byte(&pInfo->SPI,0XFF);// ´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
 
 	//____________È¡ÏûÆ¬Ñ¡	
-	GPIO_SetBits(GPIOC,GPIO_Pin_6);
-	SPI_Cmd(pInfo->SPI.port.SPIx, DISABLE);
+	spi_set_nss_high(pSPI);
+	//SPI_Cmd(pInfo->SPI.port.SPIx, DISABLE);
 
 	return ChipStatus;
 }
@@ -714,15 +803,15 @@ void API_GT32L32M0180_SectorErase(unsigned short UserSectorNum)
 	Address			=	Sector*4096;		//ÆðÊ¼ÉÈÇø
 	
 	//____________Ê¹ÄÜÆ¬Ñ¡
-	SPI_CS_LOW(pSPI);
+	spi_set_nss_low(pSPI);
 	//____________Ð´ÈëÃüÁî
-	SPI_ReadWriteByteSPI(pSPI,CMD);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,CMD);						//·¢ËÍµØÖ·
 	//____________Ð´ÈëµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address>>16);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address>>8);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address>>16);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address>>8);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address);						//·¢ËÍµØÖ·
 	//____________È¡ÏûÆ¬Ñ¡	
-	SPI_CS_HIGH(pSPI);
+	spi_set_nss_high(pSPI);
 }
 /*******************************************************************************
 * º¯ÊýÃû			:	GT32L32_ChipErase
@@ -746,20 +835,20 @@ void API_GT32L32M0180_PageWrite(unsigned short UserPageNum,unsigned char* UserDa
 	Address			=	Sector*4096;		//ÆðÊ¼ÉÈÇø	
 	
 	//____________Ê¹ÄÜÆ¬Ñ¡
-	SPI_CS_LOW(pSPI);
+	spi_set_nss_low(pSPI);
 	//____________Ð´ÈëÃüÁî
-	SPI_ReadWriteByteSPI(pSPI,CMD);								//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,CMD);								//·¢ËÍµØÖ·
 	//____________Ð´ÈëµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address>>16);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address>>8);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address>>16);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address>>8);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,Address);						//·¢ËÍµØÖ·
 	//____________Ð´ÈëÊý¾Ý	
 	for(i=0;i<256;i++)
 	{
-		SPI_ReadWriteByteSPI(pSPI,Buffer[i]);	//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
+		api_spi_ReadWrite_byte(pSPI,Buffer[i]);	//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
 	}
 	//____________È¡ÏûÆ¬Ñ¡	
-	SPI_CS_HIGH(pSPI);
+	spi_set_nss_high(pSPI);
 }
 /*******************************************************************************
 * º¯ÊýÃû			:	GT32L32_ChipErase
@@ -777,18 +866,23 @@ void GT32L32_ChipErase(GT32L32Def *pInfo)
 	u8	len=255;
 	u8	Address=0x60;	//0X60 OR 0XC7
 	//____________Ê¹ÄÜÆ¬Ñ¡
-	SPI_CS_LOW(pSPI);
+	spi_set_nss_low(pSPI);
 
-	SPI_ReadWriteByteSPI(&pInfo->SPI,Address);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(&pInfo->SPI,Address);						//·¢ËÍµØÖ·
 
 	for(i=0;i<len;i++)
 	{
-	 SPI_ReadWriteByteSPI(&pInfo->SPI,0XFF);// ´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
+	 api_spi_ReadWrite_byte(&pInfo->SPI,0XFF);// ´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
 	}
 	//____________È¡ÏûÆ¬Ñ¡	
-	SPI_CS_HIGH(pSPI);
-	SPI_Cmd(pInfo->SPI.port.SPIx,DISABLE);
+	spi_set_nss_high(pSPI);
+//	SPI_Cmd(pInfo->SPI.port.SPIx,DISABLE);
 }
+//------------------------------------------------------------------------------
+
+
+
+
 /*******************************************************************************
 * º¯ÊýÃû			:	GT32L32_ReadBuffer
 * ¹¦ÄÜÃèÊö		:	´Ó×Ö¿âÖÐÖ¸¶¨µØÖ·¿ªÊ¼¶ÁÈ¡Ö¸¶¨¸öÊýµÄÊý¾Ý
@@ -798,112 +892,34 @@ void GT32L32_ChipErase(GT32L32Def *pInfo)
 * ÐÞ¸ÄÄÚÈÝ		: ÎÞ
 * ÆäËü			: wegam@sina.com
 *******************************************************************************/
-u16 r_dat_bat(
-												u32 Address,					  //ÆðÊ¼µØÖ·
-												u32 lengh,						  //ÐèÒª¶ÁÈ¡µÄ³¤¶È
-                        u8 *ReadBuffer				  //½ÓÊÕÊý¾ÝµÄ»º´æ
-											)
+u16 gt32l32_read_buffer(u32 start_address,u32 lengh,u8 *ReadBuffer)
 {
 	//____________¶¨Òå±äÁ¿
 	u32 i=0;
 	//____________Ê¹ÄÜÆ¬Ñ¡
 //	SPI_Cmd(pInfo->SPI.Port.SPIx, ENABLE);
-	SPI_CS_LOW(pSPI);
-	Address=Address|0x03000000;		//0x03Ö¸Áî×Ö+µØÖ·¡£
+	spi_set_nss_low(pSPI);
+	start_address=start_address|0x03000000;		//0x03Ö¸Áî×Ö+µØÖ·¡£
 	//Address=Address|0x0B000000;//0x0BÖ¸Áî×Ö+µØÖ·¡£--¿ìËÙ
 
-	SPI_ReadWriteByteSPI(pSPI,Address>>24);				//·¢ËÍ¸ß8Î»---ÃüÁî
-	SPI_ReadWriteByteSPI(pSPI,Address>>16);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address>>8);				//·¢ËÍµØÖ·
-	SPI_ReadWriteByteSPI(pSPI,Address);						//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,start_address>>24);				//·¢ËÍ¸ß8Î»---ÃüÁî
+	api_spi_ReadWrite_byte(pSPI,start_address>>16);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,start_address>>8);				//·¢ËÍµØÖ·
+	api_spi_ReadWrite_byte(pSPI,start_address);						//·¢ËÍµØÖ·
 	
 //	if((Address&0x0B000000)==0x0B000000)
-//		SPI_ReadWriteByteSPI(pInfo->SPI.Port.SPIx,0XFF);						//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
+//		api_spi_ReadWrite_byte(pInfo->SPI.Port.SPIx,0XFF);						//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
 //	while((Status=GT32L32_ReadStatus()&0x01)!=0x01);
 	for(i=0;i<lengh;i++)
 	{
-		ReadBuffer[i]=SPI_ReadWriteByteSPI(pSPI,0XFF);	//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
+		ReadBuffer[i]=api_spi_ReadWrite_byte(pSPI,0XFF);	//´Ó×Ö¿â¶Á³öµãÕóÊý¾Ýµ½Êý×éÖÐ¡£
 	}
 	//____________È¡ÏûÆ¬Ñ¡	
-	SPI_CS_HIGH(pSPI);
+	spi_set_nss_high(pSPI);
 //	SPI_Cmd(pInfo->SPI.Port.SPIx, DISABLE);
-//	pInfo->Data.Address			=	Address;
-//	pInfo->Data.BufferSize	=	lengh;
 	return lengh;	
 }
-/*******************************************************************************
-* º¯ÊýÃû			:	GT32L32_GetAntennaCode
-* ¹¦ÄÜÃèÊö		:	ÌìÏß·ûºÅ¶ÁÈ¡³ÌÐò£¬»ñÈ¡12X12ÌìÏßµ÷ÓÃµØÖ·,È¡³öµãÕóÊý¾Ý
-* ÊäÈë			: NUM 0123´ø±íÌìÏßÐÅºÅÇ¿¶È
-							GetBuffer Êý¾Ý½ÓÊÕ»º´æ
-* ·µ»ØÖµ			: ¶ÁÈ¡µÄÊý¾Ý³¤¶È
-* ÐÞ¸ÄÊ±¼ä		: ÎÞ
-* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
-* ÆäËü			: wegam@sina.com
-*******************************************************************************/
-u32 GT32L32_GetAntennaCode(u8	NUM,u8 *GetBuffer)
-{
-  u32 lengh=24;
-	u32 Address,BaseAdd=0x47AD32;  
-	Address=NUM*24+BaseAdd;
 
-  r_dat_bat(Address,lengh,GetBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
-  
-	return lengh;
-}
-/*******************************************************************************
-* º¯ÊýÃû			:	GT32L32_GetBatteryCode
-* ¹¦ÄÜÃèÊö		:	µç³Ø·ûºÅ¶ÁÈ¡³ÌÐò£¬»ñÈ¡12X12µç³Øµ÷ÓÃµØÖ·,È¡³öµãÕóÊý¾Ý
-* ÊäÈë			: NUM 0123´ø±íµç³ØµçÁ¿
-							GetBuffer Êý¾Ý½ÓÊÕ»º´æ
-* ·µ»ØÖµ			: ¶ÁÈ¡µÄÊý¾Ý³¤¶È
-* ÐÞ¸ÄÊ±¼ä		: ÎÞ
-* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
-* ÆäËü			: wegam@sina.com
-*******************************************************************************/
-u32 GT32L32_GetBatteryCode(u8	NUM,u8 *GetBuffer)
-{
-  u32 lengh=24;
-	u32 Address, BaseAdd=0x47ADAA;
-	Address=BaseAdd+NUM*24;
-  
-  r_dat_bat(Address,lengh,GetBuffer);		//´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È
-  
-	return lengh;
-}
-/*******************************************************************************
-* º¯ÊýÃû			:	GT32L32_ReadCode
-* ¹¦ÄÜÃèÊö		:	´Ó×Ö¿âÖÐ¶ÁÊý¾Ý²¢·µ»ØÊý¾Ý³¤¶È 
-* ÊäÈë			: void
-* ·µ»ØÖµ			: void
-* ÐÞ¸ÄÊ±¼ä		: ÎÞ
-* ÐÞ¸ÄÄÚÈÝ		: ÎÞ
-* ÆäËü			: wegam@sina.com
-*******************************************************************************/
-u16 GT32L32_GetCode(
-												u8 font,								//×ÖÌå´óÐ¡
-												u16 word,								//×Ö·ûÄÚÂëÖµ
-                        u8 *ReadBuffer				  //½ÓÊÕÊý¾ÝµÄ»º´æ
-											)
-{
-	//____________¶¨Òå±äÁ¿
-	u32 i=0;
-	u32 Address=0;
-	u32 lengh=0;
-	//Çø·Öµ¥Ë«×Ö½Ú
-	if(word>>8>=0x80)
-	{
-		Address	=	GT32L32_GetAddress(font, (u8)(word>>8), (u8)word, 0, 0);		//»ñÈ¡µØÖ·
-		lengh= GT32L32_GetBufferLen(font, (u8)(word>>8), (u8)word, 0, 0);			//»ñÈ¡³¤¶È
-	}
-	else
-	{
-		Address	=	GT32L32_GetAddress(font, (u8)word, 0, 0, 0);			//»ñÈ¡µØÖ·
-		lengh= GT32L32_GetBufferLen(font, (u8)word, 0, 0, 0);			//»ñÈ¡³¤¶È
-	}	
-  r_dat_bat(Address,lengh,ReadBuffer);		//¶ÁÈ¡Êý¾Ý
-	return lengh;
-}
 
 ///*******************************************************************************
 //*º¯ÊýÃû			:	UnicodeCheck

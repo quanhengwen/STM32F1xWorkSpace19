@@ -48,12 +48,13 @@
 #define	USB_Video_InterfaceClass										0x0E		//视频接口类
 #define	USB_Diagnostic_Device_DeviceClass						0xDC		//诊断设备类
 #define	USB_Diagnostic_Device_InterfaceClass 				0xDC		//诊断接口类
-#define	USB_Wireless_Controller_InterfaceClass			0xE0		//无线控制器接口类
+#define	USB_Wireless_Controller_InterfaceClass			0xE0		//无线控制器接口类 
 #define	USB_Miscellaneous_DeviceClass 							0xEF		//混合设备类
 #define	USB_Miscellaneous_InterfaceClass 						0xEF		//混合设备接口类
-#define	USB_Application_Specific_InterfaceClass			0xFE		//特定应用接口类（包括红外的桥接器等）
+#define	USB_Application_Specific_InterfaceClass			0xFE		//特定应用接口类（包括红外的桥接器等） 
 #define	USB_Vendor_Specific_DeviceClass							0xFF		//厂商定义的设备类
 #define	USB_Vendor_Specific_InterfaceClass					0xFF		//厂商定义的设备接口类
+
 /* Communication device class specification version 1.10 */
 #define CDC_V1_10                               		0x0110
 //**************CDC相关参数

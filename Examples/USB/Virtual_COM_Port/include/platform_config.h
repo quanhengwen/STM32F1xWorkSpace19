@@ -24,48 +24,14 @@
 /* Exported constants --------------------------------------------------------*/
 /* Uncomment the line corresponding to the STMicroelectronics evaluation board
    used to run the example */
-#define lora	0
-#define STM32_FSMC 0
-#define STM32_USB_TEST 1
-#define usart_buffer_size	1024
+
 
 #if !defined (USE_STM3210B_EVAL) &&  !defined (USE_STM3210E_EVAL)
  //#define USE_STM3210B_EVAL
  #define USE_STM3210E_EVAL
 #endif
 
-/* Define the STM32F10x hardware depending on the used evaluation board */
-#ifdef USE_STM3210B_EVAL
 
-  #define USB_DISCONNECT            GPIOD  
-  #define USB_DISCONNECT_PIN        GPIO_Pin_9
-  #define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOD
-
-#else /* USE_STM3210E_EVAL */
-
-	#ifdef PS005
-		#define USB_DISCONNECT            GPIOA  
-		#define USB_DISCONNECT_PIN        GPIO_Pin_8
-		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#elif lora
-	  #define USB_DISCONNECT            GPIOA  
-		#define USB_DISCONNECT_PIN        GPIO_Pin_15
-		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#elif STM32_USB_TEST
-	  #define USB_DISCONNECT            GPIOA  
-		#define USB_DISCONNECT_PIN        GPIO_Pin_15
-		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#elif STM32_FSMC
-	  #define USB_DISCONNECT            GPIOA  
-		#define USB_DISCONNECT_PIN        GPIO_Pin_8
-		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#else
-	  #define USB_DISCONNECT            GPIOA  
-		#define USB_DISCONNECT_PIN        GPIO_Pin_8
-		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#endif
-
-#endif /* USE_STM3210B_EVAL */
 
 #define ComPort	USART1
 

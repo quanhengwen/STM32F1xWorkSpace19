@@ -29,6 +29,7 @@ void RCC_Configuration_HSI(void);			//配置系统时钟--使用内部高速晶振
 
 
 void SYSCLKConfig_STOP(void);
+void api_set_usb_clk(void);
 
 #endif
 

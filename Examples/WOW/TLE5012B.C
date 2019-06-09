@@ -24,7 +24,7 @@
 
 RS485Def stRS485BS;   //usart2,pB11 PB10
 TM1616Def	Seg1,Seg2;
-SPIDef	TLE5012;
+spi_def	TLE5012;
 
 
 #define ussize  128     //´®¿Ú»º´æ´óÐ¡
@@ -340,11 +340,11 @@ void USART_Server(void)
 *******************************************************************************/
 void hw_configuration(void)
 {
-	TLE5012.Port.SPIx	=	SPI1;
-	TLE5012.Port.CS_PORT	=	GPIOA;
-	TLE5012.Port.CS_Pin		=	GPIO_Pin_4;
+	TLE5012.port.SPIx	=	SPI1;
+	TLE5012.port.nss_port	=	GPIOA;
+	TLE5012.port.nss_pin		=	GPIO_Pin_4;
 	
-	TLE5012.Port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_8;
+	TLE5012.port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_8;
 	
 	api_spi_configurationNR(&TLE5012);
 	MCO_Initialize();

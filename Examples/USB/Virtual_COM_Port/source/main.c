@@ -27,7 +27,10 @@
 
 
 /* Includes ------------------------------------------------------------------*/
-
+#include "hw_config.h"
+#include "usb_lib.h"
+#include "usb_desc.h"
+#include "usb_pwr.h"
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -46,8 +49,20 @@
 *******************************************************************************/
 int main(void)
 {
-	#include "STM32_WOW.H"
-	WOW_Configuration();
+	#include "stm32f10x_gpio.h"
+	#include "STM32_SYS.H"
+	
+	usb_en_def usb_en;
+	
+	SYS_Configuration();
+	
+	usb_en.usb_connect_port	=	(unsigned long*)GPIOA;
+	usb_en.usb_connect_pin	=	GPIO_Pin_8;
+	api_usb_virtual_com_configuration(&usb_en);
+//  Set_System();
+  Set_USBClock();	
+  USB_Interrupts_Config();
+  USB_Init();
   while (1)
   {
   }

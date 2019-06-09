@@ -31,334 +31,94 @@
 #include "platform_config.h"
 #include "usb_pwr.h"
 
-#include	"string.h"			//memcpy
+//#include	"string.h"			//memcpy
 
-#include "STM32_USART.H"
-#include "STM32_GPIO.H"
-#include "usb_init.h"			//用于端点数据输入输入中断处理
+//#include "STM32_GPIO.H"
+//#include "STM32_USART.H"
 #include "stm32f10x_nvic.h"
 
+#ifdef Virtual_COM_Port
+		#include "Virtual_COM_Port.h"
+#endif
+
+
+#include "STM32_SYS.H"
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-//USART_InitTypeDef USART_InitStructure;
-ErrorStatus HSEStartUpStatus;
+
+
 
 /* Extern variables ----------------------------------------------------------*/
-u8 buffer_in[VIRTUAL_COM_PORT_DATA_SIZE];
-
-u8 buffer_rx[VIRTUAL_COM_PORT_DATA_SIZE];
-u8 buffer_tx[VIRTUAL_COM_PORT_DATA_SIZE];
-
-u32 USART_Rx_ptr_in = 0;
-u32 USART_Rx_ptr_out = 0;
-u32 USART_Rx_length  = 0;
-
-u8 Usart_tx_flg=0;
-
-extern u32 count_in;
-extern LINE_CODING linecoding;
-
-//extern u8 buffer_out[VIRTUAL_COM_PORT_DATA_SIZE];
-extern u32 count_out;
-
-u8  USB_Tx_State = 0;
 
 
-GPIO_TypeDef*		usb_en_port;
-unsigned short	usb_en_pin;
+extern void USB_CMD(FunctionalState NewState);
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
+
 /*******************************************************************************
-* Function Name  : Set_System
-* Description    : Configures Main system clocks & power
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_usb_hw_initialize(void)
+{
+	SYS_Configuration();	
+	
+	api_set_usb_clk();
+	
+	USB_Interrupts_Config();
+	
+	USB_Init();	
+}
+/*******************************************************************************
+* Function Name  : Enter_LowPowerMode
+* Description    : Power-off system clocks and power while entering suspend mode
+* 描述			    	: 挂起模式
 * Input          : None.
 * Return         : None.
 *******************************************************************************/
-void api_usb_virtual_com_configuration(usb_en_def* pInfo)		//虚拟串口配置
+void Enter_LowPowerMode(void)
 {
-	
-	
-	usb_en_port	=	(GPIO_TypeDef*)pInfo->usb_connect_port;
-	usb_en_pin	=	pInfo->usb_connect_pin;
-	
-	GPIO_Configuration_OPP50(usb_en_port,usb_en_pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	
-	set_usb_en(DISABLE);	//关闭USB上拉电阻
-	
-	set_usb_clock();			//设置USB时钟
-	
-	set_usb_Interrupt();	//设置USB中断
-	
-	USB_Init();						//USB初始化
+  /* Set the device state to suspend */
+  bDeviceState = SUSPENDED;
 }
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
 /*******************************************************************************
-* Function Name  : USB_Cable_Config
-* Description    : Software Connection/Disconnection of USB Cable
+* Function Name  : Leave_LowPowerMode
+* Description    : Restores system clocks and power while exiting suspend mode
+* 描述			    	: 退出挂起模式
 * Input          : None.
-* Return         : Status
+* Return         : None.
 *******************************************************************************/
-void set_usb_en(FunctionalState NewState)
+void Leave_LowPowerMode(void)
 {
-  if (NewState != DISABLE)
+  DEVICE_INFO *pInfo = &Device_Info;
+
+  /* Set the device state to the correct state */
+  if (pInfo->Current_Configuration != 0)
   {
-		GPIO_ResetBits(usb_en_port, usb_en_pin);
-		//GPIO_SetBits(usb_en_port, usb_en_pin);
+    /* Device configured */
+    bDeviceState = CONFIGURED;
   }
   else
   {
-		GPIO_SetBits(usb_en_port, usb_en_pin);
-		//GPIO_ResetBits(usb_en_port, usb_en_pin);
+    bDeviceState = ATTACHED;
   }
 }
-/*******************************************************************************
-* Function Name  :  UART0_Config_Default.
-* Description    :  configure the UART 0 with default values.	串口的默认配置值
-* Input          :  None.
-* Return         :  None.
-*******************************************************************************/
-void set_usart_default(void)
-{
-	USART_InitTypeDef USART_InitStructure;
-//--------------原程序
-//	linecoding
-	USART_DeInit(ComPort);
-	
-	USART_InitStructure.USART_BaudRate    = 19200; 					  //波特率
-	USART_InitStructure.USART_WordLength  = USART_WordLength_8b;		    //数据位
-	USART_InitStructure.USART_StopBits    = USART_StopBits_1;				    //停止位
-	USART_InitStructure.USART_Parity      = USART_Parity_No ; 					//奇偶校验
-	USART_InitStructure.USART_Mode        = USART_Mode_Rx | USART_Mode_Tx;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//流控
-	USART_Init(ComPort, &USART_InitStructure);											//初始化串口
-	
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,usart_buffer_size);	//USART_DMA配置--结构体形式，不开中断
-	
-}
-/*******************************************************************************
-* Function Name  :  UART0_Config.
-* Description    :  Configure the UART 1 according to the linecoding structure.
-										根据line coding 结构体配置串口.
-* Input          :  None.
-* Return         :  Configuration status
-                    TRUE : configuration done with success
-                    FALSE : configuration aborted.
-*******************************************************************************/
-bool set_usart_config(void)
-{
-	USART_InitTypeDef USART_InitStructure;
-  /* set the Stop bit*/
-	/**************设置停止位**************/
-  switch (linecoding.format)
-  {
-    case 0:
-      USART_InitStructure.USART_StopBits = USART_StopBits_1;		//1位停止位
-      break;
-    case 1:
-      USART_InitStructure.USART_StopBits = USART_StopBits_1_5;	//1.5为停止位
-      break;
-    case 2:
-      USART_InitStructure.USART_StopBits = USART_StopBits_2;		//2位停止位
-      break;
-    default :
-    {
-      set_usart_default();																			//默认配置
-      return (FALSE);
-    }
-  }
 
-  /* set the parity bit*/
-	/**************设置校验位**************/
-  switch (linecoding.paritytype)
-  {
-    case 0:
-      USART_InitStructure.USART_Parity = USART_Parity_No;			//没有校验
-      break;
-    case 1:
-      USART_InitStructure.USART_Parity = USART_Parity_Even;		//偶校验
-      break;	
-    case 2:
-      USART_InitStructure.USART_Parity = USART_Parity_Odd;		//奇校验
-      break;
-    default :
-    {
-      set_usart_default();																	//默认配置
-      return (FALSE);
-    }
-  }
-
-  /*set the data type : only 8bits and 9bits is supported */
-	/**************设置数据位: 8位或9位**************/
-  switch (linecoding.datatype)
-  {
-    case 0x07:
-      USART_InitStructure.USART_WordLength = USART_WordLength_8b;	//8为数据位，这个选项就校验位必须设置(奇校验/偶校验)
-      break;
-    case 0x08:
-      USART_InitStructure.USART_WordLength = USART_WordLength_8b;	//USART_WordLength_9b;	//9位数据位
-      break;
-    default :
-    {
-      set_usart_default();																//默认配置
-      return (FALSE);
-    }
-  }
-  USART_InitStructure.USART_BaudRate = linecoding.bitrate;													//设置波特率
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;		//设置没有硬件数据流控制
-  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;										//使能接收、发送
-  USART_Init(ComPort, &USART_InitStructure);																				//初始化串口
-  USART_Cmd(ComPort, ENABLE);																												//使能串口
-	
-	//api_usart_dma_configurationNR(ComPort,linecoding.bitrate,usart_buffer_size);
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,usart_buffer_size);	//USART_DMA配置--结构体形式，不开中断
-	
-  return (TRUE);
-}
-/*******************************************************************************
-* Function Name  : USB_To_UART_Send_Data.
-* Description    : send the received data from USB to the UART 0.将USB接收到的数据从串口发送数据
-* Input          : data_buffer: data address.
-                   Nb_bytes: number of bytes to send.
-* Return         : none.
-*******************************************************************************/
-void usb_to_usart_Send_data(u8* data_buffer, u8 Nb_bytes)
-{
-	Usart_tx_flg=1;
-	api_usart_dma_send(ComPort,data_buffer,(u16)Nb_bytes);		//自定义printf串口DMA发送程序
-}
-
-/*******************************************************************************
-* Function Name  : UART_To_USB_Send_Data.
-* Description    : send the received data from UART 0 to USB.	发送串口接收到的数据到USB
-* Input          : None.
-* Return         : none.
-*******************************************************************************/
-void usart_to_usb_send_data(void)
-{	
-	u16	num	=	api_usart_dma_receive(ComPort,buffer_in);
-	if(num)
-	{
-		UserToPMABufferCopy(buffer_in, ENDP1_TXADDR, num);
-		SetEPTxCount(ENDP1, num);																					//设置端点数据长度
-		SetEPTxValid(ENDP1);																							//使能端点
-	}
-}
-
-/*******************************************************************************
-* Function Name  : Handle_USBAsynchXfer.
-* Description    : send data to USB.
-* Input          : None.
-* Return         : none.
-*******************************************************************************/
-void Handle_USBAsynchXfer (void)
-{
-	count_in=api_usart_dma_receive(ComPort,buffer_rx);
-	if(count_in)
-	{
-		UserToPMABufferCopy(buffer_rx, ENDP1_TXADDR, count_in);
-		SetEPTxCount(ENDP1, count_in);
-		SetEPTxValid(ENDP1);
-	}
-}
-/*******************************************************************************
-* Function Name  : Handle_USBAsynchXfer.
-* Description    : send data to USB.
-* Input          : None.
-* Return         : none.
-*******************************************************************************/
-void Handle_USBAsynchXferBAC1 (void)
-{
-  
-  u16 USB_Tx_ptr;
-  u16 USB_Tx_length;
-  
-  if(USB_Tx_State != 1)
-  {
-    if (USART_Rx_ptr_out == VIRTUAL_COM_PORT_DATA_SIZE)
-    {
-      USART_Rx_ptr_out = 0;
-    }
-    
-    if(USART_Rx_ptr_out == USART_Rx_ptr_in) 
-    {
-      USB_Tx_State = 0; 
-      return;
-    }
-    
-    if(USART_Rx_ptr_out > USART_Rx_ptr_in) /* rollback */
-    { 
-      USART_Rx_length = VIRTUAL_COM_PORT_DATA_SIZE - USART_Rx_ptr_out;
-    }
-    else 
-    {
-      USART_Rx_length = USART_Rx_ptr_in - USART_Rx_ptr_out;
-    }
-    
-    if (USART_Rx_length > VIRTUAL_COM_PORT_DATA_SIZE)
-    {
-      USB_Tx_ptr = USART_Rx_ptr_out;
-      USB_Tx_length = VIRTUAL_COM_PORT_DATA_SIZE;
-      
-      USART_Rx_ptr_out += VIRTUAL_COM_PORT_DATA_SIZE;	
-      USART_Rx_length -= VIRTUAL_COM_PORT_DATA_SIZE;	
-    }
-    else
-    {
-      USB_Tx_ptr = USART_Rx_ptr_out;
-      USB_Tx_length = USART_Rx_length;
-      
-      USART_Rx_ptr_out += USART_Rx_length;
-      USART_Rx_length = 0;
-    }
-    USB_Tx_State = 1; 
-    UserToPMABufferCopy(&buffer_in[USB_Tx_ptr], ENDP1_TXADDR, USB_Tx_length);
-    SetEPTxCount(ENDP1, USB_Tx_length);
-    SetEPTxValid(ENDP1); 
-  }  
-  
-}
-
-
-
-//-----------------------------------------------------------------------------
-
-
-
-
-//-----------------------------------------------------------------------------static
-/*******************************************************************************
-* Function Name  : Set_USBClock
-* Description    : Configures USB Clock input (48MHz)
-* Input          : None.
-* Return         : None.
-*******************************************************************************/
-static void set_usb_clock(void)
-{
-  /* USBCLK = PLLCLK / 1.5 */
-  RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);
-  /* Enable USB clock */
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
-}
 /*******************************************************************************
 * Function Name  : USB_Interrupts_Config
 * Description    : Configures the USB interrupts
 * Input          : None.
 * Return         : None.
 *******************************************************************************/
-static void set_usb_Interrupt(void)
+void USB_Interrupts_Config(void)
 {
   NVIC_InitTypeDef NVIC_InitStructure;
 
@@ -377,14 +137,74 @@ static void set_usb_Interrupt(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-
-//  /* Enable USART1 Interrupt */
-//  NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
-//  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-//	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-//  NVIC_Init(&NVIC_InitStructure);
 }
-//-----------------------------------------------------------------------------
+
+/*******************************************************************************
+* Function Name  : USB_Cable_Config
+* Description    : Software Connection/Disconnection of USB Cable
+* Input          : None.
+* Return         : Status
+*******************************************************************************/
+void USB_Cable_Config(FunctionalState NewState)
+{
+	USB_CMD(NewState);
+//  if (NewState != DISABLE)
+//  {
+////    GPIO_ResetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+//		GPIO_SetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+//  }
+//  else
+//  {
+////    GPIO_SetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+//		GPIO_ResetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
+//  }
+}
+/*******************************************************************************
+* Function Name  : Handle_USBAsynchXfer.
+* Description    : send data to USB.
+* Input          : None.
+* Return         : none.
+*******************************************************************************/
+void Handle_USBAsynchXfer (void)
+{
+	#ifdef Virtual_COM_Port
+		usb_virtual_com_AsynchXfer();
+	#endif
+}
+
+/*******************************************************************************
+* Function Name  : Get_SerialNum.
+* Description    : Create the serial number string descriptor.
+* Input          : None.
+* Output         : None.
+* Return         : None.
+*******************************************************************************/
+void Get_SerialNum(void)
+{
+  u32 Device_Serial0, Device_Serial1, Device_Serial2;
+
+  Device_Serial0 = *(vu32*)(0x1FFFF7E8);
+  Device_Serial1 = *(vu32*)(0x1FFFF7EC);
+  Device_Serial2 = *(vu32*)(0x1FFFF7F0);
+
+  if (Device_Serial0 != 0)
+  {
+    Virtual_Com_Port_StringSerial[2] 	= (u8)(Device_Serial0 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[4] 	= (u8)((Device_Serial0 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[6] 	= (u8)((Device_Serial0 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[8] 	= (u8)((Device_Serial0 & 0xFF000000) >> 24);
+
+    Virtual_Com_Port_StringSerial[10] = (u8)(Device_Serial1 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[12] = (u8)((Device_Serial1 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[14] = (u8)((Device_Serial1 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[16] = (u8)((Device_Serial1 & 0xFF000000) >> 24);
+
+    Virtual_Com_Port_StringSerial[18] = (u8)(Device_Serial2 & 0x000000FF);
+    Virtual_Com_Port_StringSerial[20] = (u8)((Device_Serial2 & 0x0000FF00) >> 8);
+    Virtual_Com_Port_StringSerial[22] = (u8)((Device_Serial2 & 0x00FF0000) >> 16);
+    Virtual_Com_Port_StringSerial[24] = (u8)((Device_Serial2 & 0xFF000000) >> 24);
+  }
+}
 
 
 

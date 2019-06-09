@@ -17,7 +17,7 @@
 
 
 
-SPIDef stSpi;
+spi_def stSpi;
 #define testlen 128
 unsigned  char testrxbuffer[testlen]={0x05};
 unsigned  char testtxbuffer[testlen]={0x05};
@@ -160,14 +160,14 @@ void SPI_Test(void)
 {
 //  rets:
 //  PB12  = 0;
-//  SPI_DMASend(stSpi.Port.SPIx,testtxbuffer,testlen);
+//  api_spi_dma_send(stSpi.Port.SPIx,testtxbuffer,testlen);
 ////  
 //  while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);		//检查指令SPI接收完成标志设置与否
 ////  goto rets;
 //  PB12  = 1;
   unsigned  short num = 0;
   PB12  = 0;
-  num = SPI_DMAReadWrite(SPI2,testtxbuffer,testrxbuffer,testlen);
+  num = api_spi_dma_receive(SPI2,testrxbuffer);
   if((0==num)||(0xFFFF==num))
   {
     PB12  = 0;

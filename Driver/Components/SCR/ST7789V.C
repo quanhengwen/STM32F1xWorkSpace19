@@ -232,8 +232,8 @@ void ST7789V_ShowString(
         y=x=0;
       }
       //A3=====================读取点阵数据
-			GetBufferLength	=	GT32L32_GetCode(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
-			//GetBufferLength	=	GT32L32_GetAntennaCode(3,CodeBuffer);
+			GetBufferLength	=	api_gt32l32_get_code(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
+			//GetBufferLength	=	api_gt32l32_get_antenna(3,CodeBuffer);
 			//A4=====================写入屏幕
 			ST7789V_ShowWord(x,y,font,PenColor,GetBufferLength,CodeBuffer);
 			//A5=====================水平显示地址增加
@@ -274,8 +274,8 @@ void ST7789V_ShowString(
 			if(0x00	!=	(char)dst)
 			{
 				//B3=====================读取点阵数据
-				GetBufferLength	=	GT32L32_GetCode(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
-				//GetBufferLength	=	GT32L32_GetBatteryCode(3,CodeBuffer);
+				GetBufferLength	=	api_gt32l32_get_code(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
+				//GetBufferLength	=	api_gt32l32_get_battery(3,CodeBuffer);
 				//=======================水平制表符按空格显示(部分字库会当0xFF输出)
 				if(	('	'	==	(char)dst)		//水平制表符
 					||(' '	==	(char)dst))		//空格
@@ -360,8 +360,8 @@ void ST7789V_ShowStringBK(
         y=x=0;
       }
       //A3=====================读取点阵数据
-			GetBufferLength	=	GT32L32_GetCode(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
-			//GetBufferLength	=	GT32L32_GetAntennaCode(3,CodeBuffer);
+			GetBufferLength	=	api_gt32l32_get_code(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
+			//GetBufferLength	=	api_gt32l32_get_antenna(3,CodeBuffer);
 			//A4=====================写入屏幕
 			ST7789V_ShowWordBK(x,y,font,BKColor,PenColor,GetBufferLength,CodeBuffer);
 			//A5=====================水平显示地址增加
@@ -402,8 +402,8 @@ void ST7789V_ShowStringBK(
 			if(0x00	!=	(char)dst)
 			{
 				//B3=====================读取点阵数据
-				GetBufferLength	=	GT32L32_GetCode(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
-				//GetBufferLength	=	GT32L32_GetBatteryCode(3,CodeBuffer);
+				GetBufferLength	=	api_gt32l32_get_code(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
+				//GetBufferLength	=	api_gt32l32_get_battery(3,CodeBuffer);
 				//=======================水平制表符按空格显示(部分字库会当0xFF输出)
 				if(	('	'	==	(char)dst)		//水平制表符
 					||(' '	==	(char)dst))		//空格
@@ -469,8 +469,8 @@ void ST7789V_ShowStringBKAre(
         return;
       }
       //A3=====================读取点阵数据
-			GetBufferLength	=	GT32L32_GetCode(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
-			//GetBufferLength	=	GT32L32_GetAntennaCode(3,CodeBuffer);
+			GetBufferLength	=	api_gt32l32_get_code(font,word,CodeBuffer);		//从字库中读数据并返回数据长度
+			//GetBufferLength	=	api_gt32l32_get_antenna(3,CodeBuffer);
 			//A4=====================写入屏幕
 			ST7789V_ShowWordBK(x,y,font,BKColor,PenColor,GetBufferLength,CodeBuffer);
 			//A5=====================水平显示地址增加
@@ -511,8 +511,8 @@ void ST7789V_ShowStringBKAre(
 			if(0x00	!=	(char)dst)
 			{
 				//B3=====================读取点阵数据
-				GetBufferLength	=	GT32L32_GetCode(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
-				//GetBufferLength	=	GT32L32_GetBatteryCode(3,CodeBuffer);
+				GetBufferLength	=	api_gt32l32_get_code(font,(u16)dst,CodeBuffer);		//从字库中读数据并返回数据长度
+				//GetBufferLength	=	api_gt32l32_get_battery(3,CodeBuffer);
 				//=======================水平制表符按空格显示(部分字库会当0xFF输出)
 				if(	('	'	==	(char)dst)		//水平制表符
 					||(' '	==	(char)dst))		//空格

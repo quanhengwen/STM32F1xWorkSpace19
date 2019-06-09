@@ -38,7 +38,7 @@
 //#define	Divisor		360						//求余除数
 #define	AngleCountStopDr 			(AngleCountPerCycle-StopAngle)	//计数到达AngleCountStopDr后停止电机驱动，剩下角度偏差由原点控制程序处理
 
-SPIDef	TLE5012;
+spi_def	TLE5012;
 
 //--------------------------标志变量
 unsigned char	MotorRunFlg	=	0;		//电机运行标志,0-不运行，1-正转，2-反转

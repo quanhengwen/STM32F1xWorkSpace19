@@ -396,7 +396,7 @@ void LCD_Server(void)			//显示服务相关
 *******************************************************************************/
 void LCD_Configuration(void)
 {
-	SPIDef	*SPI	=	&sLCD.GT32L32.SPI;
+	spi_def	*SPI	=	&sLCD.GT32L32.SPI;
 	sLCD.Port.sBL_PORT				=	GPIOC;
 	sLCD.Port.sBL_Pin					=	GPIO_Pin_0;
 	

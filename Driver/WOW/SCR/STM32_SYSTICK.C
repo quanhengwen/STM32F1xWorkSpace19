@@ -13,15 +13,21 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-
-
-#include "STM32_WOW.H"
+/* Includes ------------------------------------------------------------------*/
 #include "STM32_SYSTICK.H"
 
 #include "stm32f10x_rcc.h"
-//#include "STM32F10x_BitBand.H"
+#include "stm32f10x_systick.h"
 
-#include <stdint.h>
+/* Private typedef -----------------------------------------------------------*/
+/* Private define ------------------------------------------------------------*/
+/* Private macro -------------------------------------------------------------*/
+/* Private variables ---------------------------------------------------------*/
+/* Extern variables ----------------------------------------------------------*/
+/* Private function prototypes -----------------------------------------------*/
+/* Extern function prototypes ------------------------------------------------*/
+extern void WOW_Server(void);
+/* Private functions ---------------------------------------------------------*/
 
 RCC_ClocksTypeDef RCC_ClocksStatus;							//时钟状态---时钟值
 unsigned int Load	=	0;		//保存原重装载值

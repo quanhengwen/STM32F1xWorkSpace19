@@ -60,7 +60,7 @@
 ###############################################################################*/
 
 //--------USARTÈ«¾Ö±äÁ¿¶¨Òå
-#define	uart_dma_buffer_size	280	//Ä¬ÈÏ´®¿ÚDMA½ÓÊÕ»º³å´óÐ¡,Èç¹ûÅäÖÃÊ±Î´ÊäÈë»º´æ´óÐ¡Ê±Ê¹ÓÃµÄÄ¬ÈÏÖµ
+#define	uart_dma_buffer_size	1024	//Ä¬ÈÏ´®¿ÚDMA½ÓÊÕ»º³å´óÐ¡,Èç¹ûÅäÖÃÊ±Î´ÊäÈë»º´æ´óÐ¡Ê±Ê¹ÓÃµÄÄ¬ÈÏÖµ
 #define	uBaudRate	115200	//Ä¬ÈÏ´®¿Ú²¨ÌØÂÊ
 
 struct
@@ -543,7 +543,7 @@ static void	usart_gpio_initialize(USART_TypeDef* USARTx)	//´®¿ÚGPIOÅäÖÃ
 					GPIO_RX=GPIOA;
 					TXD_Pin=GPIO_Pin_2;		//USART2-TX>PA2
 					RXD_Pin=GPIO_Pin_3;		//USART2-RX>PA3
-					RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+					RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_AFIO,ENABLE);
 					RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);	//USART2Ê±ÖÓ¿ªÆô		
 					break;
 		case 	USART3_BASE:
@@ -624,56 +624,41 @@ static void	usart_gpio_initialize_Remap(USART_TypeDef* USARTx)	//USART_GPIOÍêÈ«Ó
 	//2.2)**********USART2
 	else if(USARTx==USART2)
 	{		
-		TXD_Pin=GPIO_Pin_2;		//USART2-TX>PA2
-		RXD_Pin=GPIO_Pin_3;		//USART2-RX>PA3
+		TXD_Pin=GPIO_Pin_5;		//USART2-TX>PA2
+		RXD_Pin=GPIO_Pin_6;		//USART2-RX>PA3
 		
-		GPIO_TX=GPIOA;
-		GPIO_RX=GPIOA;
+		GPIO_TX=GPIOD;
+		GPIO_RX=GPIOD;
 		
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+		GPIO_PinRemapConfig(GPIO_Remap_USART2,ENABLE);				//I/O¿ÚÖØÓ³Éä¿ªÆô
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);	//USART1Ê±ÖÓ¿ªÆô
 
 	}
 	//2.3)**********USART3
 	else if(USARTx==USART3)
 	{		
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);				//¹Ø±ÕAFIOÊ±ÖÓ,Îª¹Ø±ÕJTAG¹¦ÄÜ
-		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);  //¹Ø±ÕJTAG¹¦ÄÜ
+		TXD_Pin=GPIO_Pin_8;	//USART3-TX>PB10
+		RXD_Pin=GPIO_Pin_9;	//USART3-RX>PB11
 		
-		TXD_Pin=GPIO_Pin_10;	//USART3-TX>PB10
-		RXD_Pin=GPIO_Pin_11;	//USART3-RX>PB11
+		GPIO_TX=GPIOD;
+		GPIO_RX=GPIOD;
 		
-		GPIO_TX=GPIOB;
-		GPIO_RX=GPIOB;
-	
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+		GPIO_PinRemapConfig(GPIO_FullRemap_USART3,ENABLE);				//I/O¿ÚÖØÓ³Éä¿ªÆô
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
 		RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);	//USART1Ê±ÖÓ¿ªÆô
 	}
 	//2.4)**********USART4
-	else if(USARTx==UART4)
+	else if(USARTx==UART4)	//ÎÞÓ³Éä
 	{
-		TXD_Pin=GPIO_Pin_10;	//USART1-TX>PC10
-		RXD_Pin=GPIO_Pin_11;	//USART1-RX>PC11
-		
-		GPIO_TX=GPIOC;
-		GPIO_RX=GPIOC;
-		
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC|RCC_APB2Periph_AFIO,ENABLE);
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, ENABLE);	//USART1Ê±ÖÓ¿ªÆô
+		return;
 	}
 	//2.5)**********USART5
-	else if(USARTx==UART5)
+	else if(USARTx==UART5)	//ÎÞÓ³Éä
 	{		
-		TXD_Pin=GPIO_Pin_12;	//USART1-TX>PC12
-		RXD_Pin=GPIO_Pin_2;		//USART1-RX>PD2
-		
-		GPIO_TX=GPIOC;
-		GPIO_RX=GPIOD;
-	
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD,ENABLE);
-		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
-		RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, ENABLE);	//USART1Ê±ÖÓ¿ªÆô
+		return;
 	}
 	//3)**********³õÊ¼»¯´®¿Ú
 	//3.1)**********³õÊ¼»¯TXDÒý½Å
@@ -939,6 +924,7 @@ static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type)
 		usart_type.nUART4	=	type;
 	if(UART5==USARTx)
 		usart_type.nUART5	=	type;
+	return 0;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	
@@ -959,6 +945,7 @@ static unsigned char get_usart_type(USART_TypeDef* USARTx)
 		return usart_type.nUART4;
 	if(UART5==USARTx)
 		return usart_type.nUART5;
+	return 0;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	
@@ -1000,6 +987,7 @@ static RS485Def* get_rs485_addr(USART_TypeDef* USARTx)		//´®¿ÚDMA·¢ËÍ³ÌÐò
 		return rs485_addr.rs485_uart4;
 	if(UART5==USARTx)
 		return rs485_addr.rs485_uart5;
+	return 0;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	
@@ -1032,7 +1020,7 @@ static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,u8 *tx_buffe
 *******************************************************************************/
 static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffer)		//´®¿ÚDMA½ÓÊÕ³ÌÐò
 {
-	u16 length=0;
+	unsigned short length=0;
 	unsigned char*	uart_rxd;
 	unsigned short 	dma_size;
 	DMA_Channel_TypeDef* DMAy_Channelrx;			//DMA½ÓÊÕÍ¨µÀÇëÇóÐÅºÅ---DMA´®¿Ú½ÓÊÕÓÉ´®¿Ú·¢ÆðÖÐ¶Ï£¬Òò´Ë´Ë´¦½ÓÊÕÍ¨µÀÖÐ¶Ï²»Ê¹ÓÃ
@@ -1594,6 +1582,7 @@ static unsigned char get_usart_rx_idlebac(USART_TypeDef* USARTx)
 			set_usart_rx_idle(UART5);
 		return usart_rx_idle_flag.nUART5;
 	}
+	return 0;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	function
@@ -1652,6 +1641,7 @@ static unsigned char get_usart_tx_idlebac(USART_TypeDef* USARTx)
 		}
 		return usart_tx_idle_flag.nUART5;
 	}
+	return 0;
 }
 /*******************************************************************************
 *º¯ÊýÃû			:	function

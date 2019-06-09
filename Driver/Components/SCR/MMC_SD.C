@@ -434,14 +434,14 @@ unsigned char SD_WriteDisk(u8*buf,u32 sector,u8 cnt)
 //返回值:读取到的字节
 unsigned char SPI1_ReadWriteByte(u8 TxData)
 {		
-	return SPI_ReadWriteByteSPI(pSDSPI,TxData);			    
+	return api_spi_ReadWrite_byte(pSDSPI,TxData);			    
 }
 //移植时候的接口
 //data:要写入的数据
 //返回值:读到的数据
 unsigned char SD_SPI_ReadWriteByte(u8 data)
 {
-//  return SPI_ReadWriteByteSPI(pSPI,data);
+//  return api_spi_ReadWrite_byte(pSPI,data);
 	return SPI1_ReadWriteByte(data);
 }	  
 //SD卡初始化的时候,需要低速

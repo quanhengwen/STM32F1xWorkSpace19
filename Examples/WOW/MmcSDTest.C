@@ -39,7 +39,7 @@ BMPInftDef BmpInf;
 LINK_NODE Node;
 
 LCDDef	sLCD;
-SPIDef	sSCport;
+spi_def	sSCport;
 
 //GT32L32_Info_TypeDef 	GT32L32_Init;
 //GT32L32Def			GT32L32;
@@ -299,7 +299,7 @@ void LCD_Server(void)			//显示服务相关
 *******************************************************************************/
 void LCD_Configuration(void)
 {
-	SPIDef	*SPI	=	&sLCD.GT32L32.SPI;
+	spi_def	*SPI	=	&sLCD.GT32L32.SPI;
 	sLCD.Port.sBL_PORT				=	GPIOC;
 	sLCD.Port.sBL_Pin					=	GPIO_Pin_0;
 	

@@ -23,8 +23,8 @@ M1卡：总容量1Kbyte
 #define IotReaderETX  (unsigned char)0xBB   //协议尾标志
   
 #define IOT5302WReadCycle   300     //读周期，单位ms
-#define IOT5302WReadTimeOut 1500    //读超时时间
-#define IOT5302WInitializeTimeOut 1500    //读超时时间
+#define IOT5302WReadTimeOut 2000    //读超时时间		//原1500
+#define IOT5302WInitializeTimeOut 2000    //读超时时间	//原1500
 #define IOT5302WBufferSize  128    //
 
 //--------------------读卡器命令

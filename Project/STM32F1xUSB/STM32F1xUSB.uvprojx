@@ -623,41 +623,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -724,11 +689,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -836,13 +796,43 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Virtual_COM_Port</GroupName>
+          <GroupName>Lib/USB</GroupName>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
+              <FileName>usb_core.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Virtual_COM_Port</GroupName>
+          <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -882,6 +872,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1596,41 +1591,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -1697,11 +1657,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -1809,6 +1764,41 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Lib/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Virtual_COM_Port</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -1876,11 +1866,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\main.c</FilePath>
@@ -1919,6 +1904,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2633,41 +2623,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -2734,11 +2689,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -2846,13 +2796,43 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Virtual_COM_Port</GroupName>
+          <GroupName>Lib/USB</GroupName>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
+              <FileName>usb_core.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Virtual_COM_Port</GroupName>
+          <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -2892,6 +2872,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3606,41 +3591,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -3707,11 +3657,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -3819,6 +3764,41 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Lib/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Virtual_COM_Port</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -3886,11 +3866,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\main.c</FilePath>
@@ -3929,6 +3904,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4643,41 +4623,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -4744,11 +4689,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -4856,13 +4796,43 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Virtual_COM_Port</GroupName>
+          <GroupName>Lib/USB</GroupName>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
+              <FileName>usb_core.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Virtual_COM_Port</GroupName>
+          <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -4902,6 +4872,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5143,7 +5118,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -5616,41 +5591,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -5717,11 +5657,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -5829,6 +5764,41 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Lib/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Virtual_COM_Port</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -5896,11 +5866,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\main.c</FilePath>
@@ -5939,6 +5904,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6451,105 +6421,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\main.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>0</vShortEn>
-                    <vShortWch>0</vShortWch>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
             </File>
             <File>
               <FileName>STM32_IT.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\main\STM32_IT.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>0</RVCTZI>
-                  <RVCTOtherData>0</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>0</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>2</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>0</vShortEn>
-                    <vShortWch>0</vShortWch>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
             </File>
             <File>
               <FileName>STM32_WOW.C</FileName>
@@ -6684,41 +6560,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -6785,11 +6626,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -6897,22 +6733,146 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Virtual_COM_Port</GroupName>
+          <GroupName>Lib/USB</GroupName>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
+              <FileName>usb_core.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Virtual_COM_Port</GroupName>
+          <Files>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\main.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>stm32f10x_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\stm32f10x_it.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>0</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>2</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>0</vShortEn>
+                    <vShortWch>0</vShortWch>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
             </File>
             <File>
               <FileName>usb_desc.c</FileName>
@@ -6943,6 +6903,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7044,6 +7009,7 @@
       <TargetName>Virtual_COM_Port_IAD</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pArmCC>5060020::V5.06 (build 20)::ARMCC</pArmCC>
       <pCCUsed>5060020::V5.06 (build 20)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
@@ -7184,7 +7150,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>3</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -7657,41 +7623,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Lib/USB</GroupName>
-          <Files>
-            <File>
-              <FileName>usb_core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_init.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_int.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_mem.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_regs.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
-            </File>
-            <File>
-              <FileName>usb_sil.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Lib/Startup</GroupName>
           <Files>
             <File>
@@ -7758,11 +7689,6 @@
               <FileName>STM32_GPIO.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_GPIO.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_I2C.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_I2C.C</FilePath>
             </File>
             <File>
               <FileName>STM32_NVIC.C</FileName>
@@ -7870,6 +7796,41 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Lib/USB</GroupName>
+          <Files>
+            <File>
+              <FileName>usb_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_core.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_init.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_int.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_int.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_mem.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_mem.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_regs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_regs.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_sil.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Library\USB\SCR\usb_sil.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Virtual_COM_Port</GroupName>
           <GroupOption>
             <CommonProperty>
@@ -7937,11 +7898,6 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>hw_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
-            </File>
-            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\main.c</FilePath>
@@ -7980,6 +7936,11 @@
               <FileName>Virtual_COM_Port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\Virtual_COM_Port.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_config.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
           </Files>
         </Group>

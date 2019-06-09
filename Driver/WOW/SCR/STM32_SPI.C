@@ -39,17 +39,24 @@ SPI需要配置基本内容：
 
 #define spiBufsize  256
 
-spi_port_def*	spi_port;
 
-//-----------------------------------------------static-hardware
-#define spi_set_nss_high	(spi_port->nss_port		->BSRR	=spi_port->nss_pin)
-#define spi_set_nss_low		(spi_port->nss_port		->BRR		=spi_port->nss_pin)
-#define spi_set_clk_high	(spi_port->clk_port		->BSRR	=spi_port->clk_pin)
-#define spi_set_clk_low		(spi_port->clk_port		->BRR		=spi_port->clk_pin)
-#define spi_set_mosi_high	(spi_port->mosi_port	->BSRR	=spi_port->mosi_pin)
-#define spi_set_mosi_low	(spi_port->mosi_port	->BRR		=spi_port->mosi_pin)
-#define	spi_get_miso			(spi_port->miso_port	->IDR&spi_port->miso_pin)
+
+unsigned  char spiTxBuff[spiBufsize]={0};
+
+
+
+////-----------------------------------------------static-hardware
+//#define spi_set_nss_high	(spi_port->nss_port		->BSRR	=spi_port->nss_pin)
+//#define spi_set_nss_low		(spi_port->nss_port		->BRR		=spi_port->nss_pin)
+//#define spi_set_clk_high	(spi_port->clk_port		->BSRR	=spi_port->clk_pin)
+//#define spi_set_clk_low		(spi_port->clk_port		->BRR		=spi_port->clk_pin)
+//#define spi_set_mosi_high	(spi_port->mosi_port	->BSRR	=spi_port->mosi_pin)
+//#define spi_set_mosi_low	(spi_port->mosi_port	->BRR		=spi_port->mosi_pin)
+//#define	spi_get_miso			(spi_port->miso_port	->IDR&spi_port->miso_pin)
 //-----------------------------------------------static-hardware-miso
+
+static void spi_initialize_nr(spi_def *pInfo);		//普通SPI接口配置
+static void spi_dma_initialize(SPI_TypeDef *SPIx);			//SPI-DMA通讯方式配置---20170722未完成
 
 
 /*******************************************************************************
@@ -63,8 +70,7 @@ spi_port_def*	spi_port;
 *******************************************************************************/
 void api_spi_configuration_gpio(spi_def* pInfo)
 {
-	spi_port	=	&pInfo->port;
-	
+	spi_port_def*	spi_port	=	&pInfo->port;
 	if(spi_port->nss_port)
 		GPIO_Configuration_OPP50	(pInfo->port.nss_port,pInfo->port.nss_pin);			//NSS
 	if(spi_port->clk_port)
@@ -88,7 +94,7 @@ void api_spi_configuration_gpio(spi_def* pInfo)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void api_spi_write_byte_gpio(unsigned char value)
+void api_spi_write_byte_gpio(spi_def* pInfo,unsigned char value)
 {
 	unsigned char i=0;	
 	//-----------------------------发送地址
@@ -97,16 +103,16 @@ void api_spi_write_byte_gpio(unsigned char value)
 		spi_delay_us(5);
 		if(0x80	==	(value&0x80))
 		{
-		 spi_set_mosi_high;	//mosi=1
+		 spi_set_mosi_high(pInfo);	//mosi=1
 		}
 		else
 		{
-		 spi_set_mosi_low;		//mosi=	0
+		 spi_set_mosi_low(pInfo);		//mosi=	0
 		}
 		spi_delay_us(5);
-		spi_set_clk_high;		//MF522_SCK = 1;
+		spi_set_clk_high(pInfo);		//MF522_SCK = 1;
 		spi_delay_us(5);
-		spi_set_clk_low;			//MF522_SCK = 0;
+		spi_set_clk_low(pInfo);			//MF522_SCK = 0;
 		value <<= 1;
 	}
 }
@@ -120,16 +126,16 @@ void api_spi_write_byte_gpio(unsigned char value)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void api_spi_write_register_gpio(unsigned char Address,unsigned char value)
+void api_spi_write_register_gpio(spi_def* pInfo,unsigned char Address,unsigned char value)
 {
-	spi_set_clk_low;		//SPI_SCK = 0;
-	spi_set_nss_low;		//SPI_NSS = 0;
+	spi_set_clk_low(pInfo);		//SPI_SCK = 0;
+	spi_set_nss_low(pInfo);		//SPI_NSS = 0;
 	spi_delay_us(5);
-	api_spi_write_byte_gpio(Address);
-	api_spi_write_byte_gpio(value);
+	api_spi_write_byte_gpio(pInfo,Address);
+	api_spi_write_byte_gpio(pInfo,value);
 	spi_delay_us(5);
-	spi_set_nss_high;		//SPI_NSS = 1
-	spi_set_clk_high;		//SPI_SCK = 1;
+	spi_set_nss_high(pInfo);		//SPI_NSS = 1
+	spi_set_clk_high(pInfo);		//SPI_SCK = 1;
 }
 /*******************************************************************************
 *函数名			:	mfrc522_read_byte
@@ -140,21 +146,21 @@ void api_spi_write_register_gpio(unsigned char Address,unsigned char value)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char api_spi_read_byte_gpio(void)
+unsigned char api_spi_read_byte_gpio(spi_def* pInfo)
 {
 	unsigned char i	=	0;
 	unsigned char ucResult=0;
 	//-----------------------------读取数据
 	for(i=8;i>0;i--)
 	{
-		spi_set_clk_high;		//MF522_SCK = 1;
+		spi_set_clk_high(pInfo);		//MF522_SCK = 1;
 		spi_delay_us(1);
 		ucResult <<= 1;
-		if(spi_get_miso)			//miso==1
+		if(spi_get_miso(pInfo))			//miso==1
 		{
 			ucResult|=0x01;
 		}
-		spi_set_clk_low;			//MF522_SCK = 0;
+		spi_set_clk_low(pInfo);			//MF522_SCK = 0;
 		spi_delay_us(1);
 	}	
 	return ucResult;
@@ -169,17 +175,17 @@ unsigned char api_spi_read_byte_gpio(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char api_spi_read_register_gpio(unsigned char Address)
+unsigned char api_spi_read_register_gpio(spi_def* pInfo,unsigned char Address)
 {
 	unsigned char value;
-	spi_set_clk_low;		//SPI_SCK = 0;
-	spi_set_nss_low;		//SPI_NSS = 0;
+	spi_set_clk_low(pInfo);		//SPI_SCK = 0;
+	spi_set_nss_low(pInfo);		//SPI_NSS = 0;
 	spi_delay_us(5);
-	api_spi_write_byte_gpio(Address);
-	value	=	api_spi_read_byte_gpio();
+	api_spi_write_byte_gpio(pInfo,Address);
+	value	=	api_spi_read_byte_gpio(pInfo);
 	spi_delay_us(5);
-	spi_set_nss_high;		//SPI_NSS = 1
-	spi_set_clk_high;		//SPI_SCK = 1;
+	spi_set_nss_high(pInfo);		//SPI_NSS = 1
+	spi_set_clk_high(pInfo);		//SPI_SCK = 1;
 	
 	return value;
 }
@@ -197,16 +203,8 @@ static void spi_delay_us(unsigned short us)
 
 
 
-unsigned  char spiTxBuff[spiBufsize]={0};
-//SPIDef	*SPISYS	=	0;	//内部驱动使用，不可删除
-void SPI_CS_LOW(spi_def *pInfo)
-{
-	pInfo->port.nss_port->BRR		= pInfo->port.nss_pin;
-}
-void SPI_CS_HIGH(spi_def *pInfo)
-{
-	pInfo->port.nss_port->BSRR		= pInfo->port.nss_pin;
-}
+
+
 
 
 
@@ -236,10 +234,10 @@ void SPI_Delay(unsigned long Time)
 *******************************************************************************/
 void api_spi_configurationNR(spi_def* pInfo)
 {
-//	SPISYS	=	pInfo;						//指针指向
 	spi_initialize_nr(pInfo);	//普通SPI接口配置
 //	api_spi_configuration_gpio(pInfo);
 	GPIO_Configuration_OPP50(pInfo->port.nss_port,pInfo->port.nss_pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
+	spi_set_nss_high(pInfo);		//SPI_NSS = 1
 }
 /*******************************************************************************
 *函数名			:	function
@@ -258,19 +256,23 @@ void api_spi_configurationDMA(spi_def* pInfo)
 	GPIO_Configuration_OPP50(pInfo->port.nss_port,pInfo->port.nss_pin);					//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605	
 	spi_dma_initialize(SPIx);		//SPI_FLASH_DMA方式配置
 }
+//------------------------------------------------------------------------------
+
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	函数功能说明
 *输入				: 
 *返回值			:	无
 *******************************************************************************/
-void spi_initialize_nr(spi_def *pInfo)
+static void spi_initialize_nr(spi_def *pInfo)
 {
 	//1)**********定义相关结构体
 	SPI_InitTypeDef  SPI_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_TypeDef *SPIx	=	pInfo->port.SPIx;
-	unsigned char SPIx_CsFlg=1;		//如果使用纯硬件SPIx（含CS脚），SPIx_CsFlg=1，否则SPIx_CsFlg=0；
 
 	//2)**********相关GPIO配置
 	switch(*(u32*)&SPIx)
@@ -278,7 +280,8 @@ void spi_initialize_nr(spi_def *pInfo)
 		case	SPI1_BASE://PA4-NSS;PA5-SCK;PA6-MISO;PA7-MOSI;
 										RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 ,ENABLE);			//开启SPI时钟
 										RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO|RCC_APB2Periph_GPIOA, ENABLE);
-										GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+										//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+										GPIO_InitStructure.GPIO_Pin =	GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
 										GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 										GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 										GPIO_Init(GPIOA, &GPIO_InitStructure);
@@ -286,7 +289,8 @@ void spi_initialize_nr(spi_def *pInfo)
 		case	SPI2_BASE://PB12-NSS;PB13-SCK;PB14-MISO;PB15-MOSI;
 										RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2 ,ENABLE);				//开启SPI时钟	
 										RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO|RCC_APB2Periph_GPIOB, ENABLE);
-										GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+										//GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+										GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
 										GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 										GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;  //复用推挽输出
 										GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -299,10 +303,10 @@ void spi_initialize_nr(spi_def *pInfo)
 										GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;  		//复用推挽输出
 										GPIO_Init(GPIOB, &GPIO_InitStructure);
 										//2.2)**********SPI_NSS配置		
-										GPIO_InitStructure.GPIO_Pin 	= GPIO_Pin_15;
-										GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-										GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;  		//复用推挽输出
-										GPIO_Init(GPIOA, &GPIO_InitStructure);
+										//GPIO_InitStructure.GPIO_Pin 	= GPIO_Pin_15;
+										//GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+										//GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF_PP;  		//复用推挽输出
+										//GPIO_Init(GPIOA, &GPIO_InitStructure);
 					break;
 		default		: break;
 	}
@@ -322,15 +326,15 @@ void spi_initialize_nr(spi_def *pInfo)
 		//未设置波特率使用最高
 		pInfo->port.SPI_BaudRatePrescaler_x	=	SPI_BaudRatePrescaler_2;
 	}
-	SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;				//设置方向				（2线全双工、2线只接收、一线发送、一线接收）
-	SPI_InitStructure.SPI_Mode = SPI_Mode_Master;															//模式         	（从或主设备）
-	SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;													//宽度         	（8或16位）
-	SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;																//时钟极性     	（低或高）
-	SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;															//时钟相位     	（第一个或第二个跳变沿）	
-	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;												//最先发送的位 	（最低位，还是最高位在先）
-	SPI_InitStructure.SPI_CRCPolynomial = 7;																	//设置crc多项式	（数字）如7
-	SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;																	//片选方式     	（硬件或软件方式）
-	SPI_InitStructure.SPI_BaudRatePrescaler = pInfo->port.SPI_BaudRatePrescaler_x;				//波特率预分频 	（从2---256分频）
+	SPI_InitStructure.SPI_Direction 				= SPI_Direction_2Lines_FullDuplex;	//设置方向				（2线全双工、2线只接收、一线发送、一线接收）
+	SPI_InitStructure.SPI_Mode 							= SPI_Mode_Master;									//模式         	（从或主设备）
+	SPI_InitStructure.SPI_DataSize 					= SPI_DataSize_8b;									//宽度         	（8或16位）
+	SPI_InitStructure.SPI_CPOL 							= SPI_CPOL_High;										//时钟极性     	（低或高）
+	SPI_InitStructure.SPI_CPHA 							= SPI_CPHA_2Edge;										//时钟相位     	（第一个或第二个跳变沿）	
+	SPI_InitStructure.SPI_FirstBit 					= SPI_FirstBit_MSB;									//最先发送的位 	（最低位，还是最高位在先）
+	SPI_InitStructure.SPI_CRCPolynomial 		= 7;																//设置crc多项式	（数字）如7
+	SPI_InitStructure.SPI_NSS 							= SPI_NSS_Soft;													//片选方式     	（硬件或软件方式）
+	SPI_InitStructure.SPI_BaudRatePrescaler = pInfo->port.SPI_BaudRatePrescaler_x;	//波特率预分频 	（从2---256分频）
 	SPI_Init(pInfo->port.SPIx,&SPI_InitStructure);
 	
 
@@ -349,22 +353,19 @@ void spi_initialize_nr(spi_def *pInfo)
 *返回值		:	无
 *例程			:
 *******************************************************************************/
-void spi_dma_initialize(SPI_TypeDef *SPIx)		//SPI_FLASH_DMA方式配置
+static void spi_dma_initialize(SPI_TypeDef *SPIx)		//SPI_FLASH_DMA方式配置
 {
-/**-----------------------------------------------------------------------------------------------------
-	********SPI_DMA的通信过程********
-	● 设置外设地址
-	● 设置存储器地址
-	● 设置传输数据量
-	● 设置通道的配置信息
-	● 使能DMA通道，启动传输
-	
-	● 发送时，在每次TXE被设置为’1’时发出DMA请求，DMA控制器则写数据至SPI_DR寄存器，TXE标志因此而被清除。
-	● 接收时，在每次RXNE被设置为’1’时发出DMA请求，DMA控制器则从SPI_DR寄存器读出数据，RXNE标志因此而被清除。
------------------------------------------------------------------------------------------------------**/
+	//-----------------------------------------------------------------------------------------------------
+	//********SPI_DMA的通信过程********
+	//● 设置外设地址
+	//● 设置存储器地址
+	//● 设置传输数据量
+	//● 设置通道的配置信息
+	//● 使能DMA通道，启动传输	
+	//● 发送时，在每次TXE被设置为’1’时发出DMA请求，DMA控制器则写数据至SPI_DR寄存器，TXE标志因此而被清除。
+	//● 接收时，在每次RXNE被设置为’1’时发出DMA请求，DMA控制器则从SPI_DR寄存器读出数据，RXNE标志因此而被清除。
+	//-----------------------------------------------------------------------------------------------------
 	//1)**********定义相关结构体
-	SPI_InitTypeDef  SPI_InitStructure;
-//	GPIO_InitTypeDef GPIO_InitStructure;
 	DMA_InitTypeDef	DMA_Initstructure;
 	DMA_Channel_TypeDef* DMAx_Channeltx=0;				//DMA发送通道请求信号---当DMA串口发送数据完成时，会发起DMA中断
 	DMA_Channel_TypeDef* DMAx_Channelrx=0;				//DMA接收通道请求信号---DMA串口接收由串口发起中断，因此此处接收通道中断不使用
@@ -391,46 +392,44 @@ void spi_dma_initialize(SPI_TypeDef *SPIx)		//SPI_FLASH_DMA方式配置
 	}
 	//4)**********SPI_DMA配置
 
-		//5)**********DMA发送初始化，外设作为DMA的目的端
-		DMA_Initstructure.DMA_PeripheralBaseAddr =  (u32)(&SPIx->DR);	//DMA外设源地址
-		DMA_Initstructure.DMA_MemoryBaseAddr     = (u32)spiTxBuff;						//DMA数据内存地址
-		DMA_Initstructure.DMA_DIR = DMA_DIR_PeripheralDST;												//DMA_DIR_PeripheralDST（外设作为DMA的目的端），DMA_DIR_PeripheralSRC（外设作为数据传输的来源）
-		DMA_Initstructure.DMA_BufferSize = spiBufsize; 													  //指定DMA通道的DMA缓存的大小
-		DMA_Initstructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					//DMA_PeripheralInc_Enable（外设地址寄存器递增），DMA_PeripheralInc_Disable（外设地址寄存器不变），
-		DMA_Initstructure.DMA_MemoryInc =DMA_MemoryInc_Enable;										//DMA_MemoryInc_Enable（内存地址寄存器递增），DMA_MemoryInc_Disable（内存地址寄存器不变）
-		DMA_Initstructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		//外设数据宽度--DMA_PeripheralDataSize_Byte（数据宽度为8位），DMA_PeripheralDataSize_HalfWord（数据宽度为16位），DMA_PeripheralDataSize_Word（数据宽度为32位）
-		DMA_Initstructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;						//内存数据宽度--DMA_MemoryDataSize_Byte（数据宽度为8位），DMA_MemoryDataSize_HalfWord（数据宽度为16位），DMA_MemoryDataSize_Word（数据宽度为32位）
-		DMA_Initstructure.DMA_Mode = DMA_Mode_Normal;															//DMA工作模式--DMA_Mode_Normal（只传送一次）, DMA_Mode_Circular（不停地传送）
-		DMA_Initstructure.DMA_Priority = DMA_Priority_High; 											//DMA通道的转输优先级--DMA_Priority_VeryHigh（非常高）DMA_Priority_High（高)，DMA_Priority_Medium（中），DMA_Priority_Low（低）
-		DMA_Initstructure.DMA_M2M = DMA_M2M_Disable;															//DMA通道的内存到内存传输--DMA_M2M_Enable(设置为内存到内存传输)，DMA_M2M_Disable（非内存到内存传输）
-		DMA_Init(DMAx_Channeltx,&DMA_Initstructure);															//初始化DMA
+	//5)**********DMA发送初始化，外设作为DMA的目的端
+	DMA_Initstructure.DMA_PeripheralBaseAddr =  (u32)(&SPIx->DR);	//DMA外设源地址
+	DMA_Initstructure.DMA_MemoryBaseAddr     = (u32)spiTxBuff;						//DMA数据内存地址
+	DMA_Initstructure.DMA_DIR = DMA_DIR_PeripheralDST;												//DMA_DIR_PeripheralDST（外设作为DMA的目的端），DMA_DIR_PeripheralSRC（外设作为数据传输的来源）
+	DMA_Initstructure.DMA_BufferSize = spiBufsize; 													  //指定DMA通道的DMA缓存的大小
+	DMA_Initstructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					//DMA_PeripheralInc_Enable（外设地址寄存器递增），DMA_PeripheralInc_Disable（外设地址寄存器不变），
+	DMA_Initstructure.DMA_MemoryInc =DMA_MemoryInc_Enable;										//DMA_MemoryInc_Enable（内存地址寄存器递增），DMA_MemoryInc_Disable（内存地址寄存器不变）
+	DMA_Initstructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		//外设数据宽度--DMA_PeripheralDataSize_Byte（数据宽度为8位），DMA_PeripheralDataSize_HalfWord（数据宽度为16位），DMA_PeripheralDataSize_Word（数据宽度为32位）
+	DMA_Initstructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;						//内存数据宽度--DMA_MemoryDataSize_Byte（数据宽度为8位），DMA_MemoryDataSize_HalfWord（数据宽度为16位），DMA_MemoryDataSize_Word（数据宽度为32位）
+	DMA_Initstructure.DMA_Mode = DMA_Mode_Normal;															//DMA工作模式--DMA_Mode_Normal（只传送一次）, DMA_Mode_Circular（不停地传送）
+	DMA_Initstructure.DMA_Priority = DMA_Priority_High; 											//DMA通道的转输优先级--DMA_Priority_VeryHigh（非常高）DMA_Priority_High（高)，DMA_Priority_Medium（中），DMA_Priority_Low（低）
+	DMA_Initstructure.DMA_M2M = DMA_M2M_Disable;															//DMA通道的内存到内存传输--DMA_M2M_Enable(设置为内存到内存传输)，DMA_M2M_Disable（非内存到内存传输）
+	DMA_Init(DMAx_Channeltx,&DMA_Initstructure);															//初始化DMA
 
-		//6)**********DMA接收初始化，外设作为DMA的源端
-		DMA_Initstructure.DMA_PeripheralBaseAddr =  (u32)(&SPIx->DR);	//DMA外设源地址
-		DMA_Initstructure.DMA_MemoryBaseAddr     = 	(u32)spiTxBuff;						//DMA数据内存地址
-		DMA_Initstructure.DMA_DIR = DMA_DIR_PeripheralSRC;												//DMA_DIR_PeripheralDST（外设作为DMA的目的端），DMA_DIR_PeripheralSRC（外设作为数据传输的来源）
-		DMA_Initstructure.DMA_BufferSize = spiBufsize; 													  //指定DMA通道的DMA缓存的大小
-		DMA_Initstructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					//DMA_PeripheralInc_Enable（外设地址寄存器递增），DMA_PeripheralInc_Disable（外设地址寄存器不变），
-		DMA_Initstructure.DMA_MemoryInc =DMA_MemoryInc_Enable;										//DMA_MemoryInc_Enable（内存地址寄存器递增），DMA_MemoryInc_Disable（内存地址寄存器不变）
-		DMA_Initstructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		//外设数据宽度--DMA_PeripheralDataSize_Byte（数据宽度为8位），DMA_PeripheralDataSize_HalfWord（数据宽度为16位），DMA_PeripheralDataSize_Word（数据宽度为32位）
-		DMA_Initstructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;						//内存数据宽度--DMA_MemoryDataSize_Byte（数据宽度为8位），DMA_MemoryDataSize_HalfWord（数据宽度为16位），DMA_MemoryDataSize_Word（数据宽度为32位）
-		DMA_Initstructure.DMA_Mode = DMA_Mode_Normal;															//DMA工作模式--DMA_Mode_Normal（只传送一次）, DMA_Mode_Circular（不停地传送）
-		DMA_Initstructure.DMA_Priority = DMA_Priority_High; 											//DMA通道的转输优先级--DMA_Priority_VeryHigh（非常高）DMA_Priority_High（高)，DMA_Priority_Medium（中），DMA_Priority_Low（低）
-		DMA_Initstructure.DMA_M2M = DMA_M2M_Disable;															//DMA通道的内存到内存传输--DMA_M2M_Enable(设置为内存到内存传输)，DMA_M2M_Disable（非内存到内存传输）
-		DMA_Init(DMAx_Channelrx,&DMA_Initstructure);															//初始化DMA
+	//6)**********DMA接收初始化，外设作为DMA的源端
+	DMA_Initstructure.DMA_PeripheralBaseAddr =  (u32)(&SPIx->DR);	//DMA外设源地址
+	DMA_Initstructure.DMA_MemoryBaseAddr     = 	(u32)spiTxBuff;						//DMA数据内存地址
+	DMA_Initstructure.DMA_DIR = DMA_DIR_PeripheralSRC;												//DMA_DIR_PeripheralDST（外设作为DMA的目的端），DMA_DIR_PeripheralSRC（外设作为数据传输的来源）
+	DMA_Initstructure.DMA_BufferSize = spiBufsize; 													  //指定DMA通道的DMA缓存的大小
+	DMA_Initstructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;					//DMA_PeripheralInc_Enable（外设地址寄存器递增），DMA_PeripheralInc_Disable（外设地址寄存器不变），
+	DMA_Initstructure.DMA_MemoryInc =DMA_MemoryInc_Enable;										//DMA_MemoryInc_Enable（内存地址寄存器递增），DMA_MemoryInc_Disable（内存地址寄存器不变）
+	DMA_Initstructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;		//外设数据宽度--DMA_PeripheralDataSize_Byte（数据宽度为8位），DMA_PeripheralDataSize_HalfWord（数据宽度为16位），DMA_PeripheralDataSize_Word（数据宽度为32位）
+	DMA_Initstructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;						//内存数据宽度--DMA_MemoryDataSize_Byte（数据宽度为8位），DMA_MemoryDataSize_HalfWord（数据宽度为16位），DMA_MemoryDataSize_Word（数据宽度为32位）
+	DMA_Initstructure.DMA_Mode = DMA_Mode_Normal;															//DMA工作模式--DMA_Mode_Normal（只传送一次）, DMA_Mode_Circular（不停地传送）
+	DMA_Initstructure.DMA_Priority = DMA_Priority_High; 											//DMA通道的转输优先级--DMA_Priority_VeryHigh（非常高）DMA_Priority_High（高)，DMA_Priority_Medium（中），DMA_Priority_Low（低）
+	DMA_Initstructure.DMA_M2M = DMA_M2M_Disable;															//DMA通道的内存到内存传输--DMA_M2M_Enable(设置为内存到内存传输)，DMA_M2M_Disable（非内存到内存传输）
+	DMA_Init(DMAx_Channelrx,&DMA_Initstructure);															//初始化DMA
+	
+	//7)**********DMA通道中断初始化---此为DMA发送中断----DMA发送完成中断
 		
-		//7)**********DMA通道中断初始化---此为DMA发送中断----DMA发送完成中断
-			
-		SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Tx, ENABLE);								//开启DMA发送
-		SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Rx, ENABLE);								//开启DMA接收
-		//使能SPIx
-//		SPI_Cmd(SPIx, ENABLE);
-		
-		//9.2)**********使能相关DMA通道传输完成中断
-		DMA_Cmd(DMAx_Channelrx,ENABLE);	
-		DMA_Cmd(DMAx_Channeltx,ENABLE);
-
-
+	SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Tx, ENABLE);								//开启DMA发送
+	SPI_I2S_DMACmd(SPIx, SPI_I2S_DMAReq_Rx, ENABLE);								//开启DMA接收
+	//使能SPIx
+	//SPI_Cmd(SPIx, ENABLE);
+	
+	//9.2)**********使能相关DMA通道传输完成中断
+	DMA_Cmd(DMAx_Channelrx,ENABLE);	
+	DMA_Cmd(DMAx_Channeltx,ENABLE);
   
 	//使能SPIx
 //	SPI_Cmd(SPIx, DISABLE);
@@ -458,7 +457,7 @@ void spi_dma_initialize(SPI_TypeDef *SPIx)		//SPI_FLASH_DMA方式配置
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short SPI_DMASend(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned short BufferSize)
+unsigned short api_spi_dma_send(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned short BufferSize)
 {
 //  spiTxBuff
   switch(*(u32*)&SPIx)
@@ -503,7 +502,7 @@ unsigned short SPI_DMASend(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned s
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned char *rx_buffer,unsigned short BufferSize)
+unsigned short api_spi_dma_receive(SPI_TypeDef* SPIx,unsigned char *rx_buffer)
 {
   switch(*(u32*)&SPIx)
   {
@@ -519,29 +518,13 @@ unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsig
         DMA1_Channel4->CNDTR  = 0;                  //清除接收计数
         return RxdNum;      //返回读到的数据大小
       }
-      else if(0 ==  DMA1_Channel5->CNDTR)   //发送缓存为空---表示可以进行新的发送
-      {
-        //-----------------------重新设定接收缓存地址
-        DMA1_Channel4->CNDTR 	=BufferSize;					  //设定待发送缓冲区大小
-        DMA1_Channel4->CMAR = (u32)rx_buffer;
-        DMA1_Channel4->CCR |=(u32)0x00000001;			  //DMA_Cmd(DMA1_Channel4,ENABLE);//DMA接收开启3
-        
-        DMA1_Channel5->CCR &= (u32)0xFFFFFFFE;				//DMA_Cmd(DMA1_Channel5,DISABLE);//DMA发送关闭，只能在DMA关闭情况下才可以写入CNDTR					
-        DMA1->IFCR = DMA1_FLAG_GL5;										//DMA_ClearFlag(DMA1_FLAG_TC5);	//清除标志						
-        DMA1_Channel5->CNDTR 	=BufferSize;					  //设定待发送缓冲区大小
-        DMA1_Channel5->CMAR 	=(u32)tx_buffer;			  //发送缓冲区
-        DMA1_Channel5->CCR |=(u32)0x00000001;			  //DMA_Cmd(DMA1_Channel5,ENABLE);//DMA发送开启3
-        return 0;
-      }
     }
       break;
     default:break;
   }
-  return 0xFFFF;
+  return 0;
 }
 //------------------------------------------------------------------------------
-
-
 
 
 /*******************************************************************************
@@ -550,10 +533,11 @@ unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsig
 *输入				: 
 *返回值			:	无
 *******************************************************************************/
-u8	SPI_ReadWriteByteSPI(spi_def *pInfo,unsigned char Data)
+unsigned char api_spi_ReadWrite_byte(spi_def *pInfo,unsigned char Data)
 {
 //____________定义变量
 	u16 retry=0;													//用来进行超时计数
+	//SPI_Cmd(pInfo->port.SPIx, ENABLE);				//使能SPI
 	//____________等待发送缓冲区为空
 	while(SPI_I2S_GetFlagStatus(pInfo->port.SPIx, SPI_I2S_FLAG_TXE) == RESET) 		//检查指令SPI发送标志是否为空
 	{
@@ -572,55 +556,22 @@ u8	SPI_ReadWriteByteSPI(spi_def *pInfo,unsigned char Data)
 			return 0;
 	}
 	while (SPI_I2S_GetFlagStatus(pInfo->port.SPIx, SPI_I2S_FLAG_BSY) == SET);
+	//SPI_Cmd(pInfo->port.SPIx, DISABLE);				//使能SPI
 	//____________返回接收到的数据
 	return SPI_I2S_ReceiveData(pInfo->port.SPIx); 			//返回接收到的数据	
 }
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void SPI_WriteBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize)
-{
-	unsigned short bufferNum=0;
-//	SPI_Cmd(SPIx, ENABLE);
-//	SPI_CS_LOW;
-	for(bufferNum=0;bufferNum<BufferSize;bufferNum++)
-	{
-		SPI_ReadWriteByteSPI(pInfo,Buffer[bufferNum]);
-	}
-//	SPI_Cmd(SPIx, DISABLE);
-//	SPI_CS_HIGH;
-}
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void SPI_ReadBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize)
-{
-	unsigned short bufferNum=0;
-//	SPI_Cmd(SPIx, ENABLE);
-//	SPI_CS_LOW;
-	for(bufferNum=0;bufferNum<BufferSize;bufferNum++)
-	{
-		Buffer[bufferNum]	=	SPI_ReadWriteByteSPI(pInfo,0xFF);
-	}
-//	SPI_Cmd(SPIx, DISABLE);
-//	SPI_CS_HIGH;
-}
+
 
 
 //------------------------------------------------------------------------------
-
+//-----------------------------------------------static-hardware
+void spi_set_nss_high(spi_def* pInfo)				{pInfo->port.nss_port		->BSRR	=pInfo->port.nss_pin;}
+void spi_set_nss_low(spi_def* pInfo)				{pInfo->port.nss_port		->BRR		=pInfo->port.nss_pin;}
+void spi_set_clk_high(spi_def* pInfo)				{pInfo->port.clk_port		->BSRR	=pInfo->port.clk_pin;}
+void spi_set_clk_low(spi_def* pInfo)				{pInfo->port.clk_port		->BRR		=pInfo->port.clk_pin;}
+void spi_set_mosi_high(spi_def* pInfo)			{pInfo->port.mosi_port				->BSRR	=pInfo->port.mosi_pin;}
+void spi_set_mosi_low(spi_def* pInfo)				{pInfo->port.mosi_port				->BRR		=pInfo->port.mosi_pin;}
+unsigned char spi_get_miso(spi_def* pInfo)	{return(pInfo->port.miso_port	->IDR&(pInfo->port.miso_pin));}
 
 
 

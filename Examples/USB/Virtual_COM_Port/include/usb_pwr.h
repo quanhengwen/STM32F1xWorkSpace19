@@ -50,11 +50,8 @@ void Resume(RESUME_STATE eResumeSetVal);
 RESULT PowerOn(void);
 RESULT PowerOff(void);
 
-void Enter_LowPowerMode(void);
-void Leave_LowPowerMode(void);
-
 /* External variables --------------------------------------------------------*/
-extern  DEVICE_STATE bDeviceState; /* USB device status */
+extern  vu32 bDeviceState; /* USB device status */
 extern volatile bool fSuspendEnabled;  /* true when suspend is possible */
 
 #endif  /*__USB_PWR_H*/

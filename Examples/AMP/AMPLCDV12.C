@@ -1170,7 +1170,7 @@ unsigned short GetBackColor(void)
 *******************************************************************************/
 void HW_Configuration(void)
 {
-//	SPIDef	*SPI	=	&sAmpLcd.SpiPort;
+//	spi_def	*SPI	=	&sAmpLcd.SpiPort;
 	sST7789VDef	sST7789V;
 	SPIDef			sGT32L32;
 	RS485Def		sRS485Port;   //²ã°å½Ó¿Ú

@@ -343,7 +343,7 @@ void USB_HP_CAN_TX_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USB_LP_CAN_RX0_IRQHandler(void)
+__weak void USB_LP_CAN_RX0_IRQHandler(void)
 {
   USB_Istr();
 }
@@ -522,7 +522,6 @@ __weak void USART1_IRQHandler(void)
   if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
   {
     /* Send the received data to the PC Host*/
-    usart_to_usb_send_data();
   }
 }
 

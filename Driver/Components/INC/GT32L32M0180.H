@@ -133,16 +133,16 @@ typedef struct      _GT32L32/*Card Identification Data*/
 
 
 /* Exported functions ------------------------------------------------------- */
+void api_gt32l32_configuration(GT32L32Def *pInfo);
 
-void GT32L32_Initialize(spi_def *SpiPort);  
 u8 GT32L32_ReadStatus(GT32L32Def *pInfo);			//读取芯片状态
 void GT32L32_ChipErase(GT32L32Def *pInfo);		//擦除用户区数据
 
 
 //----------------------------------------------------------接口函数
-u32 GT32L32_GetAntennaCode(u8	NUM,u8 *GetBuffer);						//天线图标调用程序
-u32 GT32L32_GetBatteryCode(u8	NUM,u8 *GetBuffer);						//电池图标调用程序
-u16	GT32L32_GetCode(u8 font,u16 word,u8 *ReadBuffer);		//从字库中读数据并返回数据长度
+u32 api_gt32l32_get_antenna(u8	NUM,u8 *GetBuffer);						//天线图标调用程序
+u32 api_gt32l32_get_battery(u8	NUM,u8 *GetBuffer);						//电池图标调用程序
+u16	api_gt32l32_get_code(u8 font,u16 word,u8 *ReadBuffer);		//从字库中读数据并返回数据长度
 //u8  GT32L32_ReadWriteByte(u8 Data);		//读写一个字节
 //void GT32L32_SendByte(GT32L32Def *pInfo,u8 ByteData);		//发送一个字节数据,先发送高位
 //u8 GT32L32_ReadByte(GT32L32Def *pInfo);		//读一个字节,先读高位

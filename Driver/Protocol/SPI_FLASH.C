@@ -75,17 +75,17 @@ void SPI_FLASH_SectorErase(u32 SectorAddr)
 
   /* Sector Erase */
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
   /* Send Sector Erase instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.SE);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.SE);
   /* Send SectorAddr high nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(SectorAddr & 0xFF0000) >> 16);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(SectorAddr & 0xFF0000) >> 16);
   /* Send SectorAddr medium nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(SectorAddr & 0xFF00) >> 8);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(SectorAddr & 0xFF00) >> 8);
   /* Send SectorAddr low nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,SectorAddr & 0xFF);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,SectorAddr & 0xFF);
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   /* Wait the end of Flash writing */
   SPI_FLASH_WaitForWriteEnd();
@@ -104,17 +104,17 @@ void SPI_FLASH_BulkErase(u32 BulkAddr)
 
   /* Bulk Erase */
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
   /* Send Bulk Erase instruction  */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.BE);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.BE);
 	/* Send SectorAddr high nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(BulkAddr & 0xFF0000) >> 16);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(BulkAddr & 0xFF0000) >> 16);
   /* Send SectorAddr medium nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(BulkAddr & 0xFF00) >> 8);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(BulkAddr & 0xFF00) >> 8);
   /* Send SectorAddr low nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,BulkAddr & 0xFF);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,BulkAddr & 0xFF);
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   /* Wait the end of Flash writing */
   SPI_FLASH_WaitForWriteEnd();
@@ -133,11 +133,11 @@ void SPI_FLASH_ChipErase(void)
 
   /* Sector Erase */
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
   /* Send Sector Erase instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.CE);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.CE);
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   /* Wait the end of Flash writing */
   SPI_FLASH_WaitForWriteEnd();
@@ -167,27 +167,27 @@ void SPI_FLASH_PageWrite(u8* pBuffer, u32 WriteAddr, u16 NumByteToWrite)
   SPI_FLASH_WriteEnable();
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
   /* Send "Write to Memory " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.PP);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.PP);
   /* Send WriteAddr high nibble address byte to write to */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(WriteAddr & 0xFF0000) >> 16);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(WriteAddr & 0xFF0000) >> 16);
   /* Send WriteAddr medium nibble address byte to write to */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(WriteAddr & 0xFF00) >> 8);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(WriteAddr & 0xFF00) >> 8);
   /* Send WriteAddr low nibble address byte to write to */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,WriteAddr & 0xFF);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,WriteAddr & 0xFF);
 
   /* while there is data to be written on the FLASH */
   while (NumByteToWrite--)
   {
     /* Send the current byte */
-    SPI_ReadWriteByteSPI(&FlashSYS->SPI,*pBuffer);
+    api_spi_ReadWrite_byte(&FlashSYS->SPI,*pBuffer);
     /* Point on the next byte to be written */
     pBuffer++;
   }
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   /* Wait the end of Flash writing */
   SPI_FLASH_WaitForWriteEnd();
@@ -292,28 +292,28 @@ void SPI_FLASH_BufferWrite(u8* pBuffer, u32 StartAddr, u16 NumByteToWrite)
 void SPI_FLASH_BufferRead(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 {
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "Read from Memory " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.READ);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.READ);
 
   /* Send ReadAddr high nibble address byte to read from */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(ReadAddr & 0xFF0000) >> 16);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(ReadAddr & 0xFF0000) >> 16);
   /* Send ReadAddr medium nibble address byte to read from */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(ReadAddr& 0xFF00) >> 8);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(ReadAddr& 0xFF00) >> 8);
   /* Send ReadAddr low nibble address byte to read from */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,ReadAddr & 0xFF);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,ReadAddr & 0xFF);
 
   while (NumByteToRead--) /* while there is data to be read */
   {
     /* Read a byte from the FLASH */
-    *pBuffer = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+    *pBuffer = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
     /* Point to the next location where the byte read will be saved */
     pBuffer++;
   }
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 }
 /*******************************************************************************
 * Function Name  : SPI_FLASH_StartReadSequence
@@ -330,18 +330,18 @@ void SPI_FLASH_BufferRead(u8* pBuffer, u32 ReadAddr, u16 NumByteToRead)
 void SPI_FLASH_StartReadSequence(u32 ReadAddr)
 {
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "Read from Memory " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.READ);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.READ);
 
   /* Send the 24-bit address of the address to read from -----------------------*/
   /* Send ReadAddr high nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(ReadAddr & 0xFF0000) >> 16);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(ReadAddr & 0xFF0000) >> 16);
   /* Send ReadAddr medium nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,(ReadAddr& 0xFF00) >> 8);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,(ReadAddr& 0xFF00) >> 8);
   /* Send ReadAddr low nibble address byte */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,ReadAddr & 0xFF);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,ReadAddr & 0xFF);
 }
 /*******************************************************************************
 * Function Name  : SPI_FLASH_SetDeepPowerdown
@@ -354,13 +354,13 @@ void SPI_FLASH_SetDeepPowerdown(void)
 {
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "DP " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.DP);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.DP);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
 }
 /*******************************************************************************
@@ -374,13 +374,13 @@ void SPI_FLASH_ResDeepPowerdown(void)
 {
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "RDP " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.RDP);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.RDP);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
 }
 /*******************************************************************************
@@ -395,31 +395,31 @@ u32 SPI_FLASH_ReadRDSFDP(void)
   u32 Temp = 0, Temp0 = 0, Temp1 = 0;
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "RDSFDP " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.RDSFDP);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.RDSFDP);
 
 	/* Send "ADD1 "  */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,0x00);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,0x00);
 	
 	/* Send "ADD2 "  */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,0x00);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,0x00);
 	
 	/* Send "ADD3 "  */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,0x00);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,0x00);
 	
 	/* Send one dummy bytes---Byte1 */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 	
   /* Read Data1 from the FLASH */
-  Temp0 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp0 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Read Data2 from the FLASH */
-  Temp1 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp1 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   Temp = (Temp0 << 8) | Temp1;
 
@@ -437,22 +437,22 @@ u32 SPI_FLASH_ReadID(void)
   u32 Temp = 0, Temp0 = 0, Temp1 = 0, Temp2 = 0;
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "RDID " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.RDID);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.RDID);
 
   /* Read a byte from the FLASH */
-  Temp0 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp0 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Read a byte from the FLASH */
-  Temp1 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp1 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Read a byte from the FLASH */
-  Temp2 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp2 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   Temp = (Temp0 << 16) | (Temp1 << 8) | Temp2;
 
@@ -470,28 +470,28 @@ u32 SPI_FLASH_ReadREMS(void)
   u16 Temp = 0, Temp0 = 0, Temp1 = 0;
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "REMS " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.REMS);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.REMS);
 
   /* Send two dummy bytes---Byte1 */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Send two dummy bytes---Byte2 */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
 	/* Send one bytes address (A7~A0). 发送0x00,manufacturer ID先出;发送0x01，device ID先出*/
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,0X00);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,0X00);
 	
 	/* Read a byte from the FLASH */
-  Temp0 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp0 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Read a byte from the FLASH */
-  Temp1 = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp1 = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
   Temp = (Temp0 << 8) | Temp1;
 
@@ -509,16 +509,16 @@ u32 SPI_FLASH_ReadStatusRegister(void)
   u8 Temp = 0;
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "REMS " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.RDSR);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.RDSR);
 
 	/* Read a byte from the FLASH */
-  Temp = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+  Temp = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 
 	memcpy((unsigned char*)&FlashSYS->Flag,&Temp,1);
 	
@@ -539,16 +539,16 @@ void SPI_FLASH_WriteStatusRegister(SPIFlashStatusDef Flag)
 	memcpy((unsigned char*)&Status,(unsigned char*)&Flag,1);
 	
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "WRSR " instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.WRSR);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.WRSR);
 
 	/* Send "Status " to the FLASH */
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,Status);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,Status);
 
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 }
 
 /*******************************************************************************
@@ -560,9 +560,9 @@ void SPI_FLASH_WriteStatusRegister(SPIFlashStatusDef Flag)
 *******************************************************************************/
 void SPI_FLASH_WriteEnable(void)
 {
-	SPI_CS_LOW(&FlashSYS->SPI);
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.WREN);
-	SPI_CS_HIGH(&FlashSYS->SPI);
+	spi_set_nss_low(&FlashSYS->SPI);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.WREN);
+	spi_set_nss_high(&FlashSYS->SPI);
 }
 /*******************************************************************************
 * Function Name  : SPI_FLASH_WriteDisble
@@ -573,9 +573,9 @@ void SPI_FLASH_WriteEnable(void)
 *******************************************************************************/
 void SPI_FLASH_WriteDisble(void)
 {
-	SPI_CS_LOW(&FlashSYS->SPI);
-	SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.WRDI);
-	SPI_CS_HIGH(&FlashSYS->SPI);
+	spi_set_nss_low(&FlashSYS->SPI);
+	api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.WRDI);
+	spi_set_nss_high(&FlashSYS->SPI);
 }
 /*******************************************************************************
 * Function Name  : SPI_FLASH_WaitForWriteEnd
@@ -592,21 +592,21 @@ void SPI_FLASH_WaitForWriteEnd(void)
 	unsigned long Time	=	720000;
 
   /* Select the FLASH: Chip Select low */
-  SPI_CS_LOW(&FlashSYS->SPI);
+  spi_set_nss_low(&FlashSYS->SPI);
 
   /* Send "Read Status Register" instruction */
-  SPI_ReadWriteByteSPI(&FlashSYS->SPI,FlashSYS->Cmd.RDSR);
+  api_spi_ReadWrite_byte(&FlashSYS->SPI,FlashSYS->Cmd.RDSR);
 
   /* Loop as long as the memory is busy with a write cycle */
   do
   {
     /* Send a dummy byte to generate the clock needed by the FLASH
     and put the value of the status register in FLASH_Status variable */
-    FLASH_Status = SPI_ReadWriteByteSPI(&FlashSYS->SPI,Dummy_Byte);
+    FLASH_Status = api_spi_ReadWrite_byte(&FlashSYS->SPI,Dummy_Byte);
   }
   while (((FLASH_Status & WIP_Flag) == SET)&&(Time--)); /* Write in progress */
   /* Deselect the FLASH: Chip Select high */
-  SPI_CS_HIGH(&FlashSYS->SPI);
+  spi_set_nss_high(&FlashSYS->SPI);
 }
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

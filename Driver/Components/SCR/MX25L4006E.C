@@ -90,7 +90,7 @@ void MX25L4006E_Server(void)
 //		MX25L4006E_ReadID();
 //	SPI_DMA_BufferRead((u32*)SPI_RX_Buffer);
 //	GPIO_ResetBits(GPIOA,GPIO_Pin_4);
-//	SPI_DMASend(SPI1,(u32*)SPI_TX_Buffer,(u32*)SPI_RX_Buffer,SPI_BUFFERSIZE);	//SPI_DMA发送函数----后边的省略号就是可变参数
+//	api_spi_dma_send(SPI1,(u32*)SPI_TX_Buffer,(u32*)SPI_RX_Buffer,SPI_BUFFERSIZE);	//SPI_DMA发送函数----后边的省略号就是可变参数
 //	GPIO_SetBits(GPIOA,GPIO_Pin_4);	
 //	SPI_Cmd(SPI1, ENABLE);
 //	SPI_DMA_ReceiveSendByte(SPI1,8);		//DMA收发数据

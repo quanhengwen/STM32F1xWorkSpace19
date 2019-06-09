@@ -8,8 +8,21 @@
 
 
 
+//读取一个坐标值
+//连续读取READ_TIMES次数据,对这些数据升序排列,
+//然后去掉最低和最高LOST_VAL个数,取平均值 
+#define READ_TIMES 15 //读取次数
+#define LOST_VAL 5	  //丢弃值
 
 
+//***因触摸屏批次不同等原因，默认的校准参数值可能会引起触摸识别不准，建议校准后再使用，不建议使用固定的默认校准参数
+unsigned short vx=4809,vy=7382;  //比例因子，此值除以1000之后表示多少个AD值代表一个像素点
+unsigned short chx=102,chy=296;//默认像素点坐标为0时的AD起始值
+//***因触摸屏批次不同等原因，默认的校准参数值可能会引起触摸识别不准，建议校准后再使用，不建议使用固定的默认校准参数
+
+struct tp_pix_  tp_pixad,tp_pixlcd;	 //当前触控坐标的AD值,前触控坐标的像素值
+
+spi_def* pXpt2046;
 
 /*******************************************************************************
 *函数名			:	function
@@ -22,50 +35,109 @@
 *******************************************************************************/
 void api_xpt2046_configuration(spi_def* pInfo)
 {
-
-  api_spi_configuration_gpio(pInfo);				//普通SPI通讯方式配置
-
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	写RC632寄存器
-*输入				: Address[IN]:寄存器地址
-							value[IN]:写入的值
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char api_xpt2046_write_byte(unsigned char value)
-{
-
-}
-/*******************************************************************************
-*函数名			:	mfrc522_read_byte
-*功能描述		:	读RC632寄存器
-*输入				: Address[IN]:寄存器地址
-*返回值			:	读出的值
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char api_xpt2046_read_byte(void)
-{
+	pXpt2046	=	pInfo;
+  //api_spi_configuration_gpio(pInfo);				//普通SPI通讯方式配置
+	api_spi_configurationNR(pInfo);				//SPI接口配置
 
 }
 //-----------------------------------------------------------------------------
 
 
+/*******************************************************************************
+*函数名			:	api_xpt2046_get_coordinate
+*功能描述		:	带滤波的坐标读取,最小值不能少于100
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_xpt2046_get_coordinate(unsigned short *x,unsigned short *y)
+{
+	unsigned short xtemp,ytemp;	
+	xtemp=xpt2046_get_ad_filter(CMD_RDX);		//获取X轴位置
+	ytemp=xpt2046_get_ad_filter(CMD_RDY);		//获取Y轴位置
+	if(xtemp<100||ytemp<100)
+		return 0;//读数失败
+	*x=xtemp;
+	*y=ytemp;
+	return 1;//读数成功
+}
+//-----------------------------------------------------------------------------
 
+
+/*******************************************************************************
+*函数名			:	xpt2046_get_ad
+*功能描述		:	从7846/7843/XPT2046/UH7843/UH7846读取adc值	  0x90=y   0xd0-x
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short xpt2046_get_ad(unsigned char CMD)          
+{
+	unsigned short l;
+	spi_set_nss_low(pXpt2046);
+	/* 在差分模式下，XPT2046 转换需要24个时钟，8个时钟输入命令，之后1个时钟去除 */
+	//1)--------------------发送转换命令
+	api_spi_ReadWrite_byte(pXpt2046,CMD);        				//送控制字即用差分方式读X坐标 详细请见有关资料
+	//2)--------------------读取数据，其中第一个时钟要去除
+	xpt2046_DelayNop(50);
+	l	=	api_spi_ReadWrite_byte(pXpt2046,0xFF)&0x7F;    	//第一个时钟去除，//送控制字即用差分方式读X坐标 详细请见有关资料
+	l<<=8;
+	l	|=	api_spi_ReadWrite_byte(pXpt2046,0xFF);        //送控制字即用差分方式读X坐标 详细请见有关资料
+	//3)--------------------只有12位有效值，后3位无效
+	l>>=3;
+	spi_set_nss_high(pXpt2046);
+	return l;
+}
+/*******************************************************************************
+*函数名			:	xpt2046_get_ad_filter
+*功能描述		:	滤波处理
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short xpt2046_get_ad_filter(unsigned char xy)
+{
+	/* 去掉最大值，去掉最小值，求平均值 */
+	unsigned short i, j;
+	unsigned short buf[READ_TIMES];
+	unsigned short sum=0;
+	unsigned short temp;
+	//1)-------------------------采样数据
+	for(i=0;i<READ_TIMES;i++)
+	{				 
+		buf[i]=xpt2046_get_ad(xy);	    
+	}
+	//2)-------------------------从小到大排序
+	for(i=0;i<READ_TIMES-1; i++)//排序
+	{
+		for(j=i+1;j<READ_TIMES;j++)
+		{
+			if(buf[i]>buf[j])//升序排列
+			{
+				temp=buf[i];
+				buf[i]=buf[j];
+				buf[j]=temp;
+			}
+		}
+	}
+	//3)-------------------------去掉几个最大和最小值
+	sum=0;
+	for(i=LOST_VAL;i<READ_TIMES-LOST_VAL;i++)
+		sum+=buf[i];
+	//4)-------------------------求平均值
+	temp=sum/(READ_TIMES-2*LOST_VAL);
+	return temp;   
+}
 
 //------------------------------------------------------------------------------
 
-//***因触摸屏批次不同等原因，默认的校准参数值可能会引起触摸识别不准，建议校准后再使用，不建议使用固定的默认校准参数
-unsigned short vx=4809,vy=7382;  //比例因子，此值除以1000之后表示多少个AD值代表一个像素点
-unsigned short chx=102,chy=296;//默认像素点坐标为0时的AD起始值
-//***因触摸屏批次不同等原因，默认的校准参数值可能会引起触摸识别不准，建议校准后再使用，不建议使用固定的默认校准参数
-
-struct tp_pix_  tp_pixad,tp_pixlcd;	 //当前触控坐标的AD值,前触控坐标的像素值   
+   
 
 
 unsigned char tpstate(void)
@@ -80,60 +152,7 @@ void spistar(void)                                     //SPI开始
 //	DIN=1;
 //	DCLK=1;
 }
-	
-//从7846/7843/XPT2046/UH7843/UH7846读取adc值	  0x90=y   0xd0-x
-unsigned short ADS_Read_AD(unsigned char CMD)          
-{
-	unsigned short l;
-	l	=	api_spi_read_register_gpio(CMD);        //送控制字即用差分方式读X坐标 详细请见有关资料
-	return l;
-}		   
-//读取一个坐标值
-//连续读取READ_TIMES次数据,对这些数据升序排列,
-//然后去掉最低和最高LOST_VAL个数,取平均值 
-#define READ_TIMES 15 //读取次数
-#define LOST_VAL 5	  //丢弃值
-unsigned short ADS_Read_XY(unsigned char xy)
-{
-	unsigned short i, j;
-	unsigned short buf[READ_TIMES];
-	unsigned short sum=0;
-	unsigned short temp;
-	for(i=0;i<READ_TIMES;i++)
-	{				 
-		buf[i]=ADS_Read_AD(xy);	    
-	}				    
-	for(i=0;i<READ_TIMES-1; i++)//排序
-	{
-		for(j=i+1;j<READ_TIMES;j++)
-		{
-			if(buf[i]>buf[j])//升序排列
-			{
-				temp=buf[i];
-				buf[i]=buf[j];
-				buf[j]=temp;
-			}
-		}
-	}	  
-	sum=0;
-	for(i=LOST_VAL;i<READ_TIMES-LOST_VAL;i++)
-		sum+=buf[i];
-	temp=sum/(READ_TIMES-2*LOST_VAL);
-	return temp;   
-} 
-//带滤波的坐标读取
-//最小值不能少于100.
-unsigned char Read_ADS(unsigned short *x,unsigned short *y)
-{
-	unsigned short xtemp,ytemp;			 	 		  
-	xtemp=ADS_Read_XY(CMD_RDX);
-	ytemp=ADS_Read_XY(CMD_RDY);	 									   
-	if(xtemp<100||ytemp<100)
-		return 0;//读数失败
-	*x=xtemp;
-	*y=ytemp;
-	return 1;//读数成功
-}
+
 //2次读取ADS7846,连续读取2次有效的AD值,且这两次的偏差不能超过
 //50,满足条件,则认为读数正确,否则读数错误.	   
 //该函数能大大提高准确度
@@ -143,9 +162,9 @@ unsigned char Read_ADS2(unsigned short *x,unsigned short *y)
 	unsigned short x1,y1;
  	unsigned short x2,y2;
  	unsigned char flag;    
-    flag=Read_ADS(&x1,&y1);   
+    flag=api_xpt2046_get_coordinate(&x1,&y1);   
     if(flag==0)return(0);
-    flag=Read_ADS(&x2,&y2);	
+    flag=api_xpt2046_get_coordinate(&x2,&y2);	
     if(flag==0)return(0);   
     if(((x2<=x1&&x1<x2+ERR_RANGE)||(x1<=x2&&x2<x1+ERR_RANGE))//前后两次采样在+-ERR_RANGE内
     &&((y2<=y1&&y1<y2+ERR_RANGE)||(y1<=y2&&y2<y1+ERR_RANGE)))
@@ -163,9 +182,9 @@ unsigned char Read_TP_Once(void)
 	unsigned short x2,y2;
 	while(re==0)
 	{
-		while(!Read_ADS2(&x1,&y1));
+		while(!api_xpt2046_get_coordinate(&x1,&y1));
 //		delayms(10);
-		while(!Read_ADS2(&x2,&y2));
+		while(!api_xpt2046_get_coordinate(&x2,&y2));
 		if((x2<=x1&&x1<x2+3)||(x1<=x2&&x2<x1+3))
 		{
 			tp_pixad.x=(x1+x2)/2;
@@ -195,7 +214,7 @@ void Drow_Touch_Point(unsigned short x,unsigned short y)
 unsigned char Convert_Pos(void)
 {		 	 
 	unsigned char l=0; 
-	if(Read_ADS2(&tp_pixad.x,&tp_pixad.y))
+	if(api_xpt2046_get_coordinate(&tp_pixad.x,&tp_pixad.y))
 	{
 		l=1;
 		tp_pixlcd.x=tp_pixad.x>chx?((unsigned long)tp_pixad.x-(unsigned long)chx)*1000/vx:((unsigned long)chx-(unsigned long)tp_pixad.x)*1000/vx;

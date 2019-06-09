@@ -34,9 +34,8 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-//volatile u16 wIstr;  					/* ISTR register last read value */	//中断值
+volatile u16 wIstr;  /* ISTR register last read value */
 volatile u8 bIntPackSOF = 0;  /* SOFs received between 2 consecutive packets */
-//usb_istr_def	wIstr;
 
 /* Extern variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -76,21 +75,21 @@ void (*pEpInt_OUT[7])(void) =
 void USB_Istr(void)
 {
 
-  USB_REG.wIstr.istr	=	_GetISTR();	//wIstr = _GetISTR();			//获取中断标志，得到中断源
-	//--------------------------USB复位请求 (USB reset request)
-#if (IMR_MSK & ISTR_RESET)
-  if (USB_REG.wIstr.istr & ISTR_RESET & wInterrupt_Mask)
+  wIstr = _GetISTR();			//获取中断标志，得到中断源
+
+#if (IMR_MSK & ISTR_RESET)			  //USB复位请求 (USB reset request)
+  if (wIstr & ISTR_RESET & wInterrupt_Mask)
   {
     _SetISTR((u16)CLR_RESET);		//清除USB复位请求 (USB reset request)
-		pProperty->Reset();					//USB复位
+    Device_Property.Reset();
 #ifdef RESET_CALLBACK
     RESET_Callback();
 #endif
   }
 #endif
-  //--------------------------PMA缓存溢出(Packet memory area over / underrun)
-#if (IMR_MSK & ISTR_DOVR)
-  if (USB_REG.wIstr.istr & ISTR_DOVR & wInterrupt_Mask)
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_DOVR)			//分组缓冲区溢出 (Packet memory area over / underrun)
+  if (wIstr & ISTR_DOVR & wInterrupt_Mask)
   {
     _SetISTR((u16)CLR_DOVR);	//清除分组缓冲区溢出 (Packet memory area over / underrun)
 #ifdef DOVR_CALLBACK
@@ -98,10 +97,9 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------传输出错：USB应用程序通常可以忽略这些错误，因为USB模块和主机在发生错误时都会启动重传机制。
-	//													此位产生的中断可以用于应用程序的开发阶段，可以用来监测USB总线的传输质量，标识用户可能发生的错误(连接线松，环境干扰严重，USB线损坏等)。
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
 #if (IMR_MSK & ISTR_ERR)			//出错 (Error)
-  if (USB_REG.wIstr.istr & ISTR_ERR & wInterrupt_Mask)
+  if (wIstr & ISTR_ERR & wInterrupt_Mask)
   {
     _SetISTR((u16)CLR_ERR);		//清除出错 (Error)
 #ifdef ERR_CALLBACK
@@ -109,9 +107,9 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------唤醒请求 (Wakeup)
-#if (IMR_MSK & ISTR_WKUP)
-  if (USB_REG.wIstr.istr & ISTR_WKUP & wInterrupt_Mask)
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_WKUP)			//唤醒请求 (Wakeup)
+  if (wIstr & ISTR_WKUP & wInterrupt_Mask)
   {
     _SetISTR((u16)CLR_WKUP);	//清除唤醒请求 (Wakeup)
     Resume(RESUME_EXTERNAL);
@@ -120,10 +118,11 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------挂起模块请求 (Suspend mode request)
-#if (IMR_MSK & ISTR_SUSP)
-  if (USB_REG.wIstr.istr & ISTR_SUSP & wInterrupt_Mask)
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_SUSP)			//挂起模块请求 (Suspend mode request)
+  if (wIstr & ISTR_SUSP & wInterrupt_Mask)
   {
+
     /* check if SUSPEND is possible */
     if (fSuspendEnabled)
     {
@@ -141,9 +140,9 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------//帧首(SOF)中断标志，中断服务程序可以通过检测SOF事件来完成与主机的1ms同
-#if (IMR_MSK & ISTR_SOF)										
-  if (USB_REG.wIstr.istr & ISTR_SOF & wInterrupt_Mask)		//读出的中断标志是SOF中断标志，且SOF中断使能了
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_SOF)										//帧首(SOF)中断标志
+  if (wIstr & ISTR_SOF & wInterrupt_Mask)		//读出的中断标志是SOF中断标志，且SOF中断使能了
   {
     _SetISTR((u16)CLR_SOF);									//清除SOF中断标志
     bIntPackSOF++;													//统计共接收到多少SOF
@@ -153,9 +152,9 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------期望帧首标识位 (Expected start of frame)	如果连续发生3次ESOF中断，也就是连续3次未收到SOF分组，将产生SUSP中断。即使在挂起定时器未被锁定时发生SOF分组丢失，此位也会被置位。
-#if (IMR_MSK & ISTR_ESOF)								
-  if (USB_REG.wIstr.istr & ISTR_ESOF & wInterrupt_Mask)
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_ESOF)									//期望帧首标识位 (Expected start of frame)
+  if (wIstr & ISTR_ESOF & wInterrupt_Mask)
   {
     _SetISTR((u16)CLR_ESOF);
     /* resume handling timing is made with ESOFs */
@@ -166,9 +165,9 @@ void USB_Istr(void)
 #endif
   }
 #endif
-  //--------------------------正确的传输 (Correct transfer)：此位在端点正确完成一次数据传输后由硬件置位。应用程序可以通过DIR和EP_ID位来识别是哪个端点完成了正确的数据传输。
-#if (IMR_MSK & ISTR_CTR)									
-  if (USB_REG.wIstr.istr & ISTR_CTR & wInterrupt_Mask)
+  /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+#if (IMR_MSK & ISTR_CTR)									//正确的传输 (Correct transfer)
+  if (wIstr & ISTR_CTR & wInterrupt_Mask)
   {
     /* servicing of the endpoint correct transfer interrupt */
     /* clear of the CTR flag into the sub */
@@ -179,5 +178,16 @@ void USB_Istr(void)
   }
 #endif
 } /* USB_Istr */
-
+/*******************************************************************************
+* Function Name  : USB_LP_CAN_RX0_IRQHandler
+* Description    : This function handles USB Low Priority or CAN RX0 interrupts
+*                  requests.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void USB_LP_CAN_RX0_IRQHandler(void)
+{
+  USB_Istr();
+}
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

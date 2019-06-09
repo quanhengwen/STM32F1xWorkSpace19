@@ -77,6 +77,13 @@ void EP5_OUT_Callback(void);
 void EP6_OUT_Callback(void);
 void EP7_OUT_Callback(void);
 
+
+
+unsigned char api_usb_endp_get_out_data(unsigned char* rxbuffer);
+unsigned short api_usb_endp_set_in_data(unsigned char*	buffer,unsigned short len);
+unsigned short usb_endp_set_out_data(unsigned char*	buffer,unsigned short len);
+unsigned char	usb_endp_get_in_data(unsigned char* rxbuffer);
+
 #endif /*__USB_ISTR_H*/
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

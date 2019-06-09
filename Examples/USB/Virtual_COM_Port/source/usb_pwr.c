@@ -34,7 +34,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-DEVICE_STATE bDeviceState = UNCONNECTED; 		/* USB device status */	//USB设备当前状态
+vu32 bDeviceState = UNCONNECTED; /* USB device status */
 volatile bool fSuspendEnabled = TRUE;  /* True when suspend is possible */
 
 struct
@@ -61,7 +61,7 @@ RESULT PowerOn(void)		//处理开关开情形
   u16 wRegVal;
 
   /*** cable plugged-in ? ***/
-  set_usb_en(ENABLE);			//使能1.5K上拉
+  USB_Cable_Config(ENABLE);			//使能1.5K上拉
 
   /*** CNTR_PWDN = 0 ***/
   wRegVal = CNTR_FRES;					//强制USB复位
@@ -96,7 +96,7 @@ RESULT PowerOff()			//处理开关关情形
   /* clear interrupt status register */
   _SetISTR(0);
   /* Disable the Pull-Up*/
-  set_usb_en(DISABLE);		//关闭1.5K上拉，断开USB
+  USB_Cable_Config(DISABLE);
   /* switch-off device */
   _SetCNTR(CNTR_FRES + CNTR_PDWN);
   /* sw variables reset */
@@ -232,38 +232,5 @@ void Resume(RESUME_STATE eResumeSetVal)		//处理唤醒操作
       break;
   }
 }
-/*******************************************************************************
-* Function Name  : Enter_LowPowerMode
-* Description    : Power-off system clocks and power while entering suspend mode
-* 描述			    	: 挂起模式
-* Input          : None.
-* Return         : None.
-*******************************************************************************/
-void Enter_LowPowerMode(void)
-{
-  /* Set the device state to suspend */
-  bDeviceState = SUSPENDED;
-}
 
-/*******************************************************************************
-* Function Name  : Leave_LowPowerMode
-* Description    : Restores system clocks and power while exiting suspend mode
-* 描述			    	: 退出挂起模式
-* Input          : None.
-* Return         : None.
-*******************************************************************************/
-void Leave_LowPowerMode(void)
-{
-	DEVICE_INFO *pInfo = pInformation;
-  /* Set the device state to the correct state */
-  if (pInfo->Current_Configuration != 0)
-  {
-    /* Device configured */
-    bDeviceState = CONFIGURED;
-  }
-  else
-  {
-    bDeviceState = ATTACHED;
-  }
-}
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

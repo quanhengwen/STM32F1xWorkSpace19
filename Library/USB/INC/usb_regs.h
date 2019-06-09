@@ -494,7 +494,8 @@ typedef struct _USB_REG
 
 #define _SetEPCountRxReg(dwReg,wCount)  {\
     u16 wNBlocks;\
-    if(wCount > 62){_BlocksOf32(dwReg,wCount,wNBlocks);}\
+    if(wCount > 62)	\
+		{_BlocksOf32(dwReg,wCount,wNBlocks);}\
     else {_BlocksOf2(dwReg,wCount,wNBlocks);}\
   }/* _SetEPCountRxReg */
 

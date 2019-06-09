@@ -89,7 +89,7 @@ unsigned short LCD_Initialize(LCDDef *pInfo)
 	//==========================开背光
 	LCD_BL_ON;
 	//==========================字库配置
-	GT32L32_Initialize(&pInfo->GT32L32.SPI);				//普通SPI通讯方式配置
+	api_gt32l32_configuration(&pInfo->GT32L32);				//普通SPI通讯方式配置
 	
 	return	0;
 }
@@ -212,7 +212,7 @@ void LCDFsmc_Initialize(LCDDef *pInfo)
 	//==========================开背光LIGHT=1
   GPIO_SetBits(Port->sBL_PORT, Port->sBL_Pin);
 	//==========================字库配置
-	GT32L32_Initialize(&pInfo->GT32L32.SPI);				//普通SPI通讯方式配置
+	api_gt32l32_configuration(&pInfo->GT32L32);				//普通SPI通讯方式配置
 }
 /*******************************************************************************
 * 函数名			:	function
@@ -618,7 +618,7 @@ void LCD_ShowAntenna(
   {
     Num=4;
   }
-  GetBufferLength = GT32L32_GetAntennaCode(Num,CodeBuffer);
+  GetBufferLength = api_gt32l32_get_antenna(Num,CodeBuffer);
 //	LCD_Show(x,y,12,GetBufferLength,CodeBuffer);
 	LCD_ShowWord(x,y,12,PenColor,GetBufferLength,CodeBuffer);
 }
@@ -640,7 +640,7 @@ void LCD_ShowBattery(
   {
     Num=3;
   }
-  GetBufferLength = GT32L32_GetBatteryCode(Num,CodeBuffer);
+  GetBufferLength = api_gt32l32_get_battery(Num,CodeBuffer);
 	LCD_ShowWord(x,y,12,PenColor,GetBufferLength,CodeBuffer);
 }
 /*******************************************************************************
@@ -695,7 +695,7 @@ unsigned short LCD_GetDispCodeBuffer(
 												)
 {
 	unsigned short lengh=0;
-	lengh	=	GT32L32_GetCode(font,word,ReadBuffer);		//从字库中读数据并返回数据长度
+	lengh	=	api_gt32l32_get_code(font,word,ReadBuffer);		//从字库中读数据并返回数据长度
 	return lengh;
 }
 /*******************************************************************************

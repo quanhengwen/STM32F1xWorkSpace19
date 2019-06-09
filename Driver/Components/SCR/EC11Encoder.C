@@ -69,6 +69,7 @@ void	api_EC11_run_loop(EC11_def* pInfo)
 	EC11_conf_time_def*			statictime	=	&pInfo->statictime;
 	EC11_running_time_def*	livetime		=	&pInfo->livetime;
 	
+	pEC11	=	pInfo;
 	//-------------------------------------------按键处理
 	if(0!=GPIO_ReadInputDataBit(pInfo->port.button_port,pEC11->port.button_pin))		//输入高电平---按键松开
 	{
@@ -155,6 +156,9 @@ EC11_status_def	api_EC11_get_status(EC11_def* pInfo)
 	pInfo->status.u8b.trigger_key		=	0;
 	return status;
 }
+//-----------------------------------------------------------------------------
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	函数功能说明

@@ -56,8 +56,11 @@
 //------------------背光接口J11的VCC和EN脚
 #define ampBackLightPort GPIOB         //高电平关闭，低电平点亮
 #define ampBackLightPin  GPIO_Pin_0
-#define ampBakkLightOff	(ampBackLightPort->BRR 	= ampBackLightPin)
-#define ampBakkLightOn	(ampBackLightPort->BSRR = ampBackLightPin)
+//#define ampBakkLightOff	(ampBackLightPort->BRR 	= ampBackLightPin)
+//#define ampBakkLightOn	(ampBackLightPort->BSRR = ampBackLightPin)
+//-----透明屏反向控制LED
+#define ampBakkLightOff	(ampBackLightPort->BSRR 	= ampBackLightPin)
+#define ampBakkLightOn	(ampBackLightPort->BRR = ampBackLightPin)
 
 //------------------层板电源控制J5、J6、J9共用一个控制电源
 #define ampLayPowerPort  GPIOB         //高电启动电源，低电平关闭电源
@@ -74,7 +77,7 @@ static RS485Def ampRS485Ly;   //uart4,PA15   //层板接口
 static RS485Def ampRS485Cb;   //usart1,PA8    //副柜接口
 //static RS485Def ampRS485Card; //usart3,PB2    //读卡器接口
 static SwitchDef ampSwitchID;
-static SPIDef stLed;
+static spi_def stLed;
 
 ampdef ampsys;
 
@@ -1431,11 +1434,11 @@ static void Led_Server(void)
 		}
 		
 		//____________使能片选
-		SPI_CS_LOW(&stLed);
-		SPI_I2S_SendData(stLed.Port.SPIx, displaycode);				//发送数据
+		spi_set_nss_low(&stLed);
+		SPI_I2S_SendData(stLed.port.SPIx, displaycode);				//发送数据
 //    SPI_ReadWriteByteSPI(&stLed,led_stata);
 		//____________取消片选	
-		SPI_CS_HIGH(&stLed);
+		spi_set_nss_high(&stLed);
   }  
 }
 
@@ -1663,17 +1666,17 @@ static void Lock_Configuration(void)
 *******************************************************************************/
 static void Led_Configuration(void)
 {
-  stLed.Port.SPIx 			= SPI1;
-  stLed.Port.CS_PORT  	= GPIOA;
-  stLed.Port.CS_Pin   	= GPIO_Pin_4;
-  stLed.Port.CLK_PORT 	= GPIOA;
-  stLed.Port.CLK_Pin  	= GPIO_Pin_5;
-  stLed.Port.MISO_PORT  = GPIOA;
-  stLed.Port.MISO_Pin   = GPIO_Pin_6;
-  stLed.Port.MOSI_PORT  = GPIOA;
-  stLed.Port.MOSI_Pin   = GPIO_Pin_7;
-  stLed.Port.SPI_BaudRatePrescaler_x  = SPI_BaudRatePrescaler_64;
-	SPI_Initialize(&stLed);		//SPI接口配置
+  stLed.port.SPIx 			= SPI1;
+  stLed.port.nss_port  	= GPIOA;
+  stLed.port.nss_pin   	= GPIO_Pin_4;
+  stLed.port.clk_port 	= GPIOA;
+  stLed.port.clk_pin  	= GPIO_Pin_5;
+  stLed.port.miso_port  = GPIOA;
+  stLed.port.miso_pin   = GPIO_Pin_6;
+  stLed.port.mosi_port  = GPIOA;
+  stLed.port.mosi_pin   = GPIO_Pin_7;
+  stLed.port.SPI_BaudRatePrescaler_x  = SPI_BaudRatePrescaler_64;
+	api_spi_configurationNR(&stLed);		//SPI接口配置
   //SPI_InitializeSPI(&stLed);			//SPI-DMA通讯方式配置
 }
 //------------------------------------------------------------------------------

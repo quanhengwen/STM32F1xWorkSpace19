@@ -191,4 +191,16 @@ void SYSCLKConfig_STOP(void)
     }
   }
 }
-
+/*******************************************************************************
+* Function Name  : Set_USBClock
+* Description    : Configures USB Clock input (48MHz)
+* Input          : None.
+* Return         : None.
+*******************************************************************************/
+void api_set_usb_clk(void)
+{
+  /* USBCLK = PLLCLK / 1.5 */
+  RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_1Div5);
+  /* Enable USB clock */
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
+}

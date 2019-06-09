@@ -19,18 +19,7 @@
 
 #include "stm32f10x_spi.h"
 #include "stm32f10x_gpio.h"
-//#include "stm32f10x_rcc.h"
-//#include "stm32f10x_dma.h"
-//#include "stm32f10x_nvic.h"
-//#include "STM32_WOW.H"
 
-//#include	"stdio.h"			//用于printf
-//#include	"string.h"		//用于printf
-//#include	"stdarg.h"		//用于获取不确定个数的参数
-//#include	"stdlib.h"		//malloc动态申请内存空间
-//	
-//#include	"stddef.h"
-//#include	"stdint.h"
 
 typedef struct	_spi_port
 {
@@ -62,55 +51,15 @@ typedef struct	_spi
 	spi_port_def	port;
 }spi_def;
 
-//----SPI管脚配置--------------------------------------------------------------
-typedef struct	_SPIPort
-{
-	//____________端口定义
-	SPI_TypeDef *			SPIx;				//SPI接口配置 x=0、1、2、3、
 
-	//____________SPI_CS定义
-	GPIO_TypeDef* 	CS_PORT;		//GPIOX
-	unsigned short 	CS_Pin;			//GPIO_Pin_x
-
-	//____________SPI_CLK定义
-	GPIO_TypeDef* 	CLK_PORT;		//GPIOX
-	unsigned short 	CLK_Pin;		//GPIO_Pin_x
-
-	//____________SPI_MISO定义
-	GPIO_TypeDef* 	MISO_PORT;	//GPIOX
-	unsigned short 	MISO_Pin;		//GPIO_Pin_x
-
-	//____________SPI_MOSI定义
-	GPIO_TypeDef* 	MOSI_PORT;	//GPIOX
-	unsigned short 	MOSI_Pin;		//GPIO_Pin_x
-	
-	//____________SPI_波特率
-	unsigned short 	SPI_BaudRatePrescaler_x;		//x=2/4/8/16/32/64/128/256
-	
-}SPIPortDef;
-//typedef struct _SPIDriver
-//{
-//	void ( *SPIWriteByte )( unsigned char Byte);
-//	void ( *SPIReadByte )( unsigned short HSX,unsigned short HSY,unsigned short HEX,unsigned short HEY);
-//	
-//	void ( *PowerOn )(void);
-//	void ( *PowerOff )(void);
-//	void ( *DispOff )(void);
-
-//}SPIDriverDef;
-typedef struct	_SPI
-{
-	SPIPortDef		Port;
-	//SPIDriverDef	SPIDr;	
-}SPIDef;
 
 //-------------------------------------------api
 void api_spi_configuration_gpio(spi_def* pInfo);
 
-void api_spi_write_byte_gpio(unsigned char value);
-void api_spi_write_register_gpio(unsigned char Address,unsigned char value);
-unsigned char api_spi_read_byte_gpio(void);
-unsigned char api_spi_read_register_gpio(unsigned char Address);
+void api_spi_write_byte_gpio(spi_def* pInfo,unsigned char value);
+void api_spi_write_register_gpio(spi_def* pInfo,unsigned char Address,unsigned char value);
+unsigned char api_spi_read_byte_gpio(spi_def* pInfo);
+unsigned char api_spi_read_register_gpio(spi_def* pInfo,unsigned char Address);
 
 //-------------------------------------------static
 static void spi_delay_us(unsigned short us);
@@ -120,34 +69,32 @@ static void spi_delay_us(unsigned short us);
 
 void api_spi_configurationNR(spi_def* pInfo);				//SPI接口配置
 void api_spi_configurationDMA(spi_def* pInfo);				//SPI接口配置
+unsigned char	api_spi_ReadWrite_byte(spi_def *pInfo,unsigned char Byte);
 
-
-
-	
-
-void spi_initialize_nr(spi_def *pInfo);		//普通SPI接口配置
-void spi_dma_initialize(SPI_TypeDef *SPIx);			//SPI-DMA通讯方式配置---20170722未完成
-
-
-unsigned short SPI_DMASend(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned short BufferSize);
-unsigned short SPI_DMAReadWrite(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned char *rx_buffer,unsigned short BufferSize);
-
-
-void SPI_CS_LOW(spi_def *pInfo);
-void SPI_CS_HIGH(spi_def *pInfo);
+unsigned short api_spi_dma_send(SPI_TypeDef* SPIx,unsigned char *tx_buffer,unsigned short BufferSize);
+unsigned short api_spi_dma_receive(SPI_TypeDef* SPIx,unsigned char *rx_buffer);	
 
 
 
 
-unsigned char	SPI_ReadWriteByteSPI(spi_def *pInfo,unsigned char Byte);
 
 
-//unsigned char	SPI_ReadWriteOneByteNR(SPIDef *pInfo,unsigned char Byte);
-//unsigned char	SPI_ReadWriteOneByteSPI(SPIDef *pInfo,unsigned char Byte);
 
 
-void SPI_WriteBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize);
-void SPI_ReadBufferSPI(spi_def *pInfo,u8 *Buffer,u16 BufferSize);
+
+
+
+
+
+//------------------------------------------GPIO控制
+void spi_set_nss_high(spi_def* pInfo);
+void spi_set_nss_low(spi_def* pInfo);
+void spi_set_clk_high(spi_def* pInfo);
+void spi_set_clk_low(spi_def* pInfo);
+void spi_set_mosi_high(spi_def* pInfo);
+void spi_set_mosi_low(spi_def* pInfo);
+unsigned char spi_get_miso(spi_def* pInfo);
+
 
 
 

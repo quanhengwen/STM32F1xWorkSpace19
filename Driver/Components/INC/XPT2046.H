@@ -6,7 +6,7 @@
 
 typedef struct	_xpt2046
 {
-	SPIPortDef		Port;
+	spi_def		port;
 }xpt2046def;
 
 
@@ -14,16 +14,13 @@ typedef struct	_xpt2046
 
 
 void api_xpt2046_configuration(spi_def* pInfo);
-unsigned char api_xpt2046_write_byte(unsigned char value);
-unsigned char api_xpt2046_read_byte(void);
-
-
-
-unsigned char Read_ADS(unsigned short *x,unsigned short *y);
+unsigned short api_xpt2046_get_coordinate(unsigned short *x,unsigned short *y);		//带滤波的坐标读取,最小值不能少于100
 
 
 
 
+static unsigned short xpt2046_get_ad(unsigned char CMD);		//读AD数据
+static unsigned short xpt2046_get_ad_filter(unsigned char xy);	//滤波处理
 
 
 void xpt2046_DelayNop(unsigned	short Time);

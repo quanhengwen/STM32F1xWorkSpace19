@@ -38,30 +38,21 @@ typedef struct _usb_en
 }usb_en_def;
 
 /* Exported functions ------------------------------------------------------- */
-//------------------------------------------------------api
-void api_usb_virtual_com_configuration(usb_en_def* pInfo);		//虚拟串口配置
 
 
+void api_usb_hw_initialize(void);
 
-//------------------------------------------------------未定
-void set_usb_en(FunctionalState NewState);
-void set_usart_default(void);
-bool set_usart_config(void);
-void usb_to_usart_Send_data(u8* data_buffer, u8 Nb_bytes);
-void usart_to_usb_send_data(void);
-
-
-
-//------------------------------------------------------static
-static void set_usb_clock(void);				//设置USB时钟
-static void set_usb_Interrupt(void);		//设置USB中断
-
-
-
-
-
-
+void Enter_LowPowerMode(void);
+void Leave_LowPowerMode(void);
+void USB_Interrupts_Config(void);
+void USB_Cable_Config (FunctionalState NewState);
+//void USART_Config_Default(void);
+//bool USART_Config(void);
+//void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes);
+//void USART_To_USB_Send_Data(void);
 void Handle_USBAsynchXfer (void);
+void Get_SerialNum(void);
+
 
 /* External variables --------------------------------------------------------*/
 

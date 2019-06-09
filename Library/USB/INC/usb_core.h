@@ -263,8 +263,8 @@ extern 	DEVICE_PROP Device_Property;				//相关函数指针结构体
 extern  USER_STANDARD_REQUESTS User_Standard_Requests;	//标准请求
 extern  DEVICE  Device_Table;								//端点
 
-extern	DEVICE_INFO *pInformation;				//USB设备控制传输（包括枚举）时使用的状信息构体指针--20190425添加
-extern	DEVICE_INFO Device_Info;					//USB设备控制传输（包括枚举）时使用的状信息构体
+extern	DEVICE_INFO *pInformation;					//USB设备控制传输（包括枚举）时使用的状信息构体指针--20190425添加
+extern	DEVICE_INFO Device_Info;						//USB设备控制传输（包括枚举）时使用的状信息构体
 
 /*  Temporary save the state of Rx & Tx status. */
 /*  Whenever the Rx or Tx state is changed, its value is saved */

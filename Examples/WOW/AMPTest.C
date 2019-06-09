@@ -134,13 +134,15 @@ static void xpt2046TEST(void);
 static void BT459ATEST(void);
 static void SHT20TEST(void);
 static void SHT20MTEST(void);
-//=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
-//->函数名		:	
-//->功能描述	:	 
-//->输入		:	
-//->输出		:
-//->返回 		:
-//<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void AMPTest_Configuration(void)
 {	
 //  RCC_ClocksTypeDef RCC_ClocksStatus;							//时钟状态---时钟值
@@ -152,6 +154,8 @@ void AMPTest_Configuration(void)
 	//xpt2046_configuration();
 	
   LCD_Configuration();	
+	
+	xpt2046_configuration();
 	
   RTC_Configuration();
 //  SD_Configuration();
@@ -165,8 +169,8 @@ void AMPTest_Configuration(void)
   LCD_ShowAntenna(760,2,3,LCD565_GRED);   //显示12x12天线
 
   
-  LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
-    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
+//  LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
+//    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
   
   
   api_usart_dma_configurationNR	(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
@@ -179,13 +183,15 @@ void AMPTest_Configuration(void)
   SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
 }
 
-//=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
-//->函数名		:	
-//->功能描述	:	 
-//->输入		:	
-//->输出		:
-//->返回 		:
-//<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void AMPTest_Server(void)
 {
 //  ClockServer();
@@ -199,9 +205,15 @@ void AMPTest_Server(void)
 	
 	SHT20TEST();
 	
-	//xpt2046TEST();
+	xpt2046TEST();
 	
 }
+//------------------------------------------------------------------------------
+
+
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -217,8 +229,10 @@ static void xpt2046TEST(void)
 	if(time++<200)
 		return;
 	time =0;
-	Read_ADS(&xpt2046x,&xpt2046y);
-//	LCD_Printf(600,0,16,LCD565_BLACK,"x轴%0.6d  y轴%0.6d",xpt2046x,xpt2046y);
+	xpt2046x	=	0;
+	xpt2046y	=	0;
+	api_xpt2046_get_coordinate(&xpt2046x,&xpt2046y);
+	LCD_Printf(600,0,16,LCD565_BLACK,"x轴%0.6d  y轴%0.6d",xpt2046x,xpt2046y);
 }
 /*******************************************************************************
 *函数名			:	function
@@ -257,7 +271,7 @@ static void SHT20TEST(void)
 	static unsigned short time	=	0;
 	api_sht20_server();
 	
-	if(time++<10)
+	if(time++<200)
 	{
 		return ;
 	}
@@ -351,27 +365,8 @@ static void SHT20MTEST(void)
 *******************************************************************************/
 static void xpt2046_configuration(void)
 {
-	
-//	xpt2046.Port.CLK_PORT		=	GPIOB;
-//	xpt2046.Port.CLK_Pin		=	GPIO_Pin_13;
-//	
-//	xpt2046.Port.MISO_PORT	=	GPIOB;
-//	xpt2046.Port.MISO_Pin		=	GPIO_Pin_14;
-//	
-//	xpt2046.Port.MOSI_PORT	=	GPIOB;
-//	xpt2046.Port.MOSI_Pin		=	GPIO_Pin_15;
-//	
-//	xpt2046.Port.CS_PORT		=	GPIOG;
-//	xpt2046.Port.CS_Pin			=	GPIO_Pin_7;
-//	
-//	//=======================字库端口
-//	xpt2046.Port.SPIx	    	=	SPI2;
-//	xpt2046.Port.CS_PORT	  =	GPIOG;
-//	xpt2046.Port.CS_Pin			=	GPIO_Pin_7;
-//	xpt2046.Port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
-	
-	xpt2046.port.clk_port	=	GPIOB;
-	xpt2046.port.clk_pin	=	GPIO_Pin_13;
+	xpt2046.port.clk_port		=	GPIOB;
+	xpt2046.port.clk_pin		=	GPIO_Pin_13;
 	xpt2046.port.miso_port	= GPIOB;
 	xpt2046.port.miso_pin		=	GPIO_Pin_14;
 	xpt2046.port.mosi_port	=	GPIOB;
@@ -379,9 +374,10 @@ static void xpt2046_configuration(void)
 	xpt2046.port.nss_port		=	GPIOG;
 	xpt2046.port.nss_pin		= GPIO_Pin_7;
 	
-	api_xpt2046_configuration(&xpt2046);
+	xpt2046.port.SPIx				=	SPI2;
+	xpt2046.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_8;
 	
-	SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
+	api_xpt2046_configuration(&xpt2046);
 }
 /*******************************************************************************
 *函数名			:	function
@@ -422,13 +418,15 @@ void RS485Configuration(void)
 	
 	api_rs485_dma_configurationNR(&RS485B,9600,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
-//=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
-//->函数名		:	
-//->功能描述	:	 
-//->输入		:	
-//->输出		:
-//->返回 		:
-//<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void USART_TEST(void)
 {
   unsigned short RxNum  = 0;
@@ -498,13 +496,15 @@ void USART_TEST(void)
     }
   }
 }
-//=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>
-//->函数名		:	
-//->功能描述	:	 
-//->输入		:	
-//->输出		:
-//->返回 		:
-//<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=<=
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void USART_Server(void)
 {
   unsigned short RxNum  = 0;
@@ -837,7 +837,7 @@ void LCD_Configuration(void)
 	sLCD.GT32L32.SPI.port.SPIx	    =	SPI2;
 	sLCD.GT32L32.SPI.port.nss_port	=	GPIOB;
 	sLCD.GT32L32.SPI.port.nss_pin		=	GPIO_Pin_12;
-	sLCD.GT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
+	sLCD.GT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_8;
   
   LCDFsmc_Initialize(&sLCD);  
 }

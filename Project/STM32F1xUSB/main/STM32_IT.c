@@ -190,7 +190,7 @@ void TAMPER_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void RTC_IRQHandler(void)
+__weak void RTC_IRQHandler(void)
 {
 }
 
@@ -382,7 +382,7 @@ void ADC1_2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USB_HP_CAN_TX_IRQHandler(void)
+__weak void USB_HP_CAN_TX_IRQHandler(void)
 {
 #ifdef	Audio_Speaker
 	CTR_HP();
@@ -397,7 +397,7 @@ void USB_HP_CAN_TX_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USB_LP_CAN_RX0_IRQHandler(void)
+__weak void USB_LP_CAN_RX0_IRQHandler(void)
 {
 	
 #ifdef MS0800_PL001V20
@@ -619,7 +619,7 @@ void SPI1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void SPI2_IRQHandler(void)
+__weak void SPI2_IRQHandler(void)
 {
 	
 	
@@ -648,8 +648,6 @@ void SPI2_IRQHandler(void)
   }
 	return;
 #endif
-	
-	SPI_Server();
 }
 
 /*******************************************************************************
@@ -659,7 +657,7 @@ void SPI2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART1_IRQHandler(void)
+__weak void USART1_IRQHandler(void)
 {
 	WOW_Server();
 }
@@ -671,7 +669,7 @@ void USART1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART2_IRQHandler(void)
+__weak void USART2_IRQHandler(void)
 {
 //	USART_RX_Server();
 	WOW_Server();

@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xST' 
- * Target:  'wegam' 
+ * Target:  'CRC' 
  */
 
 #ifndef RTE_COMPONENTS_H
