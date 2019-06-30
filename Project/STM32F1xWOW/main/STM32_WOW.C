@@ -352,6 +352,12 @@ void WOW_Configuration(void)
 	PCM2707_TEST_Configuration();
 #endif
 
+//*********************************BQ26100_TEST*********************************//
+#ifdef BQ26100_TEST
+	BQ26100_TEST_Configuration();
+#endif
+
+
 }
 
 
@@ -687,7 +693,10 @@ void WOW_Server(void)
 #ifdef PCM2707_TEST
 	PCM2707_TEST_Server();
 #endif
-
+//*********************************sram_test*********************************//
+#ifdef BQ26100_TEST
+	BQ26100_TEST_Server();
+#endif
 
 //IWDG_Feed();								//∂¿¡¢ø¥√≈π∑Œππ∑
 

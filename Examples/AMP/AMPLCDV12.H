@@ -216,55 +216,55 @@
 	#define DisplayFontColor		0x0000		//默认字体颜色
 	
 	
-	#define DisplayNameBkColor	0xFFFF		//名称底色
-	#define DisplayNameFtColor	0x054A		//名称颜色
-	#define	DisplayNameFtSize		24				//名称字体大小
+	#define DisplayNameBkColor		0xFFFF		//名称底色
+	#define DisplayNameFtColor		0x054A		//名称颜色
+	#define	DisplayNameFtSize			24				//名称字体大小
 	
-	#define DisplayByNameBkColor		0xB71C		//别名底色
-	#define DisplayByNameFtColor		0x094A		//别名颜色
-	#define	DisplayByNameFtSize			16				//别名字体大小
+	#define DisplayByNameBkColor	0xB71C		//别名底色
+	#define DisplayByNameFtColor	0x094A		//别名颜色
+	#define	DisplayByNameFtSize		16				//别名字体大小
 	
-	#define DisplaySpecBkColor	0xFFFF		//规格底色
-	#define DisplaySpecFtColor	0x5ACA		//规格颜色
-	#define	DisplaySpecFtSize		16				//规格字体大小
+	#define DisplaySpecBkColor		0xFFFF		//规格底色
+	#define DisplaySpecFtColor		0x5ACA		//规格颜色
+	#define	DisplaySpecFtSize			16				//规格字体大小
 	
-	#define DisplayNumBkColor		0x5902		//数量底色
-	#define DisplayNumFtColor		0x07DF		//数量颜色
-	#define	DisplayNumFtSize		32				//数量字体大小
+	#define DisplayNumBkColor			0x5902		//数量底色
+	#define DisplayNumFtColor			0x07DF		//数量颜色
+	#define	DisplayNumFtSize			32				//数量字体大小
 	
-	#define DisplaySerialBkColor		0xFFFF		//数量底色
-	#define DisplaySerialFtColor		0xFB00		//数量颜色
+	#define DisplaySerialBkColor	0xFFFF		//数量底色
+	#define DisplaySerialFtColor	0xFB00		//数量颜色
 	#define	DisplaySerialFtSize		16				//数量字体大小
 	
 	#define DisplayCodeBkColor		0xFFFF		//物料编码底色
 	#define DisplayCodeFtColor		0x5ACA		//物料编码颜色
 	#define	DisplayCodeFtSize			16				//物料编码字体大小
 	
-	#define DisplayVenderBkColor		0xFFFF		//厂家名称底色
-	#define DisplayVenderFtColor		0x5ACA		//厂家名称颜色
-	#define	DisplayVenderFtSize			16				//厂家名称字体大小
+	#define DisplayVenderBkColor	0xFFFF		//厂家名称底色
+	#define DisplayVenderFtColor	0x5ACA		//厂家名称颜色
+	#define	DisplayVenderFtSize		16				//厂家名称字体大小
 	
 	#define DisplayTitleBkColor		0x865D		//标题底色
 	#define DisplayTitleFtColor		0x0000		//标题颜色
-	#define DisplayTitleSize	24						//标题字体大小
+	#define DisplayTitleSize			24				//标题字体大小
 	
 	#define DisplaySeparBkColor		0x8450		//分隔线颜色
-	#define DisplaySeparWidth	2							//分隔线宽度
+	#define DisplaySeparWidth			2					//分隔线宽度
 	
-	#define DisplayTopStartY	48
-	#define DisplayTopEndY		8	
-	#define DisplayBotStartY	ST7789V_H-48
-	#define DisplayBotEndY		ST7789V_H
+	#define DisplayTopStartY			48
+	#define DisplayTopEndY				8	
+	#define DisplayBotStartY			ST7789V_H-48
+	#define DisplayBotEndY				ST7789V_H
 	
 	
 	
 	#define DisplayStartX	2
 	#define DisplayEndX		ST7789V_V
 #else			//DisplayManaModel1();
-	#define DisplayClrColor			0xFFFF		//显示区域清屏颜色
-	#define DisplayBackColor		0xFFFF		//默认字体底色
-	#define DisplayFontColor		0x0000		//默认字体颜色
-	#define DisplayFontSize			16				//默认字体大小
+	#define DisplayClrColor				0xFFFF		//显示区域清屏颜色
+	#define DisplayBackColor			0xFFFF		//默认字体底色
+	#define DisplayFontColor			0x0000		//默认字体颜色
+	#define DisplayFontSize				16				//默认字体大小
 	
 	
 	#define DisplayNameBkColor		0xB71C		//名称底色
@@ -302,10 +302,10 @@
 	#define DisplaySeparBkColor		0x8450		//分隔线颜色
 	#define DisplaySeparWidth	2							//分隔线宽度
 	
-	#define DisplayTopFillWidth	16					//顶端填充高度
-	#define DisplayTopEndY			8	
-	#define DisplayBotFillWidth	16					//底部填充高度
-	#define DisplayBotEndY			ST7789V_H
+	#define DisplayTopFillWidth		16				//顶端填充高度
+	#define DisplayTopEndY				8	
+	#define DisplayBotFillWidth		16				//底部填充高度
+	#define DisplayBotEndY				ST7789V_H
 	
 	#define DisplayLeftFillWidth	9					//左边填充宽度/起始点	
 	
@@ -328,8 +328,7 @@ typedef struct _Mana						//耗材数据结构体，名称，规格，数量使用相同的结构体
 typedef struct _Para						//耗材数据结构体，名称，规格，数量使用相同的结构体
 {
 	unsigned char		len;					//参数长度--字符个数
-	unsigned char		Offset;				//存储偏移地址--在String字符串中的起始地址
-	
+	unsigned char		Offset;				//存储偏移地址--在String字符串中的起始地址	
 	unsigned short	XH;						//X--水平占用点数
 	unsigned short	YV;						//Y--垂直占用点数
 }ParaDef;
@@ -349,23 +348,22 @@ typedef struct _ListData			//显示数据结构体
 typedef struct _ManaData			//显示数据结构体
 {	
 	ListDef 			List[DspMaxNameTypeCount];	//显示内容
-	unsigned char	Serial;				//当前显示序号
+	unsigned char	Serial;											//当前显示序号
 	unsigned char	ReceivedManaCount;
-	unsigned char	MaxNameList;	//最大可接收商品个数
-	
+	unsigned char	MaxNameList;								//最大可接收商品个数	
 }DataDef;
-typedef struct _Font						//字体：背景色，字体色，字体大小
+typedef struct _Font					//字体：背景色，字体色，字体大小
 {	
-	unsigned short	BackColor;		//字体底色
-	unsigned short	PenColor;			//字体颜色
-	unsigned char		Size;					//字体大小16,24,32
+	unsigned short	BackColor;	//字体底色
+	unsigned short	PenColor;		//字体颜色
+	unsigned char		Size;				//字体大小16,24,32
 }FontDef;
 typedef struct _XYPointCount					//XY需要点数
 {	
-	unsigned short	XH;			//X--水平
-	unsigned short	YV;			//Y--垂直
+	unsigned short	XH;					//X--水平
+	unsigned short	YV;					//Y--垂直
 }PxyDef;
-typedef struct _WinInfo			//显示基本参数
+typedef struct _WinInfo				//显示基本参数
 {
 	//----------------------------------字体参数
 	FontDef	FtName;			//商品名称字体参数
@@ -398,11 +396,10 @@ typedef struct _WinInfo			//显示基本参数
 
 typedef struct _Windows		//显示
 {
-	sST7789VDef	LcdPort;			//LCD
-	SPIDef 			SpiPort;			//字库
-	DataDef			ManaData;
-
-	const WinInfoDef	WinInfo;			//显示参数
+	sST7789VDef	LcdPort;				//LCD
+	GT32L32Def 	GT32L32;				//字库
+	DataDef			ManaData;				//显示的数据
+	const WinInfoDef	WinInfo;	//显示参数
 }WinDef;
 typedef struct _Comm			//通讯
 {
@@ -441,7 +438,7 @@ void AMPLCDV12_Server(void);
 void SetBackColor(unsigned short BKColor);
 unsigned short GetBackColor(void);
 
-unsigned short HW_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned short length);
+//unsigned short HW_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned short length);
 //=================================时间函数ST==============================================================
 
 

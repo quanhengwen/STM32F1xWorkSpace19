@@ -115,7 +115,7 @@ static void set_rx_dma_flag_clear(USART_TypeDef* USARTx);
 static unsigned char set_usart_rx_idle(USART_TypeDef* USARTx);
 static unsigned char set_usart_tx_idle(USART_TypeDef* USARTx);
 static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx);
-static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);
+unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);
 static unsigned char del_usart_rx_idle(USART_TypeDef* USARTx);
 static unsigned char del_usart_tx_idle(USART_TypeDef* USARTx);
 

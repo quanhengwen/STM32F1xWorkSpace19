@@ -34,19 +34,31 @@
 *******************************************************************************/
 void UserToPMABufferCopy(u8 *pbUsrBuf, u16 wPMABufAddr, u16 wNBytes)
 {
-  u32 n = (wNBytes + 1) >> 1;   /* n = (wNBytes + 1) / 2 */
-  u32 i, temp1, temp2;
+  u32 n = (wNBytes + 1) >> 1;   /* n = (wNBytes + 1) / 2 *///16位对齐，低8位在前
+  u32 i,j=0, temp1, temp2;
   u16 *pdwVal;
   pdwVal = (u16 *)(wPMABufAddr * 2 + PMAAddr);
-  for (i = n; i != 0; i--)
-  {
-    temp1 = (u16) * pbUsrBuf;
-    pbUsrBuf++;
-    temp2 = temp1 | (u16) * pbUsrBuf << 8;
-    *pdwVal++ = temp2;
-    pdwVal++;
-    pbUsrBuf++;
-  }
+	
+	//-------------------------FUN1
+//  for (i = n; i != 0; i--)
+//  {
+//    temp1 = (u16) * pbUsrBuf;
+//    pbUsrBuf++;
+//    temp2 = temp1 | (u16) * pbUsrBuf << 8;
+//    *pdwVal++ = temp2;
+//    pdwVal++;
+//    pbUsrBuf++;
+//  }
+	//--------------------------FUN2
+	j=0;
+	for(i=0;i<n;i++)
+	{
+		temp1 = (u16) pbUsrBuf[j];
+		temp2	=	(u16) pbUsrBuf[j+1];
+    temp2 = temp1 | (temp2 << 8);
+		pdwVal[j]=temp2;
+   	j+=2;
+	}
 }
 /*******************************************************************************
 * Function Name  : PMAToUserBufferCopy

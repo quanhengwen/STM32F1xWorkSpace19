@@ -73,8 +73,8 @@
 //#define ampMaxResendCount  		5         	//最大发送次数
 /* Private variables ---------------------------------------------------------*/
 
-static RS485Def ampRS485Ly;   //uart4,PA15   //层板接口
-static RS485Def ampRS485Cb;   //usart1,PA8    //副柜接口
+static RS485Def ampRS485Ly;   //uart4,PA15   		//层板接口
+static RS485Def ampRS485Cb;   //usart1,PA8    	//副柜接口
 //static RS485Def ampRS485Card; //usart3,PB2    //读卡器接口
 static SwitchDef ampSwitchID;
 static spi_def stLed;

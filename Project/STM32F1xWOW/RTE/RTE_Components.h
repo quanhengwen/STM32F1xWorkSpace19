@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xWOW' 
- * Target:  'PCM2707_TEST' 
+ * Target:  'BQ26100_TEST' 
  */
 
 #ifndef RTE_COMPONENTS_H

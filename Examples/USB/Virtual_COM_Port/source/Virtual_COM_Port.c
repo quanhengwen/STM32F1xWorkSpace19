@@ -51,6 +51,7 @@
 #include "usb_core.h"			//USB总线数据处理的核心文件
 
 #include "usb_endp.h"
+#include "usb_data.h"
 #include "hw_config.h"
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +60,7 @@
 #define bq26100	1
 #define STM32_FSMC 0
 #define STM32_USB_TEST 0
-#define usart_buffer_size	1024
+
 
 #if PS005
 		#define USB_DISCONNECT            GPIOA  
@@ -115,7 +116,7 @@
 
 
 /* Extern variables ----------------------------------------------------------*/
-u8 buffer_in[usart_buffer_size];
+u8 buffer_in[USB_BUFFER_SIZE];
 
 u8 buffer_rx[VIRTUAL_COM_PORT_DATA_SIZE];
 u8 buffer_tx[VIRTUAL_COM_PORT_DATA_SIZE];
@@ -131,7 +132,7 @@ extern u32 count_in;
 extern LINE_CODING linecoding;
 
 //extern u8 buffer_out[VIRTUAL_COM_PORT_DATA_SIZE];
-extern u32 count_out;
+//extern u32 count_out;
 
 
 
@@ -139,10 +140,10 @@ extern u32 count_out;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 void api_usb_virtual_gpio_configuration(void);
-void usb_to_uart_server(void);
+
 extern void api_usb_hw_initialize(void);
 void USB_CMD(FunctionalState NewState);
-
+static void bq26100test(void);
 
 /*******************************************************************************
 * Function Name  : Set_System
@@ -162,7 +163,7 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 //		api_usb_virtual_com_server();
 //	}
 //	 PWM_OUT(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
-//	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
+	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 }
 /*******************************************************************************
 *函数名			:	function
@@ -175,12 +176,37 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 *******************************************************************************/
 void api_usb_virtual_com_server(void)
 {	
-	if(virtual_com_time++>0xFFF0)
+	if(virtual_com_time<1000)	//等待USB初始化1秒
 	{
-		virtual_com_time =0;
+		virtual_com_time ++;
+		return ;
 	}
 	usb_to_uart_server();
 	USART_To_USB_Send_Data();
+	bq26100test();
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void bq26100test(void)
+{
+	static unsigned short time=0;
+	time++;
+	if(time==500)
+		GPIO_SetBits(G2Port,G2Pin);
+	else if(time>=5000)
+	{
+		GPIO_ResetBits(G2Port,G2Pin);
+		time=0;
+	}
+//GPIO_SetBits(G2Port,G2Pin);
+	//GPIO_ResetBits(G2Port,G2Pin);
 }
 /*******************************************************************************
 *函数名			:	function
@@ -197,32 +223,32 @@ void api_usb_virtual_gpio_configuration(void)
 	USB_CMD(DISABLE);
 #if bq26100
 	GPIO_Configuration_OPP50(G1Port,G1Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(G1Port,G1Pin);
+	//GPIO_SetBits(G1Port,G1Pin);
 	GPIO_ResetBits(G1Port,G1Pin);
 	
 	GPIO_Configuration_OPP50(G2Port,G2Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(G2Port,G2Pin);
+	//GPIO_SetBits(G2Port,G2Pin);
 	GPIO_ResetBits(G2Port,G2Pin);
 	
 	GPIO_Configuration_OPP50(G3Port,G3Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(G3Port,G3Pin);
+	//GPIO_SetBits(G3Port,G3Pin);
 	GPIO_ResetBits(G3Port,G3Pin);
 	
 	GPIO_Configuration_OPP50(V24Port,V24Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(V24Port,V24Pin);
-//	GPIO_ResetBits(V24Port,V24Pin);
+	//GPIO_SetBits(V24Port,V24Pin);
+	GPIO_ResetBits(V24Port,V24Pin);
 	
 	GPIO_Configuration_OPP50(V05Port,V05Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(V05Port,V05Pin);
-//	GPIO_ResetBits(V05Port,V05Pin);
+	//GPIO_SetBits(V05Port,V05Pin);
+	GPIO_ResetBits(V05Port,V05Pin);
 	
 	GPIO_Configuration_OPP50(MtxPort,MtxPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(MtxPort,MtxPin);
-//	GPIO_ResetBits(MtxPort,MtxPin);
+	//GPIO_SetBits(MtxPort,MtxPin);
+	GPIO_ResetBits(MtxPort,MtxPin);
 	
 	GPIO_Configuration_OPP50(MrxPort,MrxPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_SetBits(MrxPort,MrxPin);
-//	GPIO_ResetBits(MrxPort,MrxPin);
+	//GPIO_SetBits(MrxPort,MrxPin);
+	GPIO_ResetBits(MrxPort,MrxPin);
 	
 #endif
 }
@@ -250,6 +276,10 @@ void USB_CMD(FunctionalState NewState)
 		GPIO_ResetBits(USB_DISCONNECT, USB_DISCONNECT_PIN);
   }
 }
+unsigned long sendnum=0;
+unsigned long sendednum=0;
+
+extern unsigned long usbsavenum;
 
 /*******************************************************************************
 * Function Name  :  UART0_Config_Default.
@@ -272,7 +302,7 @@ void USART_Config_Default(void)
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//流控
 	USART_Init(ComPort, &USART_InitStructure);											//初始化串口
 	
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,usart_buffer_size);	//USART_DMA配置--结构体形式，不开中断	
+	api_usart_dma_configurationST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断	
 }
 
 /*******************************************************************************
@@ -350,7 +380,7 @@ char USART_Config(void)
   USART_Cmd(ComPort, ENABLE);																												//使能串口
 	
 	//api_usart_dma_configurationNR(ComPort,linecoding.bitrate,usart_buffer_size);
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,usart_buffer_size);	//USART_DMA配置--结构体形式，不开中断
+	api_usart_dma_configurationST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断
 	
   return (1);
 }
@@ -377,17 +407,31 @@ void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 *******************************************************************************/
 void usb_to_uart_server(void)
 {
-	unsigned char len	=	0;
-	unsigned char buffer[3]={0};
+	unsigned short len	=	0;
+	static unsigned char time=0;
+	unsigned char buffer[USB_BUFFER_SIZE]={0};
 	if(bDeviceState != CONFIGURED)
   {
 		return;
 	}
-//	len	=	api_usb_endp_get_out_data(buffer);
+	if(0==get_usart_tx_idle(ComPort))		//串口状态检查
+	{
+		return ;
+	}
+	//-----------------------------------无数据
+	if(0!=api_usb_out_get_complete_flag())
+	{
+		return;
+	}
+	if(time++<10)		//连续帧间隔8ms
+		return ;
+	time = 0;
+
+	len	=	api_usb_out_get_data(buffer);
 	if(len)
 	{
-		//api_usb_endp_set_in_data(buffer,len);
-//		api_usart_dma_send(ComPort,buffer,(u16)len);		//自定义printf串口DMA发送程序
+		sendnum+=len;
+		sendednum+=api_usart_dma_send(ComPort,buffer,(u16)len);		//自定义printf串口DMA发送程序
 	}
 }
 /*******************************************************************************
@@ -401,7 +445,7 @@ void USART_To_USB_Send_Data(void)
 	u16	num	=	api_usart_dma_receive(ComPort,buffer_in);
 	if(num)
 	{
-		api_usb_endp_set_in_data(buffer_in,num);
+		api_usb_in_set_data(buffer_in,num);
 	}
 }
 /*******************************************************************************
@@ -412,13 +456,14 @@ void USART_To_USB_Send_Data(void)
 *******************************************************************************/
 void usb_virtual_com_AsynchXfer (void)
 {
-	count_in=api_usart_dma_receive(ComPort,buffer_rx);
-	if(count_in)
-	{
-		UserToPMABufferCopy(buffer_rx, ENDP1_TXADDR, count_in);
-		SetEPTxCount(ENDP1, count_in);
-		SetEPTxValid(ENDP1);
-	}
+//	unsigned short count_in	=	0;
+//	count_in=api_usart_dma_receive(ComPort,buffer_rx);
+//	if(count_in)
+//	{
+//		UserToPMABufferCopy(buffer_rx, ENDP1_TXADDR, count_in);
+//		SetEPTxCount(ENDP1, count_in);
+//		SetEPTxValid(ENDP1);
+//	}
 }
 //------------------------------------------------------------------------------
 

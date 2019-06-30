@@ -172,7 +172,7 @@ typedef struct _USB_REG
 #define FNR_RXDM (0x4000) /* status of D- data line */	//D-状态位 (Receive data - line status)
 #define FNR_LCK  (0x2000) /* LoCKed */									//锁定位 (Locked)
 #define FNR_LSOF (0x1800) /* Lost SOF */								//帧首丢失标志位 (Lost SOF)
-#define FNR_FN  (0x07FF) /* Frame Number */							//帧编号 (Frame number)
+#define FNR_FN  	(0x07FF) /* Frame Number */							//帧编号 (Frame number)
 /******************************************************************************/
 /*               DADDR Device ADDRess bit definitions                         */
 /*  								USB设备地址寄存器(USB_DADDR)																*/

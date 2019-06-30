@@ -31,6 +31,8 @@ unsigned short CRC16_MAXIM				(unsigned char *puchMsg, unsigned int usDataLen);
 unsigned short CRC16_USB					(unsigned char *puchMsg, unsigned int usDataLen);
 
 
+unsigned char CRC8_8541(unsigned char *puchMsg, unsigned int usDataLen);
+
 void CRC_SetEnable(void);
 u32 Get_CalcCrc32(u32 Data);
 u32 Get_CalcCrc32(u32 Data);

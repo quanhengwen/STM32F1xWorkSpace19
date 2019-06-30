@@ -5,7 +5,7 @@
 
 //#include	"AMP_PHY.H"
 
-#define	ampArrySize    	50       		//每个发送端口待发送缓存排序个数
+#define	ampArrySize    	30       		//每个发送端口待发送缓存排序个数
 
 #define	ampledtime	40	//2000ms
 //typedef struct _ampdata       //拨码数据：

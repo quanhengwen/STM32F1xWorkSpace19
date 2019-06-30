@@ -1,5 +1,5 @@
-#ifndef __FIFO_H
-#define __FIFO_H
+#ifndef __CRC_H
+#define __CRC_H
 
 
 
@@ -22,6 +22,8 @@ unsigned short CRC16_MAXIM(unsigned char *puchMsg, unsigned int usDataLen);				/
 unsigned short CRC16_USB(unsigned char *puchMsg, unsigned int usDataLen);					//多项式x16+x15+x5+1（0x8005），初始值0xFFFF，低位在前，高位在后，结果与0xFFFF异或
 
 
+unsigned char CRC8_8541_msb(unsigned char *puchMsg, unsigned int usDataLen);			//CRC8_8541_msb 高位在前
+unsigned char CRC8_8541_lsb(unsigned char *puchMsg, unsigned int usDataLen);			//CRC8_8541_lsb低位在前
 #endif
 
 

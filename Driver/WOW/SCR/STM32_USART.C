@@ -1762,7 +1762,7 @@ static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
+unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
 {
 	//-----------------·¢ËÍ¿ÕÏÐ¼ì²â£ºTC·¢ËÍÍê³É±êÖ¾,TXE»º´æ¿Õ,£¬DMA»º´æ¿Õ£¬DMAÎ´¿ªÆô
 	unsigned short	txdelay		=	get_tx_retry_count(USARTx);
@@ -1784,7 +1784,7 @@ static unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
 	}
 	//------------------DMA»º´æ¿Õ£¬TXE»º´æ¿Õ
 	if((0==DMAy_Channelx->CNDTR)&&(USART_GetFlagStatus(USARTx,USART_FLAG_TXE)))
-	{		
+	{	
 		if(txdelay<2)
 		{
 			txdelay+=1;

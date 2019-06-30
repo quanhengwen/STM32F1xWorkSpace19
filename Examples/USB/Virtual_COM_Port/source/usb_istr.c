@@ -35,7 +35,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 volatile u16 wIstr;  /* ISTR register last read value */
-volatile u8 bIntPackSOF = 0;  /* SOFs received between 2 consecutive packets */
+volatile u16 bIntPackSOF = 0;  /* 帧号11位，最大0x800 SOFs received between 2 consecutive packets */
 
 /* Extern variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -75,7 +75,7 @@ void (*pEpInt_OUT[7])(void) =
 void USB_Istr(void)
 {
 
-  wIstr = _GetISTR();			//获取中断标志，得到中断源
+  wIstr = _GetISTR();				//获取中断标志，得到中断源
 
 #if (IMR_MSK & ISTR_RESET)			  //USB复位请求 (USB reset request)
   if (wIstr & ISTR_RESET & wInterrupt_Mask)
@@ -141,7 +141,7 @@ void USB_Istr(void)
   }
 #endif
   /*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-#if (IMR_MSK & ISTR_SOF)										//帧首(SOF)中断标志
+#if (IMR_MSK & ISTR_SOF)										//帧首/帧起始(SOF)中断标志
   if (wIstr & ISTR_SOF & wInterrupt_Mask)		//读出的中断标志是SOF中断标志，且SOF中断使能了
   {
     _SetISTR((u16)CLR_SOF);									//清除SOF中断标志

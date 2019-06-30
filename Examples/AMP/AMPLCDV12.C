@@ -17,6 +17,7 @@
 
 #include "LCD.H"
 #include "ST7789V.H"
+#include "GT32L32M0180.H"
 
 #include "font.h"
 
@@ -25,8 +26,7 @@
 /* Private variables ---------------------------------------------------------*/
 sAmpLcdDef	sAmpLcd;
 
-unsigned  long*  MCUMEMaddr = (unsigned  long*)(0x1FFFF7E0);
-unsigned  short  MCUMEMsize  = 0;
+
 
 //unsigned	short FlashTime	=0;
 unsigned	char	DaulFlag	=	0;
@@ -797,7 +797,7 @@ void DisplaySpec(const ListDef Node)
 	unsigned char 	offset=0;
 	unsigned char		str[256];		//目标符串地址---存储
 	unsigned char 	Fname[]	=	"规格:";
-	unsigned char 	Flen	=	strlen(Fname);
+	unsigned char 	Flen		=	strlen(Fname);
 	
 	unsigned short xs=0;	//字体显示坐标信息
 	unsigned short ys=0;
@@ -877,7 +877,7 @@ void DisplayCode(const ListDef Node)
 	unsigned char 	offset=0;
 	unsigned char		str[256];		//目标符串地址---存储
 	unsigned char 	Fname[]	=	"编码:";
-	unsigned char 	Flen	=	strlen(Fname);
+	unsigned char 	Flen		=	strlen(Fname);
 	
 	unsigned short xs=0;	//字体显示坐标信息
 	unsigned short ys=0;
@@ -931,8 +931,8 @@ void DisplayCode(const ListDef Node)
 	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
 	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
 
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	WinInfo->PxyDisplayStart.YV	=	WinInfo->PxyFillStart.YV;
+	WinInfo->PxyDisplayEnd.YV		=	WinInfo->PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
 	xs	=	WinInfo->PxyDisplayStart.XH;
 	ys	=	WinInfo->PxyDisplayStart.YV;
@@ -958,19 +958,19 @@ void DisplayNumber(const ListDef Node)
 	unsigned char 	offset=0;
 	unsigned char		str[256];		//目标符串地址---存储
 	
-	unsigned short xs=0;	//字体显示坐标信息
-	unsigned short ys=0;
-	unsigned short xe=0;
-	unsigned short ye=0;
+	unsigned short 	xs=0;		//字体显示坐标信息
+	unsigned short 	ys=0;
+	unsigned short 	xe=0;
+	unsigned short 	ye=0;
 	
-	unsigned short Fxs=0;	//填充背景色坐标信息
-	unsigned short Fys=0;
-	unsigned short Fxe=0;
-	unsigned short Fye=0;
+	unsigned short 	Fxs=0;	//填充背景色坐标信息
+	unsigned short 	Fys=0;
+	unsigned short 	Fxe=0;
+	unsigned short 	Fye=0;
 //	
-	unsigned short BackColor;	//背景色
-	unsigned short PenColor;	//画笔色
-	unsigned short FontSize;	//字体大小
+	unsigned short 	BackColor;	//背景色
+	unsigned short 	PenColor;		//画笔色
+	unsigned short 	FontSize;		//字体大小
 	
 	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
@@ -1172,7 +1172,7 @@ void HW_Configuration(void)
 {
 //	spi_def	*SPI	=	&sAmpLcd.SpiPort;
 	sST7789VDef	sST7789V;
-	SPIDef			sGT32L32;
+	GT32L32Def	sGT32L32;
 	RS485Def		sRS485Port;   //层板接口
 	SwitchDef 	sSwitch;			//拔码开关
 	
@@ -1212,23 +1212,23 @@ void HW_Configuration(void)
 	ST7789V_Initialize(&sAmpLcd.Windows.LcdPort);
 	
 	//-------------------------------------------字库参数初始化
-	sGT32L32.Port.SPIx			=	SPI1;
-	sGT32L32.Port.CS_PORT		=	GPIOA;
-	sGT32L32.Port.CS_Pin		=	GPIO_Pin_4;
+	sGT32L32.SPI.port.SPIx			=	SPI1;
+	sGT32L32.SPI.port.nss_port		=	GPIOA;
+	sGT32L32.SPI.port.nss_pin		=	GPIO_Pin_4;
 	
-	sGT32L32.Port.CLK_PORT	=	GPIOA;
-	sGT32L32.Port.CLK_Pin		=	GPIO_Pin_5;
+	sGT32L32.SPI.port.clk_port	=	GPIOA;
+	sGT32L32.SPI.port.clk_pin		=	GPIO_Pin_5;
 	
-	sGT32L32.Port.MISO_PORT	=	GPIOA;
-	sGT32L32.Port.MISO_Pin	=	GPIO_Pin_6;
+	sGT32L32.SPI.port.miso_port	=	GPIOA;
+	sGT32L32.SPI.port.miso_pin	=	GPIO_Pin_6;
 	
-	sGT32L32.Port.MOSI_PORT	=	GPIOA;
-	sGT32L32.Port.MOSI_Pin	=	GPIO_Pin_7;	
-	sGT32L32.Port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
+	sGT32L32.SPI.port.mosi_port	=	GPIOA;
+	sGT32L32.SPI.port.mosi_pin	=	GPIO_Pin_7;	
+	sGT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
 	
-	sAmpLcd.Windows.SpiPort	=	sGT32L32;	
+	sAmpLcd.Windows.GT32L32	=	sGT32L32;	
   
-  GT32L32_Initialize(&sAmpLcd.Windows.SpiPort);				//普通SPI通讯方式配置
+  api_gt32l32_configuration(&sAmpLcd.Windows.GT32L32);				//普通SPI通讯方式配置
 //	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_4);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	//-------------------------------------------层板接口USART1 PA11-RE,PA12-TE
   sRS485Port.USARTx  				= USART1;
@@ -1312,8 +1312,8 @@ void SendData(void)
 *******************************************************************************/
 void AckData(void)
 {
-	memcpy(sAmpLcd.Comm.Txd,ackupfarme,AmpMinFrameSize);
-	sAmpLcd.Comm.TxLen	=	AmpMinFrameSize;
+//	memcpy(sAmpLcd.Comm.Txd,ackupfarme,AmpMinFrameSize);
+//	sAmpLcd.Comm.TxLen	=	AmpMinFrameSize;
 }
 /*******************************************************************************
 *函数名			:	function
@@ -1352,9 +1352,9 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 	
 	unsigned char	i=0;
 	unsigned char DataLen	=0;		//数据段长度
-	ManaDef*	ManaData;
+//	ManaDef*	ManaData;
   
-  stampphydef* ampframe=NULL;
+  ampphydef* ampframe=NULL;
   //-------------------------检查端口是否为层接口及缓存地址是否为空
   if(NULL==StartAddr||0==framlength)
   {
@@ -1362,13 +1362,13 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
   }	
 	ReceiveDataCheckStart:	//开始检测接收到的数据
   //-------------------------协议检查
-  ampframe	=	(stampphydef*)API_AmpCheckFrame(StartAddr,&framlength);    //判断帧消息内容是否符合协议
+  ampframe	=	(ampphydef*)api_get_frame(StartAddr,framlength);    //判断帧消息内容是否符合协议
   if(NULL== ampframe)
   {
     return;		//退出，未检测到有效的帧
   }
   //-------------------------检查是否为应答帧
-	if(AmpCmdAck==ampframe->msg.cmd.cmd)
+	if(ampCmdAck==ampframe->msg.cmd.cmd)
 	{
 		goto ReCheckData;		//重新检测剩余的数据
 	}
@@ -1386,7 +1386,7 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
   if(0  ==  ampframe->msg.cmd.dir)	//最高位为0表示上往下发
   {
     //---------------------------显示数据命令
-    if(AmpCmdLcdData ==  ampframe->msg.cmd.cmd) 
+    if(ampCmdLcdData ==  ampframe->msg.cmd.cmd) 
     {	
 			unsigned char* buffer=NULL;
 			DataLen	=	ampframe->msg.length-4;		//数据段长度			
@@ -1398,7 +1398,7 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 				AckData();						
     }
 		//---------------------------修改背景色命令--只带2字节数据,低8位颜色在前
-		else if(AmpCmdLcdConf ==  ampframe->msg.cmd.cmd)
+		else if(ampCmdLcdConf ==  ampframe->msg.cmd.cmd)
 		{
 			unsigned short BackColor	=	0;			
 			memcpy(&BackColor,ampframe->msg.data,2);	//2字节背景色数据，低位在前
@@ -1415,8 +1415,8 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 	goto ReceiveDataCheckStart;
 }
 /*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
+*函数名			:	GetManaData
+*功能描述		:	从消息中获取药品信息，存储在药品列表中
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
@@ -1466,7 +1466,7 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 	//---------------------------------初始化指针地址和数据
 	ManaData	=	(ManaDef*)Databuffer;
 	pSource		=	ManaData->String;			//数据源地址
-	pTarget		=	Node.String;				//数据目标地址
+	pTarget		=	Node.String;					//数据目标地址
 	//---------------------------------01名称参数
 	strtype		=	ManaData->type;
 	strLen		=	ManaData->len;
@@ -1550,7 +1550,7 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 		//-------------------------------正确获取到数据
 		if(0!=Node.ParaName.len||0!=Node.ParaByName.len)	//商品名称或者别名是必需数据
 		{
-			SetManaData(&Node);														//设置显示参数---数据获取成功后设置相关的显示参数
+			SetManaData(&Node);															//设置显示参数---数据获取成功后设置相关的显示参数
 //			sAmpLcd.Windows.ManaData.ReceivedManaCount+=1;
 //			pNode->ListNum	=	i+1;
 		}
@@ -1647,8 +1647,6 @@ void SetManaData(ListDef* pNode)
 
 	//---------------------------------01名称参数
 	strtype		=	0x01;		//从第一个参数开始
-
-
 	SetDataStart:
 	switch(strtype)
 	{
@@ -1834,7 +1832,8 @@ void DataInitialize(void)
 	WinInfo->TopDisplayStartY			=	WinInfo->PxyTopFill.YV+WinInfo->FtTitle.Size;
 	WinInfo->BotDisplayStartY			=	WinInfo->TopDisplayStartY+(WinInfo->PxyValid.YV-WinInfo->FtTitle.Size)/2;
 	//------------------------------------------最大可以接收商品个数
-	addr=(unsigned char*)&sAmpLcd.Windows.ManaData.MaxNameList;		//const类型
-	*addr	=	DspMaxNameTypeCount;
+//	addr=(unsigned char*)&sAmpLcd.Windows.ManaData.MaxNameList;		//const类型
+	sAmpLcd.Windows.ManaData.MaxNameList	=	DspMaxNameTypeCount;		//const类型
+//	*addr	=	DspMaxNameTypeCount;
 }
 #endif

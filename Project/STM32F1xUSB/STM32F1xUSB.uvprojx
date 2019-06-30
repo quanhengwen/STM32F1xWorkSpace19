@@ -878,6 +878,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1910,6 +1915,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2877,6 +2887,11 @@
               <FileName>hw_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3910,6 +3925,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4877,6 +4897,11 @@
               <FileName>hw_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5910,6 +5935,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6908,6 +6938,11 @@
               <FileName>hw_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7941,6 +7976,11 @@
               <FileName>hw_config.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>

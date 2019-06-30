@@ -57,7 +57,7 @@ void api_usb_virtual_com_configuration(void);
 void api_usb_virtual_com_server(void);
 
 
-
+void usb_to_uart_server(void);
 
 void USART_Config_Default(void);
 char USART_Config(void);

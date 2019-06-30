@@ -142,6 +142,10 @@
 	#include "PCM2707_TEST.H"
 #endif
 
+//*********************************BQ26100_TEST*********************************//
+#ifdef BQ26100_TEST
+	#include "BQ26100_TEST.H"
+#endif
 
 
 
