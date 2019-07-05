@@ -756,6 +756,16 @@
           <GroupName>Driver/USB</GroupName>
         </Group>
         <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Document</GroupName>
           <Files>
             <File>
@@ -1727,6 +1737,16 @@
         </Group>
         <Group>
           <GroupName>Driver/USB</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Document</GroupName>
@@ -2766,6 +2786,16 @@
           <GroupName>Driver/USB</GroupName>
         </Group>
         <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Document</GroupName>
           <Files>
             <File>
@@ -3737,6 +3767,16 @@
         </Group>
         <Group>
           <GroupName>Driver/USB</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Document</GroupName>
@@ -4776,6 +4816,16 @@
           <GroupName>Driver/USB</GroupName>
         </Group>
         <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Document</GroupName>
           <Files>
             <File>
@@ -5749,6 +5799,16 @@
           <GroupName>Driver/USB</GroupName>
         </Group>
         <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Document</GroupName>
           <Files>
             <File>
@@ -6404,7 +6464,7 @@
               <MiscControls></MiscControls>
               <Define>Virtual_COM_Port</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Library\USB\INC;..\..\Examples\USB\Virtual_COM_Port\include;..\..\Driver\WOW\INC;..\..\Driver\Tool;.\main</IncludePath>
+              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Library\USB\INC;..\..\Examples\USB\Virtual_COM_Port\include;..\..\Driver\WOW\INC;..\..\Driver\Tool;.\main;..\..\Driver\Components\INC</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -6721,6 +6781,16 @@
         </Group>
         <Group>
           <GroupName>Driver/USB</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Document</GroupName>
@@ -7789,6 +7859,16 @@
         </Group>
         <Group>
           <GroupName>Driver/USB</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Driver/Components</GroupName>
+          <Files>
+            <File>
+              <FileName>BQ26100.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Document</GroupName>

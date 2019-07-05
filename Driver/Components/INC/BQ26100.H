@@ -2,6 +2,8 @@
 #define __BQ26100_H 
 #include "stdint.h"
 
+
+
 typedef enum
 {
 	sdq_error		=	0,
@@ -57,16 +59,23 @@ void api_bq26100_step1_Auth(void);
 sdq_result api_bq26100_step2_send_message(unsigned char* message,unsigned char len);
 sdq_result api_bq26100_step3_write_control(void);
 sdq_result api_bq26100_step4_read_control(void);
-sdq_result api_bq26100_step5_read_digest(unsigned char* Digest);
+sdq_result api_bq26100_step5_read_digest(void);
 
 void api_bq26100_test_example(void);
 unsigned char api_bq26100_test_example_getkey(void);
-
+unsigned long api_bq26100_test_example_getkey2(unsigned long* H,unsigned long* ARRY);
 
 sdq_result bq26100_rest(void);	//复位Dallas,返回结果
 void sdq_write_byte(unsigned char dat);
 unsigned char sdq_read_byte(void);
 
-    
+static void bq26100_change_message(void);
+
+void api_bq26100_set_message2(unsigned char* buffer);
+void api_bq26100_test_example22(unsigned long* buffer);
+unsigned char api_bq26100_data_Verify(unsigned char* message,unsigned char* digest,unsigned long serial);
+unsigned char api_bq26100_Get_Digest(unsigned char* message,unsigned char* digest,unsigned long serial);
+
+
 #endif
 

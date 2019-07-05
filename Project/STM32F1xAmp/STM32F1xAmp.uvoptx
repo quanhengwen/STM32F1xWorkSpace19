@@ -2395,7 +2395,7 @@
         <Ww>
           <count>0</count>
           <WinNumber>1</WinNumber>
-          <ItemText>IOT5302W,0x10</ItemText>
+          <ItemText>IOT5302W,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>1</count>
@@ -3082,7 +3082,7 @@
 
   <Group>
     <GroupName>MAIN</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3129,7 +3129,7 @@
 
   <Group>
     <GroupName>AMPV11A2</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3577,7 +3577,7 @@
 
   <Group>
     <GroupName>Driver/WOW</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -3897,7 +3897,7 @@
 
   <Group>
     <GroupName>Driver/Components</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -4441,7 +4441,7 @@
 
   <Group>
     <GroupName>Driver/Protocol</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

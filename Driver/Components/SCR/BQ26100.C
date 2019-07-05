@@ -1,6 +1,9 @@
 #include "BQ26100.H"	
 
+#include "BQ26100DATA.H"
+
 #include "stdlib.h"
+#include "string.h"
 
 #include "STM32_GPIO.H"
 #include "STM32_SYSTICK.H"
@@ -11,17 +14,42 @@
 #define	SDQ_Pin			GPIO_Pin_3
 
 #define	SDQ_SetOut		GPIO_Configuration_OPP50(SDQ_Port,	SDQ_Pin)			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-#define	SDQ_SetIn			GPIO_RegConfiguration_IPD(SDQ_Port,		SDQ_Pin)			//将GPIO相应管脚配置为下拉输入模式----V20170605
+#define	SDQ_SetIn			GPIO_Configuration_IPD(SDQ_Port,		SDQ_Pin)			//将GPIO相应管脚配置为下拉输入模式----V20170605
 
 #define	SDQ_H					SDQ_Port->BSRR	= SDQ_Pin			//CPLD_WR	=	1;
 #define	SDQ_L					SDQ_Port->BRR		= SDQ_Pin			//CPLD_WR	=	0;
 
-#define	SDQ_Read			SDQ_Port->IDR	& SDQ_Pin			//CPLD_WR	=	0;
+#define	SDQ_Read			(SDQ_Port->IDR	& SDQ_Pin)			//CPLD_WR	=	0;
 
 
 #define bq26100_Family_Code 0x09		//默认09
 
 unsigned short bq26100_reg_addr=0x0000;				//寄存器地址
+
+
+
+// Global Variables
+unsigned char Message[20];			//These are the 20 bytes for the random message	sent to bq26100
+unsigned char Key[16];				//These are the 16 bytes for the secret key, should match with contents of valid bq26100 
+unsigned char Digest[20];			//These are the 20 bytes for the SHA1 response of the bq26100
+
+// Global Variables for SHA1
+unsigned long Ws[80];					//Global Work schedule variable--计算时需要用到的缓冲区
+unsigned long A;	//缓冲区，计算前初始化值为0x67452301
+unsigned long B;	//缓冲区，计算前初始化值为0xEFCDAB89
+unsigned long C;	//缓冲区，计算前初始化值为0x98BADCFE
+unsigned long D;	//缓冲区，计算前初始化值为0x10325476
+unsigned long E;	//缓冲区，计算前初始化值为0xC3D2E1F0
+unsigned long H[5];	//计算出的消息摘要缓存，消息摘要是一个160位的字符串
+unsigned long Random[5];		//The 16 bytes of random message for the bq26100 are contained here
+					//for microcontroller to use in SHA1/HMAC
+unsigned long Digest_32[5];	//The result of the SHA1/HMAC obtained by the microcontroller is contained here
+
+
+unsigned long key_key32[4] = {0x00,0x01,0x02,0x03};
+const unsigned long key_message[5] = { 0xc82ca3ca ,0x10dec726 ,0x8e070a7c ,0xf0d1fe82 ,0x20aad3b8 };		//The 16 bytes of random message for the bq26100 are contained here
+const unsigned long key_digest[5] = { 0x18459979,0xca46a610,0xb18d173e,0x0db5d113 ,0x99951241 };	//The result of the SHA1/HMAC obtained by the microcontroller is contained here
+
  
 /*******************************************************************************
 * 函数名			:	function
@@ -357,16 +385,17 @@ void sdq_write_bit(unsigned char bit)		//1-wire 一位（1bit）写操作-写0&写1
 		SDQ_L;					//拉低总线
 		SysTick_DeleyuS(10);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始 
 		SDQ_H;					//拉高总线
-		SysTick_DeleyuS(63);	//等待从机采样完成
+		SysTick_DeleyuS(80);	//等待从机采样完成
 	}
 	// =============Write 0
 	else						
 	{
 		SDQ_L;					//拉低总线
-		SysTick_DeleyuS(63);	//保持60us，等待从机采样
+		SysTick_DeleyuS(85);	//保持60us，等待从机采样
 		SDQ_H;					//释放总线
-		SysTick_DeleyuS(10);
+		SysTick_DeleyuS(5);
 	}
+	SysTick_DeleyuS(2);
 }
 /*******************************************************************************
 * 函数名			:	sdq_read_bit
@@ -383,19 +412,20 @@ void sdq_write_bit(unsigned char bit)		//1-wire 一位（1bit）写操作-写0&写1
 unsigned char sdq_read_bit(void)
 {
 	//总时间按80us
-	unsigned char bit;	
+	unsigned char bit=0;	
 	SDQ_SetOut;				//设为输出模式
 	SDQ_L; 						//拉低总线
 	//SysTick_DeleyuS(15);		//至少1us时间
 //	SDQ_H; 						//释放总线
 	SDQ_SetIn;					//设置为输入模式
-	SysTick_DeleyuS(20);	//等待从机响应
-	if(SDQ_Read)				//读取总线状态
+	//SDQ_H; 						//释放总线
+	SysTick_DeleyuS(15);	//等待从机响应
+
+	if(0!=SDQ_Read)				//读取总线状态
 		bit = 1;
 	else
-		bit = 0;	 
-	SysTick_DeleyuS(46);
-	
+		bit = 0;	
+	SysTick_DeleyuS(60);
 	return bit;
 }
 //------------------------------------------------------------------------------
@@ -541,27 +571,7 @@ unsigned char TestPresence(void)
 
 
 
-// Global Variables
-unsigned char Message[20];			//These are the 20 bytes for the random message	sent to bq26100
-unsigned char Key[16];				//These are the 16 bytes for the secret key, should match with contents of valid bq26100 
-unsigned char Digest[20];			//These are the 20 bytes for the SHA1 response of the bq26100
 
-// Global Variables for SHA1
-unsigned long Ws[80];					//Global Work schedule variable--计算时需要用到的缓冲区
-unsigned long A;	//缓冲区，计算前初始化值为0x67452301
-unsigned long B;	//缓冲区，计算前初始化值为0xEFCDAB89
-unsigned long C;	//缓冲区，计算前初始化值为0x98BADCFE
-unsigned long D;	//缓冲区，计算前初始化值为0x10325476
-unsigned long E;	//缓冲区，计算前初始化值为0xC3D2E1F0
-unsigned long H[5];	//计算出的消息摘要缓存，消息摘要是一个160位的字符串
-unsigned long Random[5];		//The 16 bytes of random message for the bq26100 are contained here
-					//for microcontroller to use in SHA1/HMAC
-unsigned long Digest_32[5];	//The result of the SHA1/HMAC obtained by the microcontroller is contained here
-
-
-unsigned long key_key32[4] = {0x00,0x01,0x02,0x03};
-const unsigned long key_message[5] = { 0xc82ca3ca ,0x10dec726 ,0x8e070a7c ,0xf0d1fe82 ,0x20aad3b8 };		//The 16 bytes of random message for the bq26100 are contained here
-const unsigned long key_digest[5] = { 0x18459979,0xca46a610,0xb18d173e,0x0db5d113 ,0x99951241 };	//The result of the SHA1/HMAC obtained by the microcontroller is contained here
 
 /**********************************************************************/
 //*	unsigned long Rotl(unsigned long x, int n)
@@ -574,6 +584,10 @@ const unsigned long key_digest[5] = { 0x18459979,0xca46a610,0xb18d173e,0x0db5d11
 unsigned long Rotl(unsigned long x, int n)
 {
 	return (x<<n) |  (x>>(32-n));
+}
+unsigned long rRotl(unsigned long x, int n)
+{
+	return (x>>n) |  (x<<(32-n));
 }
 /**********************************************************************/
 //* 	unsigned long W(int t)
@@ -764,7 +778,7 @@ void api_bq26100_step1_Auth(void)
 *******************************************************************************/
 sdq_result api_bq26100_step2_send_message(unsigned char* message,unsigned char len)
 {
-	unsigned char i = 0;
+	unsigned long i = 0;
 	unsigned char Value	=	0;
 	sdq_result result;
 	// Send 160-bit Message to bq26100
@@ -794,6 +808,7 @@ sdq_result api_bq26100_step2_send_message(unsigned char* message,unsigned char l
 																//CRC are not being calculated by the microcontroller, the results given by
 																//bq26100 are being ignored
 		Value	=	sdq_read_byte();		// Read Data to Verify Write
+		
 	}
 	return sdq_success;
 }
@@ -878,7 +893,7 @@ sdq_result api_bq26100_step4_read_control(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-sdq_result api_bq26100_step5_read_digest(unsigned char* Digest)
+sdq_result api_bq26100_step5_read_digest(void)
 {
 	unsigned char i = 0;
 	unsigned char Value	=	0;
@@ -915,8 +930,10 @@ sdq_result api_bq26100_step5_read_digest(unsigned char* Digest)
 	Digest_32[0] = Digest[0x10] + Digest[0x11]*0x0100 + Digest[0x12]*0x010000 + Digest[0x13]*0x01000000;
 	if ((Digest_32[0] == H[0])&&(Digest_32[1] == H[1])&&(Digest_32[2] == H[2])&&(Digest_32[3] == H[3]))
 	{
+
 		//------------------------验证通过
 	}
+
 	return sdq_success;
 }
 /*******************************************************************************
@@ -961,6 +978,7 @@ static void bq26100_set_message(void)
 {
 	unsigned char i = 0;
 	static unsigned char data=0;
+	//static unsigned char time=0;
 	//-----------------------------随机数
 	srand(0);
 	for (i=0; i<=19; i++)
@@ -988,91 +1006,10 @@ static void bq26100_set_message(void)
 	Message[17]	=	0xa3;
 	Message[18]	=	0x2c;
 	Message[19]	=	0xc8;
-	//-----------------------------测试数据2
-	Message[0]	=	0x34;
-	Message[1]	=	0xb9;
-	Message[2]	=	0x03;
-	Message[3]	=	0x4c;
-	Message[4]	=	0xf9;
-	Message[5]	=	0x9c;
-	Message[6]	=	0xcf;
-	Message[7]	=	0x8e;
-	Message[8]	=	0xe7;
-	Message[9]	=	0x43;
-	Message[10]	=	0xe9;
-	Message[11]	=	0xf2;
-	Message[12]	=	0x62;
-	Message[13]	=	0x8a;
-	Message[14]	=	0xc1;
-	Message[15]	=	0x8b;
-	Message[16]	=	0x32;
-	Message[17]	=	0x92;
-	Message[18]	=	0x48;
-	Message[19]	=	0x46;
-	//-----------------------------测试数据2
-//	Message[0]	=	0xda;
-//	Message[1]	=	0x31;
-//	Message[2]	=	0x55;
-//	Message[3]	=	0x86;
-//	Message[4]	=	0x0e;
-//	Message[5]	=	0x90;
-//	Message[6]	=	0xa3;
-//	Message[7]	=	0x1f;
-//	Message[8]	=	0x88;
-//	Message[9]	=	0xd6;
-//	Message[10]	=	0xc9;
-//	Message[11]	=	0xdc;
-//	Message[12]	=	0x41;
-//	Message[13]	=	0x6d;
-//	Message[14]	=	0xd3;
-//	Message[15]	=	0x1c;
-//	Message[16]	=	0x4a;
-//	Message[17]	=	0xd6;
-//	Message[18]	=	0x59;
-//	Message[19]	=	0xf6;
-	//-----------------------------测试数据2
-//	Message[0]	=	0x95;
-//	Message[1]	=	0x79;
-//	Message[2]	=	0x80;
-//	Message[3]	=	0x1c;
-//	Message[4]	=	0x75;
-//	Message[5]	=	0x80;
-//	Message[6]	=	0x94;
-//	Message[7]	=	0x58;
-//	Message[8]	=	0x41;
-//	Message[9]	=	0xb1;
-//	Message[10]	=	0x31;
-//	Message[11]	=	0x37;
-//	Message[12]	=	0x96;
-//	Message[13]	=	0x92;
-//	Message[14]	=	0x91;
-//	Message[15]	=	0xdb;
-//	Message[16]	=	0x34;
-//	Message[17]	=	0x9d;
-//	Message[18]	=	0x1d;
-//	Message[19]	=	0x5a;
-//-----------------------------测试数据2
-	//83 b2 06 2e 21 60 79 00 f3 60 b0 f1 b7 2e 27 bc ff a7 e3 f1
-	Message[0]	=	0x83;
-	Message[1]	=	0xB2;
-	Message[2]	=	0x06;
-	Message[3]	=	0x2E;
-	Message[4]	=	0x21;
-	Message[5]	=	0x60;
-	Message[6]	=	0x79;
-	Message[7]	=	0x00;
-	Message[8]	=	0xF3;
-	Message[9]	=	0x60;
-	Message[10]	=	0xB0;
-	Message[11]	=	0xF1;
-	Message[12]	=	0xB7;
-	Message[13]	=	0x2E;
-	Message[14]	=	0x27;
-	Message[15]	=	0xBC;
-	Message[16]	=	0xFF;
-	Message[17]	=	0xFF;
-	Message[18]	=	0xA7;
-	Message[19]	=	0xE3;
+	
+	
+	
+
 //-----------------------------逻辑分析仪007:验证通过
 	Message[0]	=	0xFD;
 	Message[1]	=	0xAB;
@@ -1139,6 +1076,154 @@ static void bq26100_set_message(void)
 	Message[18]	=	0x21;
 	Message[19]	=	0xBD;
 	
+	//-----------------------------测试数据3:通过验证
+	//83 b2 06 2e 21 60 79 00 f3 60 b0 f1 b7 2e 27 bc ff a7 e3 f1
+	Message[0]	=	0x83;
+	Message[1]	=	0xB2;
+	Message[2]	=	0x06;
+	Message[3]	=	0x2E;
+	Message[4]	=	0x21;
+	Message[5]	=	0x60;
+	Message[6]	=	0x79;
+	Message[7]	=	0x00;
+	Message[8]	=	0xF3;
+	Message[9]	=	0x60;
+	Message[10]	=	0xB0;
+	Message[11]	=	0xF1;
+	Message[12]	=	0xB7;
+	Message[13]	=	0x2E;
+	Message[14]	=	0x27;
+	Message[15]	=	0xBC;
+	Message[16]	=	0xFF;
+	Message[17]	=	0xA7;
+	Message[18]	=	0xE3;
+	Message[19]	=	0xF1;
+	
+	//-----------------------------测试数据1：不通过
+	Message[0]	=	0x34;
+	Message[1]	=	0xb9;
+	Message[2]	=	0x03;
+	Message[3]	=	0x4c;
+	Message[4]	=	0xf9;
+	Message[5]	=	0x9c;
+	Message[6]	=	0xcf;
+	Message[7]	=	0x8e;
+	Message[8]	=	0xe7;
+	Message[9]	=	0x43;
+	Message[10]	=	0xe9;
+	Message[11]	=	0xf2;
+	Message[12]	=	0x62;
+	Message[13]	=	0x8a;
+	Message[14]	=	0xc1;
+	Message[15]	=	0x8b;
+	Message[16]	=	0x32;
+	Message[17]	=	0x92;
+	Message[18]	=	0x48;
+	Message[19]	=	0x46;
+	
+	//-----------------------------测试数据1:摘要
+	Message[0]	=	0xda;
+	Message[1]	=	0x31;
+	Message[2]	=	0x55;
+	Message[3]	=	0x86;
+	Message[4]	=	0x0e;
+	Message[5]	=	0x90;
+	Message[6]	=	0xa3;
+	Message[7]	=	0x1f;
+	Message[8]	=	0x88;
+	Message[9]	=	0xd6;
+	Message[10]	=	0xc9;
+	Message[11]	=	0xdc;
+	Message[12]	=	0x41;
+	Message[13]	=	0x6d;
+	Message[14]	=	0xd3;
+	Message[15]	=	0x1c;
+	Message[16]	=	0x4a;
+	Message[17]	=	0xd6;
+	Message[18]	=	0x59;
+	Message[19]	=	0xf6;
+	
+	//-----------------------------测试数据2:不通过
+	Message[0]	=	0x95;
+	Message[1]	=	0x79;
+	Message[2]	=	0x80;
+	Message[3]	=	0x1c;
+	Message[4]	=	0x75;
+	Message[5]	=	0x80;
+	Message[6]	=	0x94;
+	Message[7]	=	0x58;
+	Message[8]	=	0x41;
+	Message[9]	=	0xb1;
+	Message[10]	=	0x31;
+	Message[11]	=	0x37;
+	Message[12]	=	0x96;
+	Message[13]	=	0x92;
+	Message[14]	=	0x91;
+	Message[15]	=	0xdb;
+	Message[16]	=	0x34;
+	Message[17]	=	0x9d;
+	Message[18]	=	0x1d;
+	Message[19]	=	0x5a;
+	
+	//-----------------------------测试数据2:不通过
+	//80 58 a6 4d 42 72 3b 4f 7e d1 56 bd 72 c5 4a cc d8 cc 6c 4b
+	Message[0]	=	0x80;
+	Message[1]	=	0x58;
+	Message[2]	=	0xa6;
+	Message[3]	=	0x4d;
+	Message[4]	=	0x42;
+	Message[5]	=	0x72;
+	Message[6]	=	0x3b;
+	Message[7]	=	0x4f;
+	Message[8]	=	0x7e;
+	Message[9]	=	0xd1;
+	Message[10]	=	0x56;
+	Message[11]	=	0xbd;
+	Message[12]	=	0x72;
+	Message[13]	=	0xc5;
+	Message[14]	=	0x4a;
+	Message[15]	=	0xcc;
+	Message[16]	=	0xd8;
+	Message[17]	=	0xcc;
+	Message[18]	=	0x6c;
+	Message[19]	=	0x4b;
+	
+	//bq26100_change_message();
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_bq26100_set_message2(unsigned char* buffer)
+{
+	unsigned char i = 0;
+
+	for(i=0;i<20;i++)
+	{
+		Message[i]=buffer[i];
+	}
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void bq26100_change_message(void)
+{
+	static unsigned char num=0;
+	unsigned char i =0;
+	unsigned char buffer[20]={0};
+	memcpy(buffer,Message,20);
+	//memset(Message,0xFF,20);
 }
 
 //-------------------------------------------------------------------------------
@@ -1282,6 +1367,89 @@ unsigned char api_bq26100_test_example_getkey(void)
 	}
 	return 1;
 }
+/*******************************************************************************
+*函数名			:	get_up_E
+*功能描述		:	获取E值
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static unsigned long bq26100_get_E(unsigned long* ARRY)
+{
+	unsigned long temp=0;
+	
+	return temp;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned long api_bq26100_test_example_getkey2(unsigned long* H1,unsigned long* ARRY)
+{
+	//ARRY[0]=A,ARRY[1]=B,ARRY[2]=C,ARRY[3]=D,ARRY[4]=E,
+	static unsigned char num=80;
+	static unsigned char t=0;
+	static unsigned long A1,B1,C1,D1,E1;
+	unsigned long temp=0;
+	if(num==0)
+		return 0;
+	//----------------导入最终结果数据:求出第80次转换的ABCDE结果
+	if(80==num)
+	{
+		//-----计算A
+		if(H1[0]>=0x67452301)
+			ARRY[0]=H1[0]-0x67452301;
+		else
+			ARRY[0]=H1[0]+(0xFFFFFFFF-0x67452301)+1;
+		//-----计算B
+		if(H1[1]>=0xefcdab89)
+			ARRY[1]=H1[1]-0xefcdab89;
+		else
+			ARRY[1]=H1[1]+(0xFFFFFFFF-0xefcdab89)+1;
+		//-----计算C
+		if(H1[2]>=0x98badcfe)
+			ARRY[2]=H1[2]-0x98badcfe;
+		else
+			ARRY[2]=H1[2]+(0xFFFFFFFF-0x98badcfe)+1;
+		//-----计算D
+		if(H1[3]>=0x10325476)
+			ARRY[3]=H1[3]-0x10325476;
+		else
+			ARRY[3]=H1[3]+(0xFFFFFFFF-0x10325476)+1;
+		//-----计算E
+		if(H1[4]>=0xc3d2e1f0)
+			ARRY[4]=H1[4]-0xc3d2e1f0;
+		else
+			ARRY[4]=H1[4]+(0xFFFFFFFF-0xc3d2e1f0)+1;
+						//0x2	0xE
+		num--;
+		return 0;
+	}
+	//=====往前推算
+	//求上一次的A值:此次的B值
+	ARRY[0]=ARRY[1];
+	//求上一次的B值:此次的C值反移动
+	ARRY[1]=rRotl(ARRY[2],30);
+	//求上一次的C值:此次的D值
+	ARRY[2]=ARRY[3];
+	//求上一次的D值:此次的E值
+	ARRY[3]=ARRY[4];
+	//求上一次的E值:通过已经ABCD计算
+	ARRY[4]=bq26100_get_E(ARRY);
+	
+	num--;
+//	ARRY[0]=Rotl(H[0], num);
+//	if(num<32)
+//		num++;
+	return temp;
+}
 /**********************************************************************/
 /* 	int main(void)					      							  */
 /*																      */
@@ -1320,6 +1488,8 @@ void api_bq26100_test_example(void)
 	{
 		Message[i] = rand()%256;		//获取随机数
 	}
+	
+	
 	//--------------------按照BQ26100的要求计算SHA1/HMAC
 	api_bq26100_step1_Auth();	
 	
@@ -1336,8 +1506,173 @@ void api_bq26100_test_example(void)
 	if(result	==	sdq_error)
 		return ;
 	//--------------------读取bq26100生成的SHA1/HMAC并对比
-	result	=	api_bq26100_step5_read_digest(Digest);
+	result	=	api_bq26100_step5_read_digest();
+}
+/**********************************************************************/
+/* 	int main(void)					      							  */
+/*																      */
+/*	Description : 		This is the main function. It calls the SDQ	  */
+/*				  		communication and the SHA1 function. Results  */
+/*						are displayed through LEDs.					  */
+/* 	Arguments : 		*Value - generic variable for read functions  */
+/*						i - used for repeat loops				      */
+/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
+/*  Returns: 			None								          */
+/**********************************************************************/
+void api_bq26100_test_example22(unsigned long* buffer)
+{
+	#include "usb_data.h"
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+  sdq_result result;
+//	if(flag++>=5)
+//	{
+//		flag	=	0;
+//		//bq26100_reg_addr++;
+//	}
+//	//--------------------设置密钥
+//	bq26100_set_key();	
+//	
+//	//--------------------生成随机数消息
+//	srand(0);
+//	for (i=0; i<=19; i++)
+//	{
+//		Message[i] = rand()%256;		//获取随机数
+//	}
+//	
+//	
+//	//--------------------按照BQ26100的要求计算SHA1/HMAC
+//	api_bq26100_step1_Auth();	
+	
+//	bq26100_set_message();		//测试实际数据
+	
+	//--------------------发送消息
+	result	=	api_bq26100_step2_send_message(Message,20);
+	if(result	==	sdq_error)
+		return ;
+	//--------------------
+	result	=	api_bq26100_step3_write_control();
+	//api_bq26100_step4_read_control();
+	
+	if(result	==	sdq_error)
+		return ;
+	//--------------------读取bq26100生成的SHA1/HMAC并对比
+	result	=	api_bq26100_step5_read_digest();
+	
+	api_usb_in_set_data(Digest,20);
+	
+	for(i=0;i<5;i++)
+	{
+		buffer[i]=Digest_32[i];
+	}
+}
 
+/**********************************************************************/
+/* 	int main(void)					      							  */
+/*																      */
+/*	Description : 		This is the main function. It calls the SDQ	  */
+/*				  		communication and the SHA1 function. Results  */
+/*						are displayed through LEDs.					  */
+/* 	Arguments : 		*Value - generic variable for read functions  */
+/*						i - used for repeat loops				      */
+/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
+/*  Returns: 			None								          */
+/**********************************************************************/
+unsigned char api_bq26100_data_Verify(unsigned char* message,unsigned char* digest,unsigned long serial)
+{
+	#include "usb_data.h"
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+  sdq_result result;
+
+	memcpy(Message,bq26100_sample_data[serial][0],20);
+	
+	//--------------------发送消息
+	result	=	api_bq26100_step2_send_message(Message,20);
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------
+	result	=	api_bq26100_step3_write_control();
+	//api_bq26100_step4_read_control();
+	
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------读取bq26100生成的SHA1/HMAC并对比
+	result	=	api_bq26100_step5_read_digest();
+	
+	//---------------------与原消息摘要对比
+	if(0==memcmp(Digest,bq26100_sample_data[serial][1],20))
+	{
+		message	=	(unsigned char*)bq26100_sample_data[serial][0];
+		digest	=	(unsigned char*)bq26100_sample_data[serial][1];
+		return 1;
+	}
+
+	return 0;
+}
+/**********************************************************************/
+/* 	int main(void)					      							  */
+/*																      */
+/*	Description : 		This is the main function. It calls the SDQ	  */
+/*				  		communication and the SHA1 function. Results  */
+/*						are displayed through LEDs.					  */
+/* 	Arguments : 		*Value - generic variable for read functions  */
+/*						i - used for repeat loops				      */
+/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
+/*  Returns: 			None								          */
+/**********************************************************************/
+unsigned char api_bq26100_Get_Digest(unsigned char* message,unsigned char* digest,unsigned long serial)
+{
+	#include "usb_data.h"
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+  sdq_result result;
+
+	memcpy(Message,bq26100_sample_data[serial][0],20);
+	
+	//--------------------发送消息
+	result	=	api_bq26100_step2_send_message(Message,20);
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------
+	result	=	api_bq26100_step3_write_control();
+	//api_bq26100_step4_read_control();
+	
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------读取bq26100生成的SHA1/HMAC并对比
+	result	=	api_bq26100_step5_read_digest();
+	
+	//---------------------返回数据地址	
+	message	=	(unsigned char*)bq26100_sample_data[serial][0];
+	digest	=	(unsigned char*)Digest;
+
+
+	return 1;
 }
 //-------------------------------------------------------------------------------
 
@@ -1464,7 +1799,7 @@ void Auth(void)
 void api_bq26100_test_examplebac(void)
 {
 	unsigned char Value;
-	int i;
+	unsigned long i;
   	
 // Select the key to be used here. In this example 0x3601FCFB12B87356C1548630FD3EA0D2 is used.  
 	Key[0] = 0xD2;
@@ -1553,6 +1888,8 @@ void api_bq26100_test_examplebac(void)
 		sdq_write_byte(Message[i]);
 		Value = sdq_read_byte();		//Read CRC
 		Value = sdq_read_byte();		//Read Data
+		
+		
 	}
 
 

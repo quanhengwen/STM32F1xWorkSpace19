@@ -47,12 +47,11 @@ void GPIO_Configuration(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n,GPIOMode_TypeDef GPI
 //输入模式
 void GPIO_Configuration_INA(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为模拟输入模式----V20170605
 void GPIO_Configuration_INF(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为浮空输入模式----V20170605
-void GPIO_RegConfiguration_INF(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为上拉输入模式----V20190104--寄存器版本
+
 
 void GPIO_Configuration_IPD(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为下拉输入模式----V20170605
 void GPIO_Configuration_IPU(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为上拉输入模式----V20170605
-void GPIO_RegConfiguration_IPD(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为上拉输入模式----V20190104--寄存器版本
-void GPIO_RegConfiguration_IPU(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//将GPIO相应管脚配置为上拉输入模式----V20190104--寄存器版本
+
 
 
 //输出模式

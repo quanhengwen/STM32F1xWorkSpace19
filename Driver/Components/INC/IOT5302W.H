@@ -18,13 +18,23 @@ M1卡：总容量1Kbyte
 每个扇区4个块0~4
 每个块16字节
 */
+/********************************************************************************/
+/*																数据包格式																			*/
+/*------------------------------------------------------------------------------*/
+/* 起始字节  从机地址  数据长度  命令/状态  数据n  BCC校验  结束码									*/
+/* 起始码 		：0x0A																															*/
+/* 从机地址 	：单机通讯用通用地址0x00																							*/
+/* 数据长度 	：命令+数据的字节数，不包括起始码，BCC码和结束码												*/
+/* 命令/状态	：主机下发命令，从机上传状态																					*/
+/* BCC校验	：除起始码和结束码之外的所有数据异或校验																*/
+
 
 #define IotReaderSTX  (unsigned char)0xAA   //协议头标识
 #define IotReaderETX  (unsigned char)0xBB   //协议尾标志
   
-#define IOT5302WReadCycle   300     //读周期，单位ms
+#define IOT5302WReadCycle   300     //读周期，单位ms，倒计时时间
 #define IOT5302WReadTimeOut 2000    //读超时时间		//原1500
-#define IOT5302WReadTimeOut_UID 	1000    //未接收到UID超时清除
+#define IOT5302WReadTimeOut_UID 	500    	//未接收到UID超时清除
 #define IOT5302WReadTimeOut_NACK 	5000    //读卡器未响应超时时间
 #define IOT5302WInitializeTimeOut 2000    //读超时时间	//原1500
 #define IOT5302WBufferSize  128    //
@@ -95,15 +105,15 @@ typedef struct _IOT5302WData
   unsigned char   Data[IOT5302WBufferSize]; //读卡器数据接收缓存
   unsigned char   DataCount;      	//读卡器数据接收计数
   unsigned char   Initialized;    	//初始化标志，0-未初始化成功，1-初始化成功
-  unsigned short  Time;           	//计时器
-  unsigned short  TimeOut;        	//超时计时器
+//  unsigned short  Time;           	//计时器
+//  unsigned short  TimeOut;        	//超时计时器
 	unsigned short  TimeOut_UID;  		//未接收到UID计时
 	unsigned short  TimeOut_NACK;  		//读卡器无响应超时计时
 	unsigned short  Time_Initialized;	//读卡器初始化时间间隔
 	unsigned short  TimeGetData;  		//查询读卡器数据时间间隔计时
   unsigned short  TimeUIDCmp;   		//UID与UIDbac对比数据相同时，超过2秒，再上传数据
   unsigned long   USART_BaudRate; 	//正在使用的波特率
-  unsigned char   BaudRateSetStep; //设置波特率步骤
+//  unsigned char   BaudRateSetStep; //设置波特率步骤
 }IOT5302WDataWdef;
 //--------------------读卡器数据结构体
 typedef struct _IOT5302W
@@ -137,7 +147,7 @@ static void iot5302w_initialize(void);
 static void iot5302w_data_receive_process(void);	//数据接收处理，接收拼包，协议检查
 static void iot5302w_data_process(void);		//数据协议检查
 static void iot5302w_get_data(void);
-static unsigned short iot5302w_set_frame_GetSNR(unsigned char* Buffer);    		//生成获取UID的消息帧，获取UID
+static unsigned short iot5302w_GetFrame_GetSNR(unsigned char* Buffer);    		//生成获取UID的消息帧，获取UID
 static unsigned short iot5302w_set_frame_SetBaudrate(unsigned char* Buffer,unsigned char Num);  //生成配置读卡器波特率的消息帧
 #endif
 

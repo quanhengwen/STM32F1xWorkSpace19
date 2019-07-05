@@ -43,7 +43,7 @@
 #define ampCommCardTxEnPin  	GPIO_Pin_8
 #define ampCommCardRxEnPort 	GPIOC
 #define ampCommCardRxEnPin		GPIO_Pin_7
-#define ampCommCardBaudRate  19200         //读卡器通讯波特率
+#define ampCommCardBaudRate  9600         //读卡器通讯波特率
 
 //------------------锁接口J10
 #define ampLockDrPort    GPIOB         //锁控制接口，高电平开锁
@@ -56,11 +56,11 @@
 //------------------背光接口J11的VCC和EN脚
 #define ampBackLightPort GPIOB         //高电平关闭，低电平点亮
 #define ampBackLightPin  GPIO_Pin_0
-//#define ampBakkLightOff	(ampBackLightPort->BRR 	= ampBackLightPin)
-//#define ampBakkLightOn	(ampBackLightPort->BSRR = ampBackLightPin)
-//-----透明屏反向控制LED
-#define ampBakkLightOff	(ampBackLightPort->BSRR 	= ampBackLightPin)
-#define ampBakkLightOn	(ampBackLightPort->BRR = ampBackLightPin)
+#define ampBakkLightOff	(ampBackLightPort->BRR 	= ampBackLightPin)
+#define ampBakkLightOn	(ampBackLightPort->BSRR = ampBackLightPin)
+////-----透明屏反向控制LED
+//#define ampBakkLightOff	(ampBackLightPort->BSRR 	= ampBackLightPin)
+//#define ampBakkLightOn	(ampBackLightPort->BRR = ampBackLightPin)
 
 //------------------层板电源控制J5、J6、J9共用一个控制电源
 #define ampLayPowerPort  GPIOB         //高电启动电源，低电平关闭电源
@@ -1041,13 +1041,22 @@ static void set_door(unsigned char flag)
 static void set_backlight(unsigned char flag)
 {
 	//flag不为0表示有请求
+	//ampsys.sysdata.Display_Flag	=	1;	//透明屏标志://0--普通/无屏，1--主柜透明屏
+	//---------------关背光
 	if(0==flag)
 	{
-		ampBakkLightOff;
+		if(0==ampsys.sysdata.Display_Flag)
+			ampBakkLightOff;
+		else
+			ampBakkLightOn;
 	}
+	//---------------开背光
 	else
 	{
-		ampBakkLightOn;
+		if(0==ampsys.sysdata.Display_Flag)
+			ampBakkLightOn;
+		else
+			ampBakkLightOff;
 	}	
 }
 /*******************************************************************************
@@ -1254,6 +1263,12 @@ static void SwitchID_Server(void)
 			ampsys.sysdata.MB_Flag	=	1;
 		else
 			ampsys.sysdata.MB_Flag	=	0;
+		
+		//------透明屏标志
+		if(id&0x40)
+			ampsys.sysdata.Display_Flag	=	1;	//透明屏标志://0--普通/无屏，1--主柜透明屏
+		else
+			ampsys.sysdata.Display_Flag	=	0;	//透明屏标志://0--普通/无屏，1--主柜透明屏
   }
   else
   {
@@ -1266,7 +1281,13 @@ static void SwitchID_Server(void)
 			if(new_id&0x80)
 				ampsys.sysdata.MB_Flag	=	1;
 			else
-				ampsys.sysdata.MB_Flag	=	0;			
+				ampsys.sysdata.MB_Flag	=	0;
+			//------透明屏标志
+		if(new_id&0x40)
+			ampsys.sysdata.Display_Flag	=	1;	//透明屏标志://0--普通/无屏，1--主柜透明屏
+		else
+			ampsys.sysdata.Display_Flag	=	0;	//透明屏标志://0--普通/无屏，1--主柜透明屏
+		
 //			power_on_flag = 0;
 			id = new_id;
 		}
@@ -1603,6 +1624,7 @@ static void SwitchID_Configuration(void)
 
   ampsys.sysdata.Cab_Addr  = api_get_SwitchId_data_left(&ampSwitchID)&0x3F;  
   
+	//------主柜标志
   if(api_get_SwitchId_data_left(&ampSwitchID)&0x80)
   {
     ampsys.sysdata.MB_Flag=1; //0--副柜，1--主柜
@@ -1610,6 +1632,15 @@ static void SwitchID_Configuration(void)
   else
   {
     ampsys.sysdata.MB_Flag=0; //0--副柜，1--主柜
+  }
+	//------透明屏标志
+	if(api_get_SwitchId_data_left(&ampSwitchID)&0x40)
+  {
+    ampsys.sysdata.Display_Flag=1; //透明屏标志://0--普通/无屏，1--主柜透明屏
+  }
+  else
+  {
+    ampsys.sysdata.Display_Flag=0; //透明屏标志://0--普通/无屏，1--主柜透明屏
   }
 }
 /*******************************************************************************
@@ -1624,7 +1655,8 @@ static void SwitchID_Configuration(void)
 static void BackLight_Configuration(void)
 {
   GPIO_Configuration_OPP50(ampBackLightPort,ampBackLightPin);
-  ampBakkLightOff;
+	set_backlight(0);
+  //ampBakkLightOff;
 }
 /*******************************************************************************
 *函数名			:	function
@@ -1638,7 +1670,7 @@ static void BackLight_Configuration(void)
 static void LayPower_Configuration(void)
 {
   GPIO_Configuration_OPP50(ampLayPowerPort,ampLayPowerPin);
-  ampLayPowerOff;
+	set_backlight(0);
 }
 /*******************************************************************************
 *函数名			:	function

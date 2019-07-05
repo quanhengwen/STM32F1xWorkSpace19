@@ -56,6 +56,7 @@ typedef struct
 void api_usb_virtual_com_configuration(void);
 void api_usb_virtual_com_server(void);
 
+unsigned short api_usb_printf(const char *format,...);
 
 void usb_to_uart_server(void);
 

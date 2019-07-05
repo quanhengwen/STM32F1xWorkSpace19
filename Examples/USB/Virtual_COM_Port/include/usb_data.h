@@ -30,6 +30,8 @@
 
 
 /* function prototypes Automatically built defining related macros */
+unsigned short api_usb_in_add_data(const unsigned char*	buffer,unsigned short len);
+void api_usb_in_set_complete_end(void);
 unsigned short api_usb_in_set_data(const unsigned char*	buffer,unsigned short len);
 unsigned short api_usb_in_get_data(unsigned char* rxbuffer);
 unsigned short api_usb_out_set_data(const unsigned char*	buffer,unsigned short len);

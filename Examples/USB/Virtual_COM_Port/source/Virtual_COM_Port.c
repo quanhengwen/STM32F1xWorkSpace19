@@ -31,7 +31,10 @@
 
 //#include "hw_config.h"
 //#include "platform_config.h"
-#include	"string.h"			//memcpy
+#include	"stdio.h"			//用于printf
+#include	"string.h"		//用于printf
+#include	"stdarg.h"		//用于获取不确定个数的参数
+#include	"stdlib.h"		//malloc动态申请内存空间
 
 
 #include "STM32_GPIO.H"
@@ -40,7 +43,7 @@
 #include "STM32_SYSTICK.H"
 #include "STM32_PWM.H"
 
-//#include "stm32f10x_nvic.h"
+#include "BQ26100.H"
 
 #include "usb_lib.h"
 #include "usb_prop.h"
@@ -53,6 +56,8 @@
 #include "usb_endp.h"
 #include "usb_data.h"
 #include "hw_config.h"
+
+
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -71,6 +76,7 @@
 		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
 	#elif bq26100
+	
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		
@@ -94,6 +100,9 @@
 		
 		#define MrxPort   	GPIOB  
 		#define MrxPin    	GPIO_Pin_7
+		
+		#define SDQPort   	GPIOB  
+		#define SDQPin    	GPIO_Pin_7
 		
 	#elif STM32_USB_TEST
 	  #define USB_DISCONNECT            GPIOA  
@@ -143,8 +152,11 @@ void api_usb_virtual_gpio_configuration(void);
 
 extern void api_usb_hw_initialize(void);
 void USB_CMD(FunctionalState NewState);
-static void bq26100test(void);
-
+static void bq26100Verify(void);		//校验原数据
+static void bq26100GetDigest(void);	//获取消息摘要
+unsigned short usb_to_bq26100_server(void);
+unsigned long H1[5]={0xE9789DD9,0x586DE920,0xED12B811,0x681A9446,0x02647728};
+unsigned long ARRY[5]={0};
 /*******************************************************************************
 * Function Name  : Set_System
 * Description    : Configures Main system clocks & power
@@ -176,14 +188,178 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 *******************************************************************************/
 void api_usb_virtual_com_server(void)
 {	
-	if(virtual_com_time<1000)	//等待USB初始化1秒
+	if(virtual_com_time<3000)	//等待USB初始化1秒
 	{
 		virtual_com_time ++;
 		return ;
 	}
-	usb_to_uart_server();
+
+	//usb_to_uart_server();
 	USART_To_USB_Send_Data();
-	bq26100test();
+	bq26100Verify();
+	//bq26100GetDigest();	
+}
+/*******************************************************************************
+*函数名		: function
+*功能描述	:	串口接收服务函数
+*输入			: 
+*输出			:	无
+*返回值		:	无
+*例程			:	api_usart_dma_printf(USART2,"中文ENG=%d\n",num);
+*特别说明	:	在DMA发送完成后需要释放动态空间，free(USART_BUFFER);
+					:	USART_BUFFER定义在STM32_USART.H
+*******************************************************************************/
+unsigned short api_usb_printf(const char *format,...)
+{
+	
+//		va_list ap; 										//VA_LIST 是在C语言中解决变参问题的一组宏，所在头文件：#include <stdarg.h>,用于获取不确定个数的参数
+//    static char string[ 256 ];			//定义数组，
+//    va_start( ap, format );
+//    vsprintf( string , format, ap );    
+//    va_end( ap );	
+
+	unsigned short	str_len=0;
+	unsigned char		format_buffer[256]={0};
+	
+	//3)**********args为定义的一个指向可变参数的变量，va_list以及下边要用到的va_start,va_end都是是在定义，可变参数函数中必须要用到宏， 在stdarg.h头文件中定义
+	va_list args;  
+	//5)**********初始化args的函数，使其指向可变参数的第一个参数，format是可变参数的前一个参数
+	va_start(args, format);
+	//6)**********正常情况下返回生成字串的长度(除去\0),错误情况返回负值
+	str_len = vsprintf((char*)format_buffer, format, args);
+	//7)**********结束可变参数的获取
+	va_end(args); 
+	//8)**********将等发送缓冲区大小（数据个数）及缓冲区地址发给DMA开启发送	
+	return api_usb_in_add_data((u8*)format_buffer,str_len);
+	//return set_usart_tx_dma_buffer(USARTx,(u8*)format_buffer,str_len);		//串口DMA发送程序
+}
+/*******************************************************************************
+*函数名			:	bq26100Verify
+*功能描述		:	校验数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void bq26100Verify(void)
+{
+	
+	unsigned short i = 0;
+	static unsigned short time=0;
+	static unsigned short start=0;
+	static unsigned short serial=0;
+	
+	unsigned char* message=NULL;
+	unsigned char* digest	=NULL;
+	
+	//启动等待时间
+	if(start<2000)
+	{
+		start++;
+		return;
+	}
+	//测试时间间隔
+	if(time++<100)
+		return ;
+	time=0;
+	
+	if(serial>2500)
+		return;
+	
+	if(0==serial)
+		api_usb_printf("{\r\n");
+	
+	if(1==api_bq26100_Get_Digest(message,digest,serial))
+	{
+		api_usb_printf("%0.2d:\t",serial);
+		api_usb_printf("{{");
+		//-----------message
+		for(i=0;i<19;i++)
+		{
+			api_usb_printf("%0.2X,",message[i]);
+		}
+		api_usb_printf("%0.2X",message[19]);
+		
+		api_usb_printf("},{");
+		
+		//-----------digest
+		for(i=0;i<19;i++)
+		{
+			api_usb_printf("%0.2X,",digest[i]);
+		}
+		api_usb_printf("%0.2X",digest[19]);
+		api_usb_printf("}},\r\n");			
+		//api_usb_printf("%0.2X}",bq26100_sample_data2[serial][1][19]);
+		api_usb_in_set_complete_end();
+	}
+	if(2500==serial)
+		api_usb_printf("}");
+	serial++;
+}
+/*******************************************************************************
+*函数名			:	bq26100Verify
+*功能描述		:	校验数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void bq26100GetDigest(void)
+{
+	
+	unsigned short i = 0;
+	static unsigned short time=0;
+	static unsigned short start=0;
+	static unsigned short serial=0;
+	
+	unsigned char* message=NULL;
+	unsigned char* digest	=NULL;
+	
+	//启动等待时间
+	if(start<2000)
+	{
+		start++;
+		return;
+	}
+	//测试时间间隔
+	if(time++<100)
+		return ;
+	time=0;
+	
+	if(serial>2500)
+		return;
+	
+	if(0==serial)
+		api_usb_printf("{\r\n");
+
+	
+	if(1==api_bq26100_data_Verify(message,digest,serial))
+	{
+		api_usb_printf("%0.2d:\t",serial);
+		api_usb_printf("{{");
+		//-----------message
+		for(i=0;i<19;i++)
+		{
+			api_usb_printf("%0.2X,",message[i]);
+		}
+		api_usb_printf("%0.2X",message[19]);
+		
+		api_usb_printf("},{");
+		
+		//-----------digest
+		for(i=0;i<19;i++)
+		{
+			api_usb_printf("%0.2X,",digest[i]);
+		}
+		api_usb_printf("%0.2X",digest[19]);
+		api_usb_printf("}},\r\n");			
+		api_usb_in_set_complete_end();
+	}
+	if(2500==serial)
+		api_usb_printf("}");
+	serial++;
 }
 /*******************************************************************************
 *函数名			:	function
@@ -194,19 +370,35 @@ void api_usb_virtual_com_server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void bq26100test(void)
+unsigned short usb_to_bq26100_server(void)
 {
-	static unsigned short time=0;
-	time++;
-	if(time==500)
-		GPIO_SetBits(G2Port,G2Pin);
-	else if(time>=5000)
-	{
-		GPIO_ResetBits(G2Port,G2Pin);
-		time=0;
+	unsigned short len	=	0;
+	static unsigned char time=0;
+	unsigned char buffer[USB_BUFFER_SIZE]={0};
+	if(bDeviceState != CONFIGURED)
+  {
+		return 0;
 	}
-//GPIO_SetBits(G2Port,G2Pin);
-	//GPIO_ResetBits(G2Port,G2Pin);
+	if(0==get_usart_tx_idle(ComPort))		//串口状态检查
+	{
+		return 0;
+	}
+	//-----------------------------------无数据
+	if(0!=api_usb_out_get_complete_flag())
+	{
+		return 0;
+	}
+	if(time++<10)		//连续帧间隔8ms
+		return 0;
+	time = 0;
+
+	len	=	api_usb_out_get_data(buffer);
+	if(20==len)
+	{
+		api_bq26100_set_message2(buffer);
+		return len;
+	}
+	return 0;
 }
 /*******************************************************************************
 *函数名			:	function
@@ -434,6 +626,7 @@ void usb_to_uart_server(void)
 		sendednum+=api_usart_dma_send(ComPort,buffer,(u16)len);		//自定义printf串口DMA发送程序
 	}
 }
+
 /*******************************************************************************
 * Function Name  : UART_To_USB_Send_Data.
 * Description    : send the received data from UART 0 to USB.	发送串口接收到的数据到USB

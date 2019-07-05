@@ -53,9 +53,9 @@ unsigned char usb_in_buffer_busy	=	0;		//0-空闲
 /* Private functions ---------------------------------------------------------*/
 //static unsigned short usb_endp_set_out_data(unsigned char*	buffer,unsigned short len);
 //static unsigned char	usb_endp_get_in_data(unsigned char* rxbuffer);
-static unsigned char	get_buffer_size(usb_data_arry* arry);
-static unsigned short usb_data_set_data(usb_data_arry* arry,const unsigned char*	buffer,unsigned short len);
-static unsigned char	usb_data_get_data(usb_data_arry* arry,unsigned char* rxbuffer);
+//static unsigned char	get_buffer_size(usb_data_arry* arry);
+//static unsigned short usb_data_set_data(usb_data_arry* arry,const unsigned char*	buffer,unsigned short len);
+//static unsigned char	usb_data_get_data(usb_data_arry* arry,unsigned char* rxbuffer);
 
 //------------------------------------------------------------------------------
 
@@ -65,7 +65,51 @@ static unsigned char	usb_data_get_data(usb_data_arry* arry,unsigned char* rxbuff
 
 //-----------------------------------------------------------------------------
 
-
+/*******************************************************************************
+*函数名			:	api_usb_in_set_data
+*功能描述		:	设置输入/上传数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_usb_in_add_data(const unsigned char*	buffer,unsigned short len)
+{
+	if(0==usb_in_arry.complete)	//缓存未准备好
+	{
+		if(usb_in_arry.len)	//有数据
+			return 0;
+	}
+	if(usb_out_arry.len+len<=USB_BUFFER_SIZE-1)		//未超出缓存
+	{
+		memcpy(&usb_in_arry.buffer[usb_in_arry.len],buffer,len);
+		usb_in_arry.len+=len;
+		usb_in_arry.complete	=	1;	//未完成写入
+	}
+	else
+	{
+		len=USB_BUFFER_SIZE-usb_in_arry.len;
+		memcpy(&usb_in_arry.buffer[usb_in_arry.len],buffer,len);
+		usb_in_arry.len+=len;
+		usb_in_arry.complete	=	0;	//完成写入
+	}
+	
+	return usb_in_arry.len;
+}
+/*******************************************************************************
+*函数名			:	api_usb_in_set_data
+*功能描述		:	设置输入/上传数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_usb_in_set_complete_end(void)
+{
+	usb_in_arry.complete	=	0;	//完成写入
+}
 /*******************************************************************************
 *函数名			:	api_usb_in_set_data
 *功能描述		:	设置输入/上传数据
@@ -77,18 +121,7 @@ static unsigned char	usb_data_get_data(usb_data_arry* arry,unsigned char* rxbuff
 *******************************************************************************/
 unsigned short api_usb_in_set_data(const unsigned char*	buffer,unsigned short len)
 {
-	if(usb_in_arry.len+len<=USB_BUFFER_SIZE-1)		//未超出缓存
-	{
-		memcpy(&usb_in_arry.buffer[usb_in_arry.len],buffer,len);
-		usb_in_arry.len+=len;
-	}
-	else
-	{
-		len=USB_BUFFER_SIZE-usb_in_arry.len;
-		memcpy(&usb_out_arry.buffer[usb_in_arry.len],buffer,len);
-		usb_in_arry.len+=len;
-		usb_in_arry.complete	=	0;	//完成写入
-	}
+	len=api_usb_in_add_data(buffer,len);
 	return len;
 }
 /*******************************************************************************

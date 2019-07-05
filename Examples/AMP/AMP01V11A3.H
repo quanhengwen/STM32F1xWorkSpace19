@@ -72,8 +72,9 @@ typedef struct _ampResend   //重发计数器
 
 typedef struct _ampdata       //拨码数据：
 {
-  unsigned char Cab_Addr;         	//柜地址
+  unsigned char Cab_Addr;         	//柜地址 6位拨码 345678
   unsigned char MB_Flag;          	//主板标志://0--副柜，1--主柜
+	unsigned char Display_Flag;       //透明屏标志://0--普通/无屏，1--主柜透明屏
 }ampdatadef;
 typedef struct _ampcommled       //拨码数据：
 {
