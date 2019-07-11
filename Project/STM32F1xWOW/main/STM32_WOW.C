@@ -357,6 +357,12 @@ void WOW_Configuration(void)
 	BQ26100_TEST_Configuration();
 #endif
 
+//*********************************BQ26100_TEST*********************************//
+#ifdef SDQ_TEST
+	SDQ_TEST_Configuration();
+#endif
+
+
 
 }
 
@@ -697,6 +703,13 @@ void WOW_Server(void)
 #ifdef BQ26100_TEST
 	BQ26100_TEST_Server();
 #endif
+
+//*********************************SDQ_TEST*********************************//
+#ifdef SDQ_TEST
+	SDQ_TEST_Server();
+#endif
+
+
 
 //IWDG_Feed();								//∂¿¡¢ø¥√≈π∑Œππ∑
 

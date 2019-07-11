@@ -15,7 +15,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 //#include "usb_lib.h"
-#include "usb_desc.h"
+//#include "usb_desc.h"
 //#include "usb_mem.h"
 
 //#include "usb_istr.h"
@@ -37,12 +37,7 @@
 //u32 count_out = 0;
 //u32 count_in = 0;
 
-typedef struct
-{
-	unsigned char complete;				//传送完成标志：0-完成/未激活；1-传送未完成
-	unsigned short len;						//当前节点中缓存数据大小
-	unsigned char buffer[USB_BUFFER_SIZE];
-}usb_data_arry;	//USB主机输出数据到设备缓存
+
 
 usb_data_arry usb_out_arry;	//USB主机输出数据到设备缓存
 usb_data_arry usb_in_arry;	//设备发送数据到USB主机缓存
@@ -66,8 +61,8 @@ unsigned char usb_in_buffer_busy	=	0;		//0-空闲
 //-----------------------------------------------------------------------------
 
 /*******************************************************************************
-*函数名			:	api_usb_in_set_data
-*功能描述		:	设置输入/上传数据
+*函数名			:	api_usb_in_add_data
+*功能描述		:	添加数据
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
@@ -76,23 +71,27 @@ unsigned char usb_in_buffer_busy	=	0;		//0-空闲
 *******************************************************************************/
 unsigned short api_usb_in_add_data(const unsigned char*	buffer,unsigned short len)
 {
-	if(0==usb_in_arry.complete)	//缓存未准备好
+	if((usb_data_read==usb_in_arry.status)||(usb_data_full==usb_in_arry.status))	//缓存未准备好
 	{
 		if(usb_in_arry.len)	//有数据
 			return 0;
 	}
-	if(usb_out_arry.len+len<=USB_BUFFER_SIZE-1)		//未超出缓存
+	if(usb_in_arry.len+len<=USB_BUFFER_SIZE)		//未超出缓存
 	{
 		memcpy(&usb_in_arry.buffer[usb_in_arry.len],buffer,len);
 		usb_in_arry.len+=len;
-		usb_in_arry.complete	=	1;	//未完成写入
+		usb_in_arry.status	=	usb_data_write;	//正在写数据
 	}
-	else
+	else if(USB_BUFFER_SIZE>len)
 	{
 		len=USB_BUFFER_SIZE-usb_in_arry.len;
 		memcpy(&usb_in_arry.buffer[usb_in_arry.len],buffer,len);
 		usb_in_arry.len+=len;
-		usb_in_arry.complete	=	0;	//完成写入
+		usb_in_arry.status	=	usb_data_full;	//缓存满
+	}
+	else
+	{
+		usb_in_arry.status	=	usb_data_full;	//缓存满
 	}
 	
 	return usb_in_arry.len;
@@ -108,7 +107,7 @@ unsigned short api_usb_in_add_data(const unsigned char*	buffer,unsigned short le
 *******************************************************************************/
 void api_usb_in_set_complete_end(void)
 {
-	usb_in_arry.complete	=	0;	//完成写入
+	usb_in_arry.status	=	usb_data_read_enable;	//可读
 }
 /*******************************************************************************
 *函数名			:	api_usb_in_set_data
@@ -138,12 +137,17 @@ unsigned short api_usb_in_get_data(unsigned char* rxbuffer)
 	//VIRTUAL_COM_PORT_DATA_SIZE
 	unsigned short len	=	0;
 	static unsigned short startaddr=0;
-	if(usb_in_arry.len>VIRTUAL_COM_PORT_DATA_SIZE)
+	if((usb_data_read_enable!=usb_in_arry.status)			//非可读状态
+		&&(usb_data_read!=usb_in_arry.status)						//正在读数据
+		&&(usb_data_full!=usb_in_arry.status))					//缓存未满
+		return 0;
+	
+	if(usb_in_arry.len>USB_COM_PORT_SIZE)
 	{
-		len	=	VIRTUAL_COM_PORT_DATA_SIZE;		
+		len	=	USB_COM_PORT_SIZE;		
 		memcpy(rxbuffer,&usb_in_arry.buffer[startaddr],len);
 		usb_in_arry.len-=len;
-		usb_in_arry.complete	=	1;
+		usb_in_arry.status	=	usb_data_read;		//正在读数据
 		startaddr+=len;
 	}
 	else
@@ -151,7 +155,7 @@ unsigned short api_usb_in_get_data(unsigned char* rxbuffer)
 		len	=	usb_in_arry.len;
 		memcpy(rxbuffer,&usb_in_arry.buffer[startaddr],len);
 		usb_in_arry.len=0;
-		usb_in_arry.complete	=	0;
+		usb_in_arry.status	=	usb_data_idle;		//空闲
 		startaddr=0;
 	}
 	return len;
@@ -171,23 +175,30 @@ unsigned short api_usb_in_get_data(unsigned char* rxbuffer)
 *******************************************************************************/
 unsigned short api_usb_out_set_data(const unsigned char*	buffer,unsigned short len)
 {
-	if(0==usb_out_arry.complete)	//缓存未准备好
+	if((usb_data_read_enable==usb_out_arry.status)	//从机可读数据状态
+		||(usb_data_full==usb_out_arry.status))				//缓存满
 	{
-		if(usb_out_arry.len)	//有数据
+		if(usb_out_arry.len)				//有数据
 			return 0;
+		else
+			usb_out_arry.status=usb_data_idle;		//空闲
 	}
-	if(usb_out_arry.len+len<=USB_BUFFER_SIZE-1)		//未超出缓存
+	if(usb_out_arry.len+len<=USB_BUFFER_SIZE)		//未超出缓存
 	{
 		memcpy(&usb_out_arry.buffer[usb_out_arry.len],buffer,len);
 		usb_out_arry.len+=len;
-		usb_out_arry.complete	=	1;	//未完成写入
+		usb_out_arry.status	=	usb_data_write;	//正在写数据
 	}
-	else
+	else if(USB_BUFFER_SIZE>len)
 	{
 		len=USB_BUFFER_SIZE-usb_out_arry.len;
 		memcpy(&usb_out_arry.buffer[usb_out_arry.len],buffer,len);
 		usb_out_arry.len+=len;
-		usb_out_arry.complete	=	0;	//完成写入
+		usb_out_arry.status	=	usb_data_full;	//缓存满
+	}
+	else
+	{
+		usb_out_arry.status	=	usb_data_full;	//缓存满
 	}
 	return len;
 }
@@ -203,13 +214,15 @@ unsigned short api_usb_out_set_data(const unsigned char*	buffer,unsigned short l
 unsigned short api_usb_out_get_data(unsigned char* rxbuffer)
 {
 	unsigned short len	=	0;
-	if(usb_out_arry.complete)
+	if((usb_data_full!=usb_out_arry.status)						//缓存满
+		&&(usb_data_read!=usb_out_arry.status)					//正在读数据
+		&&(usb_data_read_enable!=usb_out_arry.status))	//可读
 		return 0;
 
 	len	=	usb_out_arry.len;
 	memcpy(rxbuffer,usb_out_arry.buffer,len);
 	usb_out_arry.len	=	0;
-	usb_out_arry.complete	=	1;	//缓存空
+	usb_out_arry.status	=	usb_data_idle;	//空闲
 	return len;
 }
 /*******************************************************************************
@@ -223,7 +236,7 @@ unsigned short api_usb_out_get_data(unsigned char* rxbuffer)
 *******************************************************************************/
 void api_usb_out_set_complete_end(void)
 {
-	usb_out_arry.complete	=	0;
+	usb_out_arry.status	=	usb_data_read_enable;		//可读
 }
 /*******************************************************************************
 *函数名			:	api_usb_out_set_complete_end
@@ -234,9 +247,40 @@ void api_usb_out_set_complete_end(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char api_usb_out_get_complete_flag(void)
+unsigned char api_usb_out_get_read_enable(void)
 {
-	return usb_out_arry.complete;		//0：完成，1：缓存空闲
+	if((usb_data_full!=usb_out_arry.status)						//缓存未满
+		||(usb_data_read_enable!=usb_out_arry.status))	//不可读
+	{
+		return 0;
+	}		
+	else
+	{
+		if(0==usb_out_arry.len)
+		{
+			usb_out_arry.status=usb_data_idle;	//空闲
+			return 0;
+		}
+		return 1;
+	}
+}
+/*******************************************************************************
+*函数名			:	api_usb_out_set_complete_end
+*功能描述		:	存储数据完成/空闲
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_usb_out_get_write_enable(void)
+{
+	if((usb_data_idle!=usb_out_arry.status)							//非空闲
+		||(usb_data_write!=usb_out_arry.status)						//非写状态
+		||(usb_data_write_enable!=usb_out_arry.status))		//非可写状态
+		return 0;
+	else
+		return 1;
 }
 /*******************************************************************************
 *函数名			:	api_usb_out_set_complete_end

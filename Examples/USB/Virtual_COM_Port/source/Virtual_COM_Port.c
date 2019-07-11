@@ -27,7 +27,7 @@
 #include "Virtual_COM_Port.h"
 //#include "stm32f10x_it.h"
 
-
+#include "BqApp.h"
 
 //#include "hw_config.h"
 //#include "platform_config.h"
@@ -62,7 +62,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define lora	0
-#define bq26100	1
+#define bq26100V1	0
+#define bq26100V2	1
 #define STM32_FSMC 0
 #define STM32_USB_TEST 0
 
@@ -71,54 +72,49 @@
 		#define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_8
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
+		
+		#define ComPort	USART1
 	#elif lora
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
-	#elif bq26100
+		
+		#define ComPort	USART1
+	#elif bq26100V1
 	
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		
-		#define G1Port   	GPIOB  
-		#define G1Pin    	GPIO_Pin_4
+		#define ComPort	USART1
+
+#elif bq26100V2
+	
+	  #define USB_DISCONNECT            GPIOA  
+		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		
-		#define G2Port   	GPIOB  
-		#define G2Pin    	GPIO_Pin_3
-		
-		#define G3Port   	GPIOB  
-		#define G3Pin    	GPIO_Pin_9
-		
-		#define V24Port   	GPIOB  
-		#define V24Pin    	GPIO_Pin_8
-		
-		#define V05Port   	GPIOB  
-		#define V05Pin    	GPIO_Pin_5
-		
-		#define MtxPort   	GPIOB  
-		#define MtxPin    	GPIO_Pin_6
-		
-		#define MrxPort   	GPIOB  
-		#define MrxPin    	GPIO_Pin_7
-		
-		#define SDQPort   	GPIOB  
-		#define SDQPin    	GPIO_Pin_7
+		#define ComPort	USART1		//
 		
 	#elif STM32_USB_TEST
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_15
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
+		
+		#define ComPort	USART1
 	#elif STM32_FSMC
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_8
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
+		
+		#define ComPort	USART1
 	#else
 	  #define USB_DISCONNECT            GPIOA  
 		#define USB_DISCONNECT_PIN        GPIO_Pin_8
 		#define RCC_APB2Periph_GPIO_DISCONNECT      RCC_APB2Periph_GPIOA
+		
+		#define ComPort	USART1
 #endif
 
-#define ComPort	USART1
+
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 //USART_InitTypeDef USART_InitStructure;
@@ -127,24 +123,19 @@
 /* Extern variables ----------------------------------------------------------*/
 u8 buffer_in[USB_BUFFER_SIZE];
 
-u8 buffer_rx[VIRTUAL_COM_PORT_DATA_SIZE];
-u8 buffer_tx[VIRTUAL_COM_PORT_DATA_SIZE];
+//u8 buffer_rx[VIRTUAL_COM_PORT_DATA_SIZE];
+//u8 buffer_tx[VIRTUAL_COM_PORT_DATA_SIZE];
 
-u32 USART_Rx_ptr_in = 0;
-u32 USART_Rx_ptr_out = 0;
-u32 USART_Rx_length  = 0;
+//u32 USART_Rx_ptr_in = 0;
+//u32 USART_Rx_ptr_out = 0;
+//u32 USART_Rx_length  = 0;
 
 u8 Usart_tx_flg=0;
 unsigned short virtual_com_time = 0;
 
+
 extern u32 count_in;
 extern LINE_CODING linecoding;
-
-//extern u8 buffer_out[VIRTUAL_COM_PORT_DATA_SIZE];
-//extern u32 count_out;
-
-
-
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -152,11 +143,7 @@ void api_usb_virtual_gpio_configuration(void);
 
 extern void api_usb_hw_initialize(void);
 void USB_CMD(FunctionalState NewState);
-static void bq26100Verify(void);		//校验原数据
-static void bq26100GetDigest(void);	//获取消息摘要
-unsigned short usb_to_bq26100_server(void);
-unsigned long H1[5]={0xE9789DD9,0x586DE920,0xED12B811,0x681A9446,0x02647728};
-unsigned long ARRY[5]={0};
+
 /*******************************************************************************
 * Function Name  : Set_System
 * Description    : Configures Main system clocks & power
@@ -164,11 +151,15 @@ unsigned long ARRY[5]={0};
 * Return         : None.
 *******************************************************************************/
 void api_usb_virtual_com_configuration(void)		//虚拟串口配置
-{	
-	
+{
+	#include "BqApp.h"
 	api_usb_virtual_gpio_configuration();
 	
 	api_usb_hw_initialize();
+	
+//#if bq26100V2	
+//	api_BqApp_configuration();
+//#endif
   
 //	while(1)
 //	{
@@ -176,6 +167,9 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 //	}
 //	 PWM_OUT(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
+	
+	//while(1)
+	//api_BqApp_certification_message_server();
 }
 /*******************************************************************************
 *函数名			:	function
@@ -188,16 +182,25 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 *******************************************************************************/
 void api_usb_virtual_com_server(void)
 {	
-	if(virtual_com_time<3000)	//等待USB初始化1秒
+	static unsigned short time = 0;
+	
+	if(bDeviceState != CONFIGURED)
+	{
+		virtual_com_time=0;
+		return;
+	}
+	if(virtual_com_time<2000)	//等待USB初始化1秒
 	{
 		virtual_com_time ++;
 		return ;
 	}
-
-	//usb_to_uart_server();
+	
+#if bq26100V2
+	api_BqApp_server();
+#else
+	usb_to_uart_server();
 	USART_To_USB_Send_Data();
-	bq26100Verify();
-	//bq26100GetDigest();	
+#endif	
 }
 /*******************************************************************************
 *函数名		: function
@@ -233,173 +236,7 @@ unsigned short api_usb_printf(const char *format,...)
 	return api_usb_in_add_data((u8*)format_buffer,str_len);
 	//return set_usart_tx_dma_buffer(USARTx,(u8*)format_buffer,str_len);		//串口DMA发送程序
 }
-/*******************************************************************************
-*函数名			:	bq26100Verify
-*功能描述		:	校验数据
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void bq26100Verify(void)
-{
-	
-	unsigned short i = 0;
-	static unsigned short time=0;
-	static unsigned short start=0;
-	static unsigned short serial=0;
-	
-	unsigned char* message=NULL;
-	unsigned char* digest	=NULL;
-	
-	//启动等待时间
-	if(start<2000)
-	{
-		start++;
-		return;
-	}
-	//测试时间间隔
-	if(time++<100)
-		return ;
-	time=0;
-	
-	if(serial>2500)
-		return;
-	
-	if(0==serial)
-		api_usb_printf("{\r\n");
-	
-	if(1==api_bq26100_Get_Digest(message,digest,serial))
-	{
-		api_usb_printf("%0.2d:\t",serial);
-		api_usb_printf("{{");
-		//-----------message
-		for(i=0;i<19;i++)
-		{
-			api_usb_printf("%0.2X,",message[i]);
-		}
-		api_usb_printf("%0.2X",message[19]);
-		
-		api_usb_printf("},{");
-		
-		//-----------digest
-		for(i=0;i<19;i++)
-		{
-			api_usb_printf("%0.2X,",digest[i]);
-		}
-		api_usb_printf("%0.2X",digest[19]);
-		api_usb_printf("}},\r\n");			
-		//api_usb_printf("%0.2X}",bq26100_sample_data2[serial][1][19]);
-		api_usb_in_set_complete_end();
-	}
-	if(2500==serial)
-		api_usb_printf("}");
-	serial++;
-}
-/*******************************************************************************
-*函数名			:	bq26100Verify
-*功能描述		:	校验数据
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void bq26100GetDigest(void)
-{
-	
-	unsigned short i = 0;
-	static unsigned short time=0;
-	static unsigned short start=0;
-	static unsigned short serial=0;
-	
-	unsigned char* message=NULL;
-	unsigned char* digest	=NULL;
-	
-	//启动等待时间
-	if(start<2000)
-	{
-		start++;
-		return;
-	}
-	//测试时间间隔
-	if(time++<100)
-		return ;
-	time=0;
-	
-	if(serial>2500)
-		return;
-	
-	if(0==serial)
-		api_usb_printf("{\r\n");
 
-	
-	if(1==api_bq26100_data_Verify(message,digest,serial))
-	{
-		api_usb_printf("%0.2d:\t",serial);
-		api_usb_printf("{{");
-		//-----------message
-		for(i=0;i<19;i++)
-		{
-			api_usb_printf("%0.2X,",message[i]);
-		}
-		api_usb_printf("%0.2X",message[19]);
-		
-		api_usb_printf("},{");
-		
-		//-----------digest
-		for(i=0;i<19;i++)
-		{
-			api_usb_printf("%0.2X,",digest[i]);
-		}
-		api_usb_printf("%0.2X",digest[19]);
-		api_usb_printf("}},\r\n");			
-		api_usb_in_set_complete_end();
-	}
-	if(2500==serial)
-		api_usb_printf("}");
-	serial++;
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned short usb_to_bq26100_server(void)
-{
-	unsigned short len	=	0;
-	static unsigned char time=0;
-	unsigned char buffer[USB_BUFFER_SIZE]={0};
-	if(bDeviceState != CONFIGURED)
-  {
-		return 0;
-	}
-	if(0==get_usart_tx_idle(ComPort))		//串口状态检查
-	{
-		return 0;
-	}
-	//-----------------------------------无数据
-	if(0!=api_usb_out_get_complete_flag())
-	{
-		return 0;
-	}
-	if(time++<10)		//连续帧间隔8ms
-		return 0;
-	time = 0;
-
-	len	=	api_usb_out_get_data(buffer);
-	if(20==len)
-	{
-		api_bq26100_set_message2(buffer);
-		return len;
-	}
-	return 0;
-}
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -413,36 +250,6 @@ void api_usb_virtual_gpio_configuration(void)
 {
 	GPIO_Configuration_OPP50(USB_DISCONNECT,USB_DISCONNECT_PIN);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	USB_CMD(DISABLE);
-#if bq26100
-	GPIO_Configuration_OPP50(G1Port,G1Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(G1Port,G1Pin);
-	GPIO_ResetBits(G1Port,G1Pin);
-	
-	GPIO_Configuration_OPP50(G2Port,G2Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(G2Port,G2Pin);
-	GPIO_ResetBits(G2Port,G2Pin);
-	
-	GPIO_Configuration_OPP50(G3Port,G3Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(G3Port,G3Pin);
-	GPIO_ResetBits(G3Port,G3Pin);
-	
-	GPIO_Configuration_OPP50(V24Port,V24Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(V24Port,V24Pin);
-	GPIO_ResetBits(V24Port,V24Pin);
-	
-	GPIO_Configuration_OPP50(V05Port,V05Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(V05Port,V05Pin);
-	GPIO_ResetBits(V05Port,V05Pin);
-	
-	GPIO_Configuration_OPP50(MtxPort,MtxPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(MtxPort,MtxPin);
-	GPIO_ResetBits(MtxPort,MtxPin);
-	
-	GPIO_Configuration_OPP50(MrxPort,MrxPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//GPIO_SetBits(MrxPort,MrxPin);
-	GPIO_ResetBits(MrxPort,MrxPin);
-	
-#endif
 }
 //------------------------------------------------------------------------------
 
@@ -611,7 +418,7 @@ void usb_to_uart_server(void)
 		return ;
 	}
 	//-----------------------------------无数据
-	if(0!=api_usb_out_get_complete_flag())
+	if(0==api_usb_out_get_read_enable())
 	{
 		return;
 	}

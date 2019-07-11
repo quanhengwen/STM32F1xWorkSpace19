@@ -60,12 +60,9 @@ void usb_out_end(void);
 * Return         : 	None.
 *******************************************************************************/
 void EP3_OUT_Callback(void)
-{
-	
-	
-	unsigned char complete=api_usb_out_get_complete_flag();
+{	
+	unsigned char complete=api_usb_out_get_write_enable();
 	unsigned short counnt=api_usb_out_get_complete_count();	
-	
 	usb_out_loop	=	0;
 	if(0==counnt)
 	{
@@ -138,13 +135,14 @@ void EP1_IN_Callback(void)
 	if(count_in)
 	{
 		UserToPMABufferCopy(endp_buffer_in, ENDP1_TXADDR, count_in);
-		SetEPTxCount(ENDP1, count_in);		
+		SetEPTxCount(ENDP1, count_in);
+		SetEPTxValid(ENDP1);		
 	}
 	else
 	{
 		SetEPTxCount(ENDP1, 0);		
 	}
-	SetEPTxValid(ENDP1);
+	//SetEPTxValid(ENDP1);
 	
 	//	Handle_USBAsynchXfer();
 	//	USART_To_USB_Send_Data();
@@ -201,9 +199,9 @@ void usb_out_end(void)
 	if(usb_out_loop++>=VCOMPORT_IN_FRAME_INTERVAL)
 	//if(((fnrcc>count_in)&&(fnrcc-count_in>5))||((count_in>fnrcc)&&(count_in-fnrcc>5)))
 	{		
-		unsigned char complete=api_usb_out_get_complete_flag();
+		unsigned char write_enable=api_usb_out_get_write_enable();
 		unsigned short counnt=api_usb_out_get_complete_count();		
-		if(complete)	//可接收标志
+		if(write_enable)	//可接收标志
 		{
 			if(counnt)		//有数据
 			{

@@ -32,12 +32,12 @@ M1卡：总容量1Kbyte
 #define IotReaderSTX  (unsigned char)0xAA   //协议头标识
 #define IotReaderETX  (unsigned char)0xBB   //协议尾标志
   
-#define IOT5302WReadCycle   300     //读周期，单位ms，倒计时时间
+#define IOT5302WReadCycle   300     //读周期，单位0.3秒，倒计时时间
 #define IOT5302WReadTimeOut 2000    //读超时时间		//原1500
 #define IOT5302WReadTimeOut_UID 	500    	//未接收到UID超时清除
-#define IOT5302WReadTimeOut_NACK 	5000    //读卡器未响应超时时间
-#define IOT5302WInitializeTimeOut 2000    //读超时时间	//原1500
-#define IOT5302WBufferSize  128    //
+#define IOT5302WReadTimeOut_NACK 	3000    //读卡器未响应超时时间3秒
+#define IOT5302WInitializeTimeOut 2000    //读超时时间2秒	//原1500
+#define IOT5302WBufferSize  100    //
 
 //--------------------读卡器命令
 typedef enum  _Cmd //STATUS
@@ -105,7 +105,7 @@ typedef struct _IOT5302WData
   unsigned char   Data[IOT5302WBufferSize]; //读卡器数据接收缓存
   unsigned char   DataCount;      	//读卡器数据接收计数
   unsigned char   Initialized;    	//初始化标志，0-未初始化成功，1-初始化成功
-//  unsigned short  Time;           	//计时器
+  unsigned short  Time;           	//计时器
 //  unsigned short  TimeOut;        	//超时计时器
 	unsigned short  TimeOut_UID;  		//未接收到UID计时
 	unsigned short  TimeOut_NACK;  		//读卡器无响应超时计时

@@ -55,11 +55,16 @@ sdq_result api_bq26100_read_status(unsigned char* pbuffer);
 sdq_result api_bq26100_write_status(unsigned char* pbuffer);
 
 
-void api_bq26100_step1_Auth(void);
-sdq_result api_bq26100_step2_send_message(unsigned char* message,unsigned char len);
-sdq_result api_bq26100_step3_write_control(void);
-sdq_result api_bq26100_step4_read_control(void);
-sdq_result api_bq26100_step5_read_digest(void);
+
+sdq_result bq26100_step1_send_message(const unsigned char* message,unsigned char len);
+sdq_result bq26100_step2_write_control(void);
+sdq_result bq26100_step3_read_control(void);
+sdq_result bq26100_step4_read_digest(unsigned char* digest);
+void bq26100_step5_Auth(void);
+sdq_result bq26100_step6_verify(unsigned char* digest);
+
+
+
 
 void api_bq26100_test_example(void);
 unsigned char api_bq26100_test_example_getkey(void);
@@ -73,8 +78,8 @@ static void bq26100_change_message(void);
 
 void api_bq26100_set_message2(unsigned char* buffer);
 void api_bq26100_test_example22(unsigned long* buffer);
-unsigned char api_bq26100_data_Verify(unsigned char* message,unsigned char* digest,unsigned long serial);
-unsigned char api_bq26100_Get_Digest(unsigned char* message,unsigned char* digest,unsigned long serial);
+
+unsigned char api_bq26100_get_digest(const unsigned char* message,unsigned char* digest);
 
 
 #endif

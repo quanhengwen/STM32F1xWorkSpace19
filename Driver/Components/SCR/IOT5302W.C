@@ -3,6 +3,7 @@
 ********************************************************************************/
 #include  "IOT5302W.H"
 #include  "TOOL.H"
+#include "STM32_SYSTICK.H"
 
 
 #include	"stdio.h"			//用于printf
@@ -46,6 +47,7 @@ void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W)
 *******************************************************************************/
 void api_iot5302w_server(void)
 {
+	static unsigned short time=0;
 	//先处理数据，再执行初始化，更改初始化参数后发现数据验证已通过
   //==================================检查参数
   if(0==IOT5302W.Conf.IOT5302WPort.USARTx)  //参数错误--未配置串口
@@ -162,10 +164,15 @@ static void iot5302w_initialize(void)
     return;
   }
   //---------------------0.3秒发送一次查询UID如果读卡器有返回任何数据，则当前波特率正确
-  if(IOT5302W.Data.Time_Initialized++<300)
-  {
-   return; 
-  }
+	
+	if(0==IOT5302W.Data.TimeGetData)
+	{
+		IOT5302W.Data.Time_Initialized++;
+	}
+	if(IOT5302W.Data.Time_Initialized<3)
+	{
+	 return; 
+	}
 	IOT5302W.Data.Time_Initialized  = 0;
 	
   //---------------------循环选择相应的测试波特率	   
@@ -195,6 +202,7 @@ static void iot5302w_initialize(void)
 	}
 	//---------------------将串口配置为相应的波特率
 	hw_port_configuration(IOT5302W.Data.USART_BaudRate);			//配置波特率，根据当前波特率与读卡器通讯是否成功
+	SysTick_DeleymS(10);				//SysTick延时nmS
 	//---------------------使用当前波特率查询一次读卡器UID，查看UID返回情况，如果有返回数据，表示当前波特率匹配读卡器成功
 	//iot5302w_get_data();
 	//-------------------下一次再次发送获取数据时间清零:重新计时
@@ -212,7 +220,12 @@ static void iot5302w_initialize(void)
 static void iot5302w_data_receive_process(void)
 {
   unsigned char IOT5302WRx[64];
-  unsigned short RxdLen = 0;  
+  unsigned short RxdLen = 0; 
+	
+//	if(IOT5302W.Data.TimeGetData>200)   //0.3秒扫描一次
+//  {
+//		return;
+//	}
   RxdLen  = iot5302w_read_msg(IOT5302WRx);
 	//=====================接收到读卡器的数据
   if(RxdLen)

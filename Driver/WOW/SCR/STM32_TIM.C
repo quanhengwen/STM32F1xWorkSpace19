@@ -18,6 +18,76 @@
 #include "STM32_WOW.H"
 //#include "STM32F10x_BitBand.H"
 
+/*******************************************************************************
+*º¯ÊıÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_tim3_1us_configuration(void)
+{
+	NVIC_InitTypeDef	NVIC_InitStructure;						//ÖĞ¶Ï½á¹¹Ìå
+	
+	//------------------Æô¶¯Ê±ÖÓ
+	RCC->APB1ENR |= RCC_APB1Periph_TIM3;		//±ãÄÜ¶¨Ê±Æ÷Ê±ÖÓ---APB2×î´óÊ±ÖÓ72MHz,APB2×î´ó36MHz
+	//------------------ÉèÖÃ·ÖÆµ
+	TIM3->PSC 		=	72;											//·ÖÆµ36£¬1MHZ--1us
+	//------------------×Ô¶¯ÖØ×°ÔØ³õÊ¼Öµ
+  TIM3->ARR = 50000;	//50ms	//×î´ó65535	
+	//------------------ÏòÉÏ¼ÆÊıÄ£Ê½:ÔÚÏòÉÏ¼ÆÊıÄ£Ê½ÖĞ£¬¼ÆÊıÆ÷´Ó0¼ÆÊıµ½×Ô¶¯¼ÓÔØÖµ(TIMx_ARR¼ÆÊıÆ÷µÄÄÚÈİ)£¬È»ºóÖØĞÂ´Ó0¿ªÊ¼¼ÆÊı²¢ÇÒ²úÉúÒ»¸ö¼ÆÊıÆ÷Òç³öÊÂ¼ş¡£
+//	TIM3->CR1 &=	~0x0010;
+//	//------------------Ê±ÖÓ·ÖÆµÒò×Ó
+//	TIM3->CR1 |=	0x0200;
+//	//------------------½ûÖ¹¸üĞÂ
+//	TIM3->CR1 |=	~0x0002;	
+//	
+//	//------------------Æô¶¯Ê±ÖÓ
+//	TIM3->CR1 |= 0x0001;
+	
+	TIM3->CR1 = 0x008B;
+}
+/*******************************************************************************
+*º¯ÊıÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_tim3_get_count(void)
+{
+	//unsigned short count_time=TIM3->CNT;
+//	TIM3->CR1 &=	~0x0001;
+//	TIM3->CNT = 0;
+//	TIM3->CR1 |=	0x0003;
+	//TIM3->CR1 = 0x0000;
+	//count_time=TIM3->CNT;
+	//TIM3->CNT = 0;
+	//TIM3->CR1 = 0x0001;
+	return TIM3->CNT;
+}
+/*******************************************************************************
+*º¯ÊıÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎŞ
+*ĞŞ¸ÄÊ±¼ä		:	ÎŞ
+*ĞŞ¸ÄËµÃ÷		:	ÎŞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_tim3_set_restart(void)
+{
+	TIM3->CR1 = 0x0000;
+	TIM3->CNT=0;
+	TIM3->CR1 = 0x008B;
+}
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
 
 
 ///* ¶¨Ê±Æ÷½á¹¹Ìå */
@@ -64,12 +134,10 @@ void TIM_ConfigurationFreq(TIM_TypeDef* TIMx,u32 Frequency)		//¶¨Ê±Æ÷ÆµÂÊÅäÖÃ·½Ê
 //	double PWM_Frequency	=	2*(PWM_Tim->PWM_BasicData.PWM_Frequency);
 	
 	u8 TIM_IRQChannel=0;
-	u32	Tim_temp				=	2*Frequency;	//ÓÉÓÚ·­×ªĞèÒªË«±¶ÆµÂÊ
+	u32	Tim_temp							=	2*Frequency;	//ÓÉÓÚ·­×ªĞèÒªË«±¶ÆµÂÊ
 	u32	TIMx_Frequency				=	0;			//	¶¨Ê±Æ÷Ê±ÖÓ
 	u16 TIMx_Prescaler				=	0	;			//	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ		È¡Öµ·¶Î§£º0x0000~0xFFFF
   u16 TIMx_Period						=	0	;			//	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ	È¡Öµ·¶Î§£º0x0000~0xFFFF
-
-
 
 	//1£©============================´ò¿ª¶¨Ê±Æ÷Ê±ÖÓ
 	switch ((u32)TIMx)
@@ -169,8 +237,8 @@ void TIM_ConfigurationFreq(TIM_TypeDef* TIMx,u32 Frequency)		//¶¨Ê±Æ÷ÆµÂÊÅäÖÃ·½Ê
 //	TIMx_Period=(u16)(5-1);
 	
 	//6.3¶¨Ê±Æ÷³õÊ¼»¯*********************************************************************
-	TIM_TimeBaseStructure.TIM_Prescaler = TIMx_Prescaler; 				//Éè¶¨·ÖÆµÖµ
-	TIM_TimeBaseStructure.TIM_Period 		= TIMx_Period;        		//Éè¶¨×Ô¶¯ÖØ×°ÔØÖµ
+	TIM_TimeBaseStructure.TIM_Prescaler = TIMx_Prescaler; 					//Éè¶¨·ÖÆµÖµ
+	TIM_TimeBaseStructure.TIM_Period 		= TIMx_Period;        			//Éè¶¨×Ô¶¯ÖØ×°ÔØÖµ
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;  				//²»·Ö¸î
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  		//ÏòÉÏ¼ÆÊı
 	TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);		//³õÊ¼»¯	

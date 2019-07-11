@@ -147,6 +147,11 @@
 	#include "BQ26100_TEST.H"
 #endif
 
+//*********************************BQ26100_TEST*********************************//
+#ifdef SDQ_TEST
+	#include "SDQ_TEST.H"
+#endif
+
 
 
 

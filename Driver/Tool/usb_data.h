@@ -24,20 +24,39 @@
 /* Exported types ------------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define USB_BUFFER_SIZE	2048
+#define USB_COM_PORT_SIZE 64
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
-
+	
+typedef enum
+{
+	usb_data_idle		=	(unsigned char)0,		//空闲
+	usb_data_write 	= (unsigned char)1,		//正在写数据
+	usb_data_read 	= (unsigned char)2,		//正在读数据
+	usb_data_full 	= (unsigned char)3,		//缓存满
+	usb_data_read_enable	=	(unsigned char)4,	//可读
+	usb_data_write_enable	=	(unsigned char)5,	//可写
+}usb_data_status_def;
+typedef struct
+{
+	usb_data_status_def status;				//传送完成标志：0-完成/未激活；1-传送未完成
+	unsigned short 			len;						//当前节点中缓存数据大小
+	unsigned char 			buffer[USB_BUFFER_SIZE];
+}usb_data_arry;	//USB主机输出数据到设备缓存
 /* function prototypes Automatically built defining related macros */
 unsigned short api_usb_in_add_data(const unsigned char*	buffer,unsigned short len);
 void api_usb_in_set_complete_end(void);
 unsigned short api_usb_in_set_data(const unsigned char*	buffer,unsigned short len);
 unsigned short api_usb_in_get_data(unsigned char* rxbuffer);
+
+
 unsigned short api_usb_out_set_data(const unsigned char*	buffer,unsigned short len);
 unsigned short api_usb_out_get_data(unsigned char* rxbuffer);
 void api_usb_out_set_complete_end(void);
-unsigned char api_usb_out_get_complete_flag(void);
+unsigned char api_usb_out_get_read_enable(void);
+unsigned char api_usb_out_get_write_enable(void);
 unsigned short api_usb_out_get_complete_count(void);
 
 #endif /*__USB_ISTR_H*/

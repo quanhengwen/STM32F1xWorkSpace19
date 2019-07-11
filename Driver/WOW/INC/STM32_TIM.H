@@ -24,10 +24,12 @@
 //#include "STM32_WOW.H"
 
 
-
+void api_tim3_1us_configuration(void);
+unsigned short api_tim3_get_count(void);
+void api_tim3_set_restart(void);
 
 void TIM_ConfigurationFreq(TIM_TypeDef* TIMx,u32 Frequency);		//定时器频率配置方式，最小频率0.01Hz,最大100KHz
-void TIM_SetFreq(TIM_TypeDef* TIMx,u32 Frequency);		//设定频率	
+void TIM_SetFreq(TIM_TypeDef* TIMx,u32 Frequency);							//设定频率	
 
 
 void TIMx_RCC_ENABLE(TIM_TypeDef* TIMx);	//定时器配置

@@ -38,7 +38,7 @@ void TIM_TEST_Configuration(void)
 	GPIO_DeInitAll();													//将所有的GPIO关闭----V20170605
 //	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	GPIO_Configuration_OPP50	(GPIOA,	GPIO_Pin_7);			//将GPIO相应管脚配置为APP(复用推挽)输出模式，最大速度50MHz----V20170605
-	TIM_ConfigurationFreq(TIM1,40000);	//定时器频率配置方式，最小频率0.01Hz,最大100KHz
+	TIM_ConfigurationFreq(TIM1,40000);									//定时器频率配置方式，最小频率0.01Hz,最大100KHz
 	
 	TIM1->RCR = 100-1;
 	

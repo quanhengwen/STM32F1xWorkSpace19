@@ -1,6 +1,6 @@
 #include "BQ26100.H"	
 
-#include "BQ26100DATA.H"
+//#include "BQ26100DATA.H"
 
 #include "stdlib.h"
 #include "string.h"
@@ -10,8 +10,37 @@
 
 #include 	"CRC.H"
 
-#define	SDQ_Port		GPIOA
-#define	SDQ_Pin			GPIO_Pin_3
+#include "usb_data.h"
+
+#define bq26100V1	0
+#define bq26100V2	1
+#define bq26100V2Slave	1
+
+#if bq26100V1
+	#define	SDQ_Port		GPIOA
+	#define	SDQ_Pin			GPIO_Pin_3
+#elif bq26100V2
+	#if bq26100V2Slave
+		//-------------------飞达接口
+		#define SDQ_Port   	GPIOA  
+		#define SDQ_Pin    	GPIO_Pin_6
+	#else
+		//-------------------带KEY
+		#define SDQ_Port   	GPIOA  
+		#define SDQ_Pin    	GPIO_Pin_7
+	#endif
+		
+		
+		#define FDSDQPort   	GPIOA  
+		#define FDSDQPin    	GPIO_Pin_6
+		
+		#define U4SDQPort   	GPIOA  
+		#define U4SDQPin    	GPIO_Pin_5
+		
+		//-------------------飞达接口
+		#define FDSDQPort   	GPIOA  
+		#define FDSDQPin    	GPIO_Pin_6
+#endif
 
 #define	SDQ_SetOut		GPIO_Configuration_OPP50(SDQ_Port,	SDQ_Pin)			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 #define	SDQ_SetIn			GPIO_Configuration_IPD(SDQ_Port,		SDQ_Pin)			//将GPIO相应管脚配置为下拉输入模式----V20170605
@@ -23,9 +52,6 @@
 
 
 #define bq26100_Family_Code 0x09		//默认09
-
-unsigned short bq26100_reg_addr=0x0000;				//寄存器地址
-
 
 
 // Global Variables
@@ -211,6 +237,12 @@ sdq_result api_bq26100_read_page(unsigned char* pbuffer)
 		//pbuffer[i]=sdq_read_byte();
 	return sdq_success;
 }
+//------------------------------------------------------------------------------
+
+
+
+
+
 /*******************************************************************************
 *函数名			:	api_read_id
 *功能描述		:	读64字节器件电子标签
@@ -361,6 +393,10 @@ sdq_result bq26100_mem_fun(sdq_mem_cmd mem_cmd)
 	}
 	return result;
 }
+//------------------------------------------------------------------------------
+
+
+
 
 /*******************************************************************************
 * 函数名			:	sdq_write_bit
@@ -430,8 +466,6 @@ unsigned char sdq_read_bit(void)
 }
 //------------------------------------------------------------------------------
 
-
-
 /*******************************************************************************
 * 函数名			:	function
 * 功能描述		:	写一个字节到Dallas---从低位开始写入
@@ -480,6 +514,9 @@ unsigned char sdq_read_byte(void)
 
 
 
+
+
+
 //------------------------------------------------------------------------------
 /*******************************************************************************
 * 函数名			:	function
@@ -522,6 +559,9 @@ sdq_result bq26100_rest(void)		//复位Dallas,返回结果
 	return sdq_success;
 }
 //------------------------------------------------------------------------------
+
+
+
 
 
 
@@ -651,8 +691,166 @@ unsigned long f(u32 x, u32 y, u32 z, int t)
 
 
 
+
 /*******************************************************************************
-*函数名			:	api_bq26100_step1_Auth
+*函数名			:	bq26100_step1_send_message
+*功能描述		:	Send 160-bit Message to bq26100
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+sdq_result bq26100_step1_send_message(const unsigned char* message,unsigned char len)
+{
+	unsigned long i = 0;
+	unsigned char Value	=	0;
+	sdq_result result;
+	// Send 160-bit Message to bq26100
+	result	=	bq26100_rest();
+	if(sdq_error	==	result)
+		return sdq_error;	
+	sdq_write_byte(0xCC);			// Skip ROM Command
+	sdq_write_byte(0x22);			//Write Message Command
+	sdq_write_byte(0x00);			//Address Low Byte
+	sdq_write_byte(0x00);			//Address High Byte
+	
+		// Write first byte of message, Message[0]
+	sdq_write_byte(message[0x00]);	
+	Value = sdq_read_byte();	//Read CRC of Message Command, Address and Data
+	//CRC are not being calculated by the microcontroller, the results given by
+	//bq26100 are being ignored
+	// Read Data to Verify Write
+	Value = sdq_read_byte();
+	// Write the remaining bytes of the message
+	for (i=1; i<=19; i++)
+	{
+		sdq_write_byte(message[i]);
+		Value	=	sdq_read_byte();		//Read CRC of Message Command, Address and Data
+																//CRC are not being calculated by the microcontroller, the results given by
+																//bq26100 are being ignored
+		Value	=	sdq_read_byte();		// Read Data to Verify Write		
+	}
+	return sdq_success;
+}
+/*******************************************************************************
+*函数名			:	bq26100_step2_write_control
+*功能描述		:	Write Control to set AUTH bit to initiate Authentication by bq26100
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+sdq_result bq26100_step2_write_control(void)
+{
+	unsigned char Value	=	0;
+	unsigned char i = 0;
+	sdq_result result;
+	// Write Control to set AUTH bit to initiate Authentication by bq26100
+	result	=	bq26100_rest();
+	if(sdq_error	==	result)
+		return sdq_error;
+	//Value = TestPresence();
+	// Skip ROM Command
+	sdq_write_byte(0xCC);
+	// Write Control Command
+	sdq_write_byte(sdq_mem_write_control);	//Write Control Command
+	//bq26100_reg_addr
+//	sdq_write_byte(bq26100_reg_addr&0xFF);	//Address Low Byte
+//	sdq_write_byte((bq26100_reg_addr>>8)&0xFF);	//Address High Byte
+	sdq_write_byte(0x00);	//Address Low Byte
+	sdq_write_byte(0x00);	//Address High Byte	
+//	sdq_write_byte(0x05);			// Write Auth Bit of Control Register
+//	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data
+	// Read Data to Verify Write
+	//----------读数据，直到读到低位为1,最多重试100次
+	for(i=0;i<100;i++)
+	{
+		sdq_write_byte(0x05);			// Write Auth Bit of Control Register
+		Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data
+		Value = sdq_read_byte();	//Read Data，直到读到低位为1
+		if(0x01==(Value&0x01))
+			break;
+	}
+	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data	
+
+	return sdq_success;
+}
+/*******************************************************************************
+*函数名			:	bq26100_step3_read_control
+*功能描述		:	Write Control to set AUTH bit to initiate Authentication by bq26100
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+sdq_result bq26100_step3_read_control(void)
+{
+	unsigned char Value	=	0;
+	unsigned char i=0;
+	sdq_result result;
+	// Write Control to set AUTH bit to initiate Authentication by bq26100
+	result	=	bq26100_rest();
+	if(sdq_error	==	result)
+		return sdq_error;
+	//Value = TestPresence();
+	
+	sdq_write_byte(0xCC);				// Skip ROM Command
+	sdq_write_byte(sdq_mem_read_control);	//Write Control Command
+	sdq_write_byte(0x00);			//Address Low Byte
+	sdq_write_byte(0x00);			//Address High Byte
+	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data	
+	//----------读数据，直到读到低位为1,最多重试100次
+	for(i=0;i<100;i++)
+	{
+		Value = sdq_read_byte();	//Read Data，直到读到低位为1
+		if(0x01==(Value&0x01))
+			break;
+	}
+	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data
+	return sdq_success;
+	
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	bq26100_step4_read_digest
+*功能描述		:	Read Digest
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+sdq_result bq26100_step4_read_digest(unsigned char* digest)
+{
+	unsigned char i = 0;
+	unsigned char Value	=	0;
+	sdq_result result;
+	//Read Digest
+	result	=	bq26100_rest();
+	if(sdq_error	==	result)
+		return sdq_error;	
+	sdq_write_byte(0xCC);			// Skip ROM Command
+	sdq_write_byte(0xDD);			//Read Digest Command
+	sdq_write_byte(0x00);			//Address Low Byte
+	sdq_write_byte(0x00);			//Address High Byte
+	Value = sdq_read_byte();	//Read CRC of Read Digest Command, Address
+	// Read Digest
+	for (i=0; i<=19; i++)
+	{
+		digest[i] = sdq_read_byte();
+	}
+	// Read CRC of Digest
+	Value = sdq_read_byte();
+
+	return sdq_success;
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	bq26100_step5_Auth
 *功能描述		:	本程序按照BQ26100的要求计算SHA1/HMAC
 *输入				: 
 *返回值			:	无
@@ -670,7 +868,7 @@ unsigned long f(u32 x, u32 y, u32 z, int t)
 *						A, B, C, D, E	
 *  Returns: 			Result of 32-bit word rotated n times
 *******************************************************************************/
-void api_bq26100_step1_Auth(void)
+void bq26100_step5_Auth(void)
 {
 	int i;			//Used for doing two times the SHA1 as required by the bq26100
 	int t;			//Used for the indexes 0 through 79
@@ -767,125 +965,11 @@ void api_bq26100_step1_Auth(void)
 		H[4] = E + H[4];
 	}//End of for loop
 }	//End Auth() function
+//------------------------------------------------------------------------------
+
+
 /*******************************************************************************
-*函数名			:	api_bq26100_step2_send_message
-*功能描述		:	Send 160-bit Message to bq26100
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-sdq_result api_bq26100_step2_send_message(unsigned char* message,unsigned char len)
-{
-	unsigned long i = 0;
-	unsigned char Value	=	0;
-	sdq_result result;
-	// Send 160-bit Message to bq26100
-	result	=	bq26100_rest();
-	if(sdq_error	==	result)
-		return sdq_error;
-	// Skip ROM Command
-	sdq_write_byte(0xCC);
-	// Write Message Command
-	sdq_write_byte(0x22);	//Write Message Command
-	// Write Address
-	//bq26100_reg_addr
-	sdq_write_byte(bq26100_reg_addr&0xFF);	//Address Low Byte
-	sdq_write_byte((bq26100_reg_addr>>8)&0xFF);	//Address High Byte
-	// Write first byte of message, Message[0]
-	sdq_write_byte(Message[0x00]);	
-	Value	=	sdq_read_byte();	//Read CRC of Message Command, Address and Data
-	//CRC are not being calculated by the microcontroller, the results given by
-	//bq26100 are being ignored
-	// Read Data to Verify Write
-	Value	=	sdq_read_byte();
-	// Write the remaining bytes of the message
-	for (i=1; i<=19; i++)
-	{
-		sdq_write_byte(Message[i]);
-		Value	=	sdq_read_byte();		//Read CRC of Message Command, Address and Data
-																//CRC are not being calculated by the microcontroller, the results given by
-																//bq26100 are being ignored
-		Value	=	sdq_read_byte();		// Read Data to Verify Write
-		
-	}
-	return sdq_success;
-}
-/*******************************************************************************
-*函数名			:	api_bq26100_step3_write_control
-*功能描述		:	Write Control to set AUTH bit to initiate Authentication by bq26100
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-sdq_result api_bq26100_step3_write_control(void)
-{
-	unsigned char Value	=	0;
-	sdq_result result;
-	// Write Control to set AUTH bit to initiate Authentication by bq26100
-	result	=	bq26100_rest();
-	if(sdq_error	==	result)
-		return sdq_error;
-	//Value = TestPresence();
-	// Skip ROM Command
-	sdq_write_byte(0xCC);
-	// Write Control Command
-	sdq_write_byte(sdq_mem_write_control);	//Write Control Command
-	//bq26100_reg_addr
-//	sdq_write_byte(bq26100_reg_addr&0xFF);	//Address Low Byte
-//	sdq_write_byte((bq26100_reg_addr>>8)&0xFF);	//Address High Byte
-	sdq_write_byte(0x00);	//Address Low Byte
-	sdq_write_byte(0x00);	//Address High Byte	
-	sdq_write_byte(0x05);			// Write Auth Bit of Control Register
-	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data
-	// Read Data to Verify Write
-	Value = sdq_read_byte();
-	
-	//sdq_write_byte(0x01);	//Address Low Byte
-	//sdq_write_byte(0x00);	//Address High Byte
-	sdq_write_byte(0xA1);			// Write Auth Bit of Control Register
-	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data	
-	Value = sdq_read_byte();	// Read Data to Verify Write
-	return sdq_success;
-}
-/*******************************************************************************
-*函数名			:	api_bq26100_step3_write_control
-*功能描述		:	Write Control to set AUTH bit to initiate Authentication by bq26100
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-sdq_result api_bq26100_step4_read_control(void)
-{
-	unsigned char Value	=	0;
-	sdq_result result;
-	// Write Control to set AUTH bit to initiate Authentication by bq26100
-	result	=	bq26100_rest();
-	if(sdq_error	==	result)
-		return sdq_error;
-	//Value = TestPresence();
-	// Skip ROM Command
-	sdq_write_byte(0xCC);
-	// Write Control Command
-	sdq_write_byte(sdq_mem_read_control);	//Write Control Command
-	//bq26100_reg_addr
-//	sdq_write_byte(bq26100_reg_addr&0xFF);	//Address Low Byte
-//	sdq_write_byte((bq26100_reg_addr>>8)&0xFF);	//Address High Byte
-	sdq_write_byte(0x00);	//Address Low Byte
-	sdq_write_byte(0x00);	//Address High Byte	
-	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data
-	Value = sdq_read_byte();
-	sdq_write_byte(0xA1);	
-	Value = sdq_read_byte();	//Read CRC of Write Control Command, Address and Data	
-	return sdq_success;
-}
-/*******************************************************************************
-*函数名			:	api_bq26100_step5_read_digest
+*函数名			:	bq26100_step6_verify
 *功能描述		:	Read Digest
 *输入				: 
 *返回值			:	无
@@ -893,49 +977,127 @@ sdq_result api_bq26100_step4_read_control(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-sdq_result api_bq26100_step5_read_digest(void)
+sdq_result bq26100_step6_verify(unsigned char* digest)
 {
-	unsigned char i = 0;
-	unsigned char Value	=	0;
-	sdq_result result;
-	//Read Digest
-	result	=	bq26100_rest();
-	if(sdq_error	==	result)
-		return sdq_error;	
-	//Value = TestPresence();
-	// Skip ROM Command
-	sdq_write_byte(0xCC);
-	// Read Digest Command
-	sdq_write_byte(0xDD);	//Read Digest Command
-	// Write Address
-	//bq26100_reg_addr
-	sdq_write_byte(bq26100_reg_addr&0xFF);	//Address Low Byte
-	sdq_write_byte((bq26100_reg_addr>>8)&0xFF);	//Address High Byte
-	Value = sdq_read_byte();	//Read CRC of Read Digest Command, Address
-	// Read Digest
-	for (i=0; i<=19; i++)
-	{
-		Digest[i] = sdq_read_byte();
-	}
-	// Read CRC of Digest
-	Value = sdq_read_byte();
-
 	// The 20 bytes of the digest returned by the bq26100 is arranged in 32-bit words so that it
 	// can be compared with the results computed by the microcontroller
 	
-	Digest_32[4] = Digest[0x00] + Digest[0x01]*0x0100 + Digest[0x02]*0x010000 + Digest[0x03]*0x01000000;
-	Digest_32[3] = Digest[0x04] + Digest[0x05]*0x0100 + Digest[0x06]*0x010000 + Digest[0x07]*0x01000000;
-	Digest_32[2] = Digest[0x08] + Digest[0x09]*0x0100 + Digest[0x0A]*0x010000 + Digest[0x0B]*0x01000000;
-	Digest_32[1] = Digest[0x0C] + Digest[0x0D]*0x0100 + Digest[0x0E]*0x010000 + Digest[0x0F]*0x01000000;
-	Digest_32[0] = Digest[0x10] + Digest[0x11]*0x0100 + Digest[0x12]*0x010000 + Digest[0x13]*0x01000000;
+	Digest_32[4] = digest[0x00] + digest[0x01]*0x0100 + digest[0x02]*0x010000 + digest[0x03]*0x01000000;
+	Digest_32[3] = digest[0x04] + digest[0x05]*0x0100 + digest[0x06]*0x010000 + digest[0x07]*0x01000000;
+	Digest_32[2] = digest[0x08] + digest[0x09]*0x0100 + digest[0x0A]*0x010000 + digest[0x0B]*0x01000000;
+	Digest_32[1] = digest[0x0C] + digest[0x0D]*0x0100 + digest[0x0E]*0x010000 + digest[0x0F]*0x01000000;
+	Digest_32[0] = digest[0x10] + digest[0x11]*0x0100 + digest[0x12]*0x010000 + digest[0x13]*0x01000000;
 	if ((Digest_32[0] == H[0])&&(Digest_32[1] == H[1])&&(Digest_32[2] == H[2])&&(Digest_32[3] == H[3]))
 	{
-
+		return sdq_success;
 		//------------------------验证通过
 	}
-
-	return sdq_success;
+	return sdq_error;
 }
+//------------------------------------------------------------------------------
+
+
+
+
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_bq26100_get_digest(const unsigned char* message,unsigned char* digest)
+{
+//	#include "usb_data.h"
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+  sdq_result result;
+
+	//--------------------发送消息
+	result	=	bq26100_step1_send_message(message,20);
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------
+	result	=	bq26100_step2_write_control();
+	//bq26100_step3_read_control();
+	
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------读取bq26100生成的SHA1/HMAC并存储在digest
+	result	=	bq26100_step4_read_digest(digest);
+	
+	return 1;
+}
+//---------------------------------------------------------------------------
+
+
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_bq26100_message_verify(const unsigned char* message,unsigned char* digest)
+{
+//	#include "usb_data.h"
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+  sdq_result result;
+
+	//--------------------发送消息
+	result	=	bq26100_step1_send_message(message,20);
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------
+	result	=	bq26100_step2_write_control();
+	//bq26100_step3_read_control();
+	
+	if(result	==	sdq_error)
+		return 0;
+	//--------------------读取bq26100生成的SHA1/HMAC并存储在digest
+	result	=	bq26100_step4_read_digest(digest);
+	
+	return 1;
+}
+//---------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1005,32 +1167,7 @@ static void bq26100_set_message(void)
 	Message[16]	=	0xca;
 	Message[17]	=	0xa3;
 	Message[18]	=	0x2c;
-	Message[19]	=	0xc8;
-	
-	
-	
-
-//-----------------------------逻辑分析仪007:验证通过
-	Message[0]	=	0xFD;
-	Message[1]	=	0xAB;
-	Message[2]	=	0x14;
-	Message[3]	=	0xB6;
-	Message[4]	=	0xCE;
-	Message[5]	=	0x0A;
-	Message[6]	=	0x28;
-	Message[7]	=	0x41;
-	Message[8]	=	0x2F;
-	Message[9]	=	0x08;
-	Message[10]	=	0x6D;
-	Message[11]	=	0xD4;
-	Message[12]	=	0xDB;
-	Message[13]	=	0x62;
-	Message[14]	=	0x89;
-	Message[15]	=	0xB0;
-	Message[16]	=	0x77;
-	Message[17]	=	0x30;
-	Message[18]	=	0x59;
-	Message[19]	=	0x5D;
+	Message[19]	=	0xc8;	
 	//-----------------------------逻辑分析仪001:验证通过
 	//0xEC 0x8D 0x31 0x3B 0xCF 0xAD 0x8A 0x2E 0xAA 0xF9 0xAA 0x26 0xC1 0xFF  0xF1 0xD2 0x95 0x91 0xAA 0xEA 
 	Message[0]	=	0xEC;
@@ -1188,6 +1325,51 @@ static void bq26100_set_message(void)
 	Message[18]	=	0x6c;
 	Message[19]	=	0x4b;
 	
+	//-----------------------------逻辑分析仪007:验证通过
+	Message[0]	=	0xFD;
+	Message[1]	=	0xAB;
+	Message[2]	=	0x14;
+	Message[3]	=	0xB6;
+	Message[4]	=	0xCE;
+	Message[5]	=	0x0A;
+	Message[6]	=	0x28;
+	Message[7]	=	0x41;
+	Message[8]	=	0x2F;
+	Message[9]	=	0x08;
+	Message[10]	=	0x6D;
+	Message[11]	=	0xD4;
+	Message[12]	=	0xDB;
+	Message[13]	=	0x62;
+	Message[14]	=	0x89;
+	Message[15]	=	0xB0;
+	Message[16]	=	0x77;
+	Message[17]	=	0x30;
+	Message[18]	=	0x59;
+	Message[19]	=	0x5D;
+	
+	
+	//-----------------------------测试数据2:
+	//0xA5,0xE7,0x6E,0x31,0x81,0xCA,0xD3,0x63,0x19,0x3C,0xFD,0x17,0x40,0x07,0xA3,0xA7,0xAA,0xA9,0x96,0x08
+	Message[0]	=	0xA5;
+	Message[1]	=	0xE7;
+	Message[2]	=	0x6E;
+	Message[3]	=	0x31;
+	Message[4]	=	0x81;
+	Message[5]	=	0xCA;
+	Message[6]	=	0xD3;
+	Message[7]	=	0x63;
+	Message[8]	=	0x19;
+	Message[9]	=	0x3C;
+	Message[10]	=	0xFD;
+	Message[11]	=	0x17;
+	Message[12]	=	0x40;
+	Message[13]	=	0x07;
+	Message[14]	=	0xA3;
+	Message[15]	=	0xA7;
+	Message[16]	=	0xAA;
+	Message[17]	=	0xA9;
+	Message[18]	=	0x96;
+	Message[19]	=	0x08;
 	//bq26100_change_message();
 }
 /*******************************************************************************
@@ -1222,8 +1404,8 @@ static void bq26100_change_message(void)
 	static unsigned char num=0;
 	unsigned char i =0;
 	unsigned char buffer[20]={0};
-	memcpy(buffer,Message,20);
-	//memset(Message,0xFF,20);
+	//memcpy(buffer,Message,20);
+	memset(Message,0x00,20);
 }
 
 //-------------------------------------------------------------------------------
@@ -1450,17 +1632,17 @@ unsigned long api_bq26100_test_example_getkey2(unsigned long* H1,unsigned long* 
 //		num++;
 	return temp;
 }
-/**********************************************************************/
-/* 	int main(void)					      							  */
-/*																      */
-/*	Description : 		This is the main function. It calls the SDQ	  */
-/*				  		communication and the SHA1 function. Results  */
-/*						are displayed through LEDs.					  */
-/* 	Arguments : 		*Value - generic variable for read functions  */
-/*						i - used for repeat loops				      */
-/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
-/*  Returns: 			None								          */
-/**********************************************************************/
+//---------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void api_bq26100_test_example(void)
 {
 	//-------------流程：
@@ -1473,6 +1655,7 @@ void api_bq26100_test_example(void)
 	unsigned char Value;
 	int i;
 	static unsigned char flag=0;
+	unsigned char digest[20];
   sdq_result result;
 	if(flag++>=5)
 	{
@@ -1491,34 +1674,90 @@ void api_bq26100_test_example(void)
 	
 	
 	//--------------------按照BQ26100的要求计算SHA1/HMAC
-	api_bq26100_step1_Auth();	
+	//bq26100_step5_Auth();	
 	
 	bq26100_set_message();		//测试实际数据
 	
 	//--------------------发送消息
-	result	=	api_bq26100_step2_send_message(Message,20);
+	result	=	bq26100_step1_send_message(Message,20);
 	if(result	==	sdq_error)
 		return ;
+	bq26100_step4_read_digest(digest);
+	bq26100_step3_read_control();
 	//--------------------
-	result	=	api_bq26100_step3_write_control();
-	//api_bq26100_step4_read_control();
+	result	=	bq26100_step2_write_control();
+	//bq26100_step3_read_control();
+	
+	if(result	==	sdq_error)
+		return ;
+	result	=	bq26100_step4_read_digest(digest);
+	//--------------------读取bq26100生成的SHA1/HMAC并对比
+	
+	
+	result	=	bq26100_step6_verify(digest);
+}
+void api_bq26100_test_example2(void)
+{
+	//-------------流程：
+	//1,生成随机消息
+	//2,将数据与key一起计算出结果
+	//3,将消息发往bq26100
+	//4,设置发送bq26100控制命令
+	//5,读取bq26100的验证结果
+	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
+	unsigned char Value;
+	int i;
+	static unsigned char flag=0;
+	unsigned char digest[20];
+  sdq_result result;
+	if(flag++>=5)
+	{
+		flag	=	0;
+		//bq26100_reg_addr++;
+	}
+	//--------------------设置密钥
+	bq26100_set_key();	
+	
+	//--------------------生成随机数消息
+	srand(0);
+	for (i=0; i<=19; i++)
+	{
+		Message[i] = rand()%256;		//获取随机数
+	}
+	
+	
+	//--------------------按照BQ26100的要求计算SHA1/HMAC
+	//bq26100_step5_Auth();	
+	
+	bq26100_set_message();		//测试实际数据
+	
+	//--------------------发送消息
+	result	=	bq26100_step1_send_message(Message,20);
+	if(result	==	sdq_error)
+		return ;
+	bq26100_step4_read_digest(digest);
+	//--------------------
+	result	=	bq26100_step2_write_control();
+	//bq26100_step3_read_control();
 	
 	if(result	==	sdq_error)
 		return ;
 	//--------------------读取bq26100生成的SHA1/HMAC并对比
-	result	=	api_bq26100_step5_read_digest();
+	result	=	bq26100_step4_read_digest(digest);
+	
+	result	=	bq26100_step6_verify(digest);
 }
-/**********************************************************************/
-/* 	int main(void)					      							  */
-/*																      */
-/*	Description : 		This is the main function. It calls the SDQ	  */
-/*				  		communication and the SHA1 function. Results  */
-/*						are displayed through LEDs.					  */
-/* 	Arguments : 		*Value - generic variable for read functions  */
-/*						i - used for repeat loops				      */
-/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
-/*  Returns: 			None								          */
-/**********************************************************************/
+//---------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
 void api_bq26100_test_example22(unsigned long* buffer)
 {
 	#include "usb_data.h"
@@ -1532,6 +1771,7 @@ void api_bq26100_test_example22(unsigned long* buffer)
 	unsigned char Value;
 	int i;
 	static unsigned char flag=0;
+	unsigned char digest[20];
   sdq_result result;
 //	if(flag++>=5)
 //	{
@@ -1550,22 +1790,22 @@ void api_bq26100_test_example22(unsigned long* buffer)
 //	
 //	
 //	//--------------------按照BQ26100的要求计算SHA1/HMAC
-//	api_bq26100_step1_Auth();	
+//	bq26100_step5_Auth();	
 	
 //	bq26100_set_message();		//测试实际数据
 	
 	//--------------------发送消息
-	result	=	api_bq26100_step2_send_message(Message,20);
+	result	=	bq26100_step1_send_message(Message,20);
 	if(result	==	sdq_error)
 		return ;
 	//--------------------
-	result	=	api_bq26100_step3_write_control();
-	//api_bq26100_step4_read_control();
+	result	=	bq26100_step2_write_control();
+	//bq26100_step3_read_control();
 	
 	if(result	==	sdq_error)
 		return ;
 	//--------------------读取bq26100生成的SHA1/HMAC并对比
-	result	=	api_bq26100_step5_read_digest();
+	result	=	bq26100_step4_read_digest(digest);
 	
 	api_usb_in_set_data(Digest,20);
 	
@@ -1574,109 +1814,17 @@ void api_bq26100_test_example22(unsigned long* buffer)
 		buffer[i]=Digest_32[i];
 	}
 }
-
-/**********************************************************************/
-/* 	int main(void)					      							  */
-/*																      */
-/*	Description : 		This is the main function. It calls the SDQ	  */
-/*				  		communication and the SHA1 function. Results  */
-/*						are displayed through LEDs.					  */
-/* 	Arguments : 		*Value - generic variable for read functions  */
-/*						i - used for repeat loops				      */
-/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
-/*  Returns: 			None								          */
-/**********************************************************************/
-unsigned char api_bq26100_data_Verify(unsigned char* message,unsigned char* digest,unsigned long serial)
-{
-	#include "usb_data.h"
-	//-------------流程：
-	//1,生成随机消息
-	//2,将数据与key一起计算出结果
-	//3,将消息发往bq26100
-	//4,设置发送bq26100控制命令
-	//5,读取bq26100的验证结果
-	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
-	unsigned char Value;
-	int i;
-	static unsigned char flag=0;
-  sdq_result result;
-
-	memcpy(Message,bq26100_sample_data[serial][0],20);
-	
-	//--------------------发送消息
-	result	=	api_bq26100_step2_send_message(Message,20);
-	if(result	==	sdq_error)
-		return 0;
-	//--------------------
-	result	=	api_bq26100_step3_write_control();
-	//api_bq26100_step4_read_control();
-	
-	if(result	==	sdq_error)
-		return 0;
-	//--------------------读取bq26100生成的SHA1/HMAC并对比
-	result	=	api_bq26100_step5_read_digest();
-	
-	//---------------------与原消息摘要对比
-	if(0==memcmp(Digest,bq26100_sample_data[serial][1],20))
-	{
-		message	=	(unsigned char*)bq26100_sample_data[serial][0];
-		digest	=	(unsigned char*)bq26100_sample_data[serial][1];
-		return 1;
-	}
-
-	return 0;
-}
-/**********************************************************************/
-/* 	int main(void)					      							  */
-/*																      */
-/*	Description : 		This is the main function. It calls the SDQ	  */
-/*				  		communication and the SHA1 function. Results  */
-/*						are displayed through LEDs.					  */
-/* 	Arguments : 		*Value - generic variable for read functions  */
-/*						i - used for repeat loops				      */
-/*	Global Variables:	Message[], Key[], Digest[], Digest_32[]		  */
-/*  Returns: 			None								          */
-/**********************************************************************/
-unsigned char api_bq26100_Get_Digest(unsigned char* message,unsigned char* digest,unsigned long serial)
-{
-	#include "usb_data.h"
-	//-------------流程：
-	//1,生成随机消息
-	//2,将数据与key一起计算出结果
-	//3,将消息发往bq26100
-	//4,设置发送bq26100控制命令
-	//5,读取bq26100的验证结果
-	//6,对比第二步计算出的结果与从bq26100读取的数据,如果相同，验证通过
-	unsigned char Value;
-	int i;
-	static unsigned char flag=0;
-  sdq_result result;
-
-	memcpy(Message,bq26100_sample_data[serial][0],20);
-	
-	//--------------------发送消息
-	result	=	api_bq26100_step2_send_message(Message,20);
-	if(result	==	sdq_error)
-		return 0;
-	//--------------------
-	result	=	api_bq26100_step3_write_control();
-	//api_bq26100_step4_read_control();
-	
-	if(result	==	sdq_error)
-		return 0;
-	//--------------------读取bq26100生成的SHA1/HMAC并对比
-	result	=	api_bq26100_step5_read_digest();
-	
-	//---------------------返回数据地址	
-	message	=	(unsigned char*)bq26100_sample_data[serial][0];
-	digest	=	(unsigned char*)Digest;
+//---------------------------------------------------------------------------
 
 
-	return 1;
-}
+//---------------------------------------------------------------------------
+
+
+
 //-------------------------------------------------------------------------------
 
 
+//-------------------------------------------------------------------------------
 
 
 

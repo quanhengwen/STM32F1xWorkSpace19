@@ -456,7 +456,7 @@ void EXTI_Configuration_ITRF(GPIO_TypeDef* GPIOx,						//GPIO端口
 	assert_param(IS_GPIO_PIN(GPIO_Pin_x));
 	
 	EXTI_ClockConf(GPIOx,GPIO_Pin_x);												//打开外部中断相应管脚时钟--20171213
-	EXTI_GPIOConf(GPIOx,GPIO_Pin_x,GPIO_Mode_IN_FLOATING);	//根据输入模式初始化GPIO--20171213---浮空
+	EXTI_GPIOConf(GPIOx,GPIO_Pin_x,GPIO_Mode_IPU);					//根据输入模式初始化GPIO--20171213---浮空
 	EXTI_LineConf(GPIOx,GPIO_Pin_x);												//设置中断线--20171213	
 	EXTI_TTMConf(GPIO_Pin_x,EXTI_Trigger_Rising_Falling);		//外部中断触发模式配置--20171213--边沿中断
 	EXTI_NVICConf(GPIOx,GPIO_Pin_x);												//中断通道及优先级配置--20171213	

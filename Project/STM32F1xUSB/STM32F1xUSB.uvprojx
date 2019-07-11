@@ -889,9 +889,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -917,6 +917,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1936,9 +1941,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1964,6 +1969,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2919,9 +2929,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2947,6 +2957,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3966,9 +3981,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3994,6 +4009,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4949,9 +4969,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4977,6 +4997,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5996,9 +6021,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6024,6 +6049,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7010,9 +7040,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7038,6 +7068,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8058,9 +8093,9 @@
               <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\hw_config.c</FilePath>
             </File>
             <File>
-              <FileName>usb_data.c</FileName>
+              <FileName>BqApp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\usb_data.c</FilePath>
+              <FilePath>..\..\Examples\USB\Virtual_COM_Port\source\BqApp.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8086,6 +8121,11 @@
               <FileName>TOOL.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\TOOL.C</FilePath>
+            </File>
+            <File>
+              <FileName>usb_data.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
             </File>
           </Files>
         </Group>

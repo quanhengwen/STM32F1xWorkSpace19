@@ -28,7 +28,9 @@ void SysTick_Server(void);											//嘀嗒时钟服务
 void SysTick_DeleyuS(unsigned int Time);				//SysTick延时nuS
 void SysTick_DeleymS(unsigned int Time);				//SysTick延时nmS
 void SysTick_DeleyS(unsigned int Time);					//SysTick延时nS
-
+unsigned long SysTick_GetVal(void);							//获取当前SysTick计数值
+unsigned long  SysTick_ReLoad(void);
+void SysTick_Clear(void);
 
 
 void DeleyuS(unsigned int Time);								//

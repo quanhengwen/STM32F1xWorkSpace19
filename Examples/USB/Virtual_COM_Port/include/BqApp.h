@@ -1,9 +1,9 @@
 /******************** (C) COPYRIGHT 2008 STMicroelectronics ********************
-* File Name          : platform_config.h
+* File Name          : usb_pwr.h
 * Author             : MCD Application Team
 * Version            : V2.2.0
 * Date               : 06/13/2008
-* Description        : Evaluation board specific configuration file.
+* Description        : Connection/disconnection & power management header
 ********************************************************************************
 * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
 * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE TIME.
@@ -14,30 +14,36 @@
 *******************************************************************************/
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __PLATFORM_CONFIG_H
-#define __PLATFORM_CONFIG_H
+#ifndef __BqApp_H
+#define __BqApp_H
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f10x_type.h"
+
 
 /* Exported types ------------------------------------------------------------*/
+typedef struct 
+{
+	unsigned char flag;				//1需要验证，0空闲
+	unsigned char message[20];
+}CertificationDataDef;
 /* Exported constants --------------------------------------------------------*/
-/* Uncomment the line corresponding to the STMicroelectronics evaluation board
-   used to run the example */
-
-
-#if !defined (USE_STM3210B_EVAL) &&  !defined (USE_STM3210E_EVAL)
- //#define USE_STM3210B_EVAL
- #define USE_STM3210E_EVAL
-#endif
-
-
-
-//#define ComPort	USART1
-
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/* Exported define -----------------------------------------------------------*/
 
-#endif /* __PLATFORM_CONFIG_H */
+/* External variables --------------------------------------------------------*/
+
+/* Exported functions ------------------------------------------------------- */
+void api_BqApp_configuration(void);
+void api_BqApp_server(void);
+void api_BqApp_sample_data_verify(void);
+void api_BqApp_sample_data_get_digest(void);
+unsigned short api_BqApp_get_digest(void);
+void api_BqApp_gpio_configuration(void);
+
+
+void api_BqApp_certification_message_server(void);
+static unsigned char api_BqApp_set_certification_message(const unsigned char* message);
+
+#endif  /*__USB_PWR_H*/
 
 /******************* (C) COPYRIGHT 2008 STMicroelectronics *****END OF FILE****/

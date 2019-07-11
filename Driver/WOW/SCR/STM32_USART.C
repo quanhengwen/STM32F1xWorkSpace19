@@ -337,9 +337,7 @@ void api_usart_dma_configurationNR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsi
 *******************************************************************************/
 void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize)	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 {
-	usart_gpio_initialize(pRS485->USARTx);							//串口GPIO配置
-	usart_initialize_nr(pRS485->USARTx,USART_BaudRate);	//USART_DMA配置--查询方式，不开中断
-	usart_dma_initialize(pRS485->USARTx,BufferSize);		//USART_DMA配置--查询方式，不开中断
+	
 	
 	set_usart_type(pRS485->USARTx,1);		//设置串口类型：0---USART,1-RS485
 	set_rs485_addr(pRS485);
@@ -355,6 +353,10 @@ void api_rs485_dma_configurationNR(RS485Def *pRS485,u32 USART_BaudRate,unsigned 
 	
 	set_rs485_tx(pRS485,DISABLE);
 	set_rs485_rx(pRS485,ENABLE);
+	
+	usart_gpio_initialize(pRS485->USARTx);							//串口GPIO配置	
+	usart_initialize_nr(pRS485->USARTx,USART_BaudRate);	//USART_DMA配置--查询方式，不开中断
+	usart_dma_initialize(pRS485->USARTx,BufferSize);		//USART_DMA配置--查询方式，不开中断
 }
 /*******************************************************************************
 *函数名			:	USART_DMA_ConfigurationNr
@@ -1036,8 +1038,11 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 //	{	
 		uart_rxd	=	get_usart_rx_data_addr(USARTx);
 		dma_size	=	get_usart_dma_buffer_size(USARTx);
+
 		DMAy_Channelrx=get_usart_rx_dma_channel(USARTx);
 		length 	= DMAy_Channelrx->CNDTR;										//DMA_GetCurrDataCounter(DMA1_Channel5);	//得到真正接收数据个数(DMA_GetCurrDataCounter返回当前DMA通道x剩余的待传输数据数目)
+		if(length>dma_size)	//超出缓存，避免内存溢出
+			return 0;
 		length	=	dma_size-length;												 	//设定缓冲区大小减剩余缓冲区大小得到实际接收到的数据个数
 		if(0==length)
 			return 0;
