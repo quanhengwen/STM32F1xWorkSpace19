@@ -247,7 +247,7 @@ void api_BqApp_sample_data_verify(void)
 		return;
 	}
 	//≤‚ ‘ ±º‰º‰∏Ù
-	if(time++<2000)
+	if(time++<100)
 		return ;
 	time=0;
 	

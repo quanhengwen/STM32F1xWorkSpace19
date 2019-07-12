@@ -65,8 +65,8 @@ void SDQ_TEST_Server(void)
 *******************************************************************************/
 static void SDQ_TEST_SYS_Configuration(void)
 {
-	SDQ_SLAVE.port.SDQ_Port	=	GPIOA;
-	SDQ_SLAVE.port.SDQ_Pin	=	GPIO_Pin_6;
+//	SDQ_SLAVE.port.SDQ_Port	=	GPIOA;
+//	SDQ_SLAVE.port.SDQ_Pin	=	GPIO_Pin_6;
 	
 	api_sdq_slave_configuration(&SDQ_SLAVE);		//SDQ从机设备配置
 }

@@ -12,6 +12,8 @@
 
 #include "usb_data.h"
 
+#include "STM32F10x_BitBand.H"
+
 #define bq26100V1	0
 #define bq26100V2	1
 #define bq26100V2Slave	1
@@ -24,10 +26,34 @@
 		//-------------------飞达接口
 		#define SDQ_Port   	GPIOA  
 		#define SDQ_Pin    	GPIO_Pin_6
+		
+		#define	SetBQPinLevel	PA6
+		#define	GetBQPinLevel	PA6in
+
+		#define	SetBQPinOut		{	GPIOA->CRL&=0xF0FFFFFF;\
+														GPIOA->CRL|=0x07000000;\
+														SetBQPinLevel=0;}		//配置为OD输出模式并拉低
+															
+		#define	SetBQPinIntrr	{	GPIOA->CRL&=0xF0FFFFFF;\
+														GPIOA->CRL|=0x08000000;\
+														SetBQPinLevel=0;}			//配置为上拉输入模式
+
 	#else
 		//-------------------带KEY
 		#define SDQ_Port   	GPIOA  
 		#define SDQ_Pin    	GPIO_Pin_7
+		
+		#define	SetBQPinLevel	PA7
+		#define	GetBQPinLevel	PA7in
+
+		#define	SetBQPinOut		{	GPIOA->CRL&=0x0FFFFFFF;\
+												GPIOA->CRL|=0x70000000;\
+												SetBQPinLevel=0;}		//配置为OD输出模式并拉低
+													
+		#define	SetBQPinIntrr	{	GPIOA->CRL&=0x0FFFFFFF;\
+												GPIOA->CRL|=0x80000000;\
+												SetBQPinLevel=0;}			//配置为上拉输入模式
+
 	#endif
 		
 		
@@ -42,13 +68,30 @@
 		#define FDSDQPin    	GPIO_Pin_6
 #endif
 
-#define	SDQ_SetOut		GPIO_Configuration_OPP50(SDQ_Port,	SDQ_Pin)			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-#define	SDQ_SetIn			GPIO_Configuration_IPD(SDQ_Port,		SDQ_Pin)			//将GPIO相应管脚配置为下拉输入模式----V20170605
 
-#define	SDQ_H					SDQ_Port->BSRR	= SDQ_Pin			//CPLD_WR	=	1;
-#define	SDQ_L					SDQ_Port->BRR		= SDQ_Pin			//CPLD_WR	=	0;
 
-#define	SDQ_Read			(SDQ_Port->IDR	& SDQ_Pin)			//CPLD_WR	=	0;
+//#define	SetBQPinLevel	PA6
+//#define	GetBQPinLevel	PA6in
+
+//#define	SetBQPinOut		{	GPIOA->CRL&=0xF0FFFFFF;\
+//												GPIOA->CRL|=0x07000000;\
+//												SetBQPinLevel=0;}		//配置为OD输出模式并拉低
+//													
+//#define	SetBQPinIntrr	{	GPIOA->CRL&=0xF0FFFFFF;\
+//												GPIOA->CRL|=0x08000000;\
+//												SetBQPinLevel=0;}			//配置为上拉输入模式
+
+#define	SDQ_SetOut		SetBQPinOut			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
+#define	SDQ_SetIn			SetBQPinIntrr			//将GPIO相应管脚配置为下拉输入模式----V20170605
+//#define	SDQ_H					{SetBQPinLevel=1;}			//CPLD_WR	=	1;
+//#define	SDQ_L					{SetBQPinLevel=0;}			//CPLD_WR	=	0;
+												
+//#define	SDQ_SetOut		GPIO_Configuration_OPP50(SDQ_Port,	SDQ_Pin)			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
+//#define	SDQ_SetIn			GPIO_Configuration_IPU(SDQ_Port,		SDQ_Pin)			//将GPIO相应管脚配置为下拉输入模式----V20170605
+//#define	SDQ_H					SDQ_Port->BSRR	= SDQ_Pin			//CPLD_WR	=	1;
+//#define	SDQ_L					SDQ_Port->BRR		= SDQ_Pin			//CPLD_WR	=	0;
+
+//#define	SDQ_Read			(SDQ_Port->IDR	& SDQ_Pin)			//CPLD_WR	=	0;
 
 
 #define bq26100_Family_Code 0x09		//默认09
@@ -416,20 +459,47 @@ void sdq_write_bit(unsigned char bit)		//1-wire 一位（1bit）写操作-写0&写1
 {
 	//总时间按80us
 	// =============Write 1
-	if (bit&0x01)		
+	SetBQPinLevel=0;					//拉低总线
+	SysTick_DeleyuS(5);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始
+	if (bit&0x01)
 	{
-		SDQ_L;					//拉低总线
-		SysTick_DeleyuS(10);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始 
-		SDQ_H;					//拉高总线
+		SetBQPinLevel=1;					//拉高总线
 		SysTick_DeleyuS(80);	//等待从机采样完成
+	}
+	else
+	{		
+		SysTick_DeleyuS(80);	//等待从机采样完成
+	}
+	SetBQPinLevel=1;		//拉高总线
+	SysTick_DeleyuS(10);	//等待从机采样完成,至少需要1us恢复时间
+	return ;
+	
+	
+	if (bit&0x01)		
+	{	
+		SetBQPinLevel=0;					//拉低总线		
+		SysTick_DeleyuS(10);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始 
+		SetBQPinLevel=1;					//拉高总线
+		SysTick_DeleyuS(80);	//等待从机采样完成
+		
+		//SDQ_L;					//拉低总线
+		//SysTick_DeleyuS(10);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始 
+		//SDQ_H;					//拉高总线
+		//SysTick_DeleyuS(80);	//等待从机采样完成
+		
 	}
 	// =============Write 0
 	else						
 	{
-		SDQ_L;					//拉低总线
-		SysTick_DeleyuS(85);	//保持60us，等待从机采样
-		SDQ_H;					//释放总线
-		SysTick_DeleyuS(5);
+		SetBQPinLevel=0;					//拉低总线		
+		SysTick_DeleyuS(85);		//至少维持了1us,表示写时序(包括写0时序或写1时序)开始 
+		SetBQPinLevel=1;					//拉高总线
+		SysTick_DeleyuS(5);	//等待从机采样完成
+		
+		//SDQ_L;					//拉低总线
+		//SysTick_DeleyuS(85);	//保持60us，等待从机采样
+		//SDQ_H;					//释放总线
+		//SysTick_DeleyuS(5);
 	}
 	SysTick_DeleyuS(2);
 }
@@ -450,14 +520,14 @@ unsigned char sdq_read_bit(void)
 	//总时间按80us
 	unsigned char bit=0;	
 	SDQ_SetOut;				//设为输出模式
-	SDQ_L; 						//拉低总线
-	//SysTick_DeleyuS(15);		//至少1us时间
-//	SDQ_H; 						//释放总线
-	SDQ_SetIn;					//设置为输入模式
-	//SDQ_H; 						//释放总线
+	SetBQPinLevel=0; 			//拉低总线
+	SysTick_DeleyuS(5);		//至少1us时间
+//	SDQ_H; 							//释放总线
+	SDQ_SetIn;						//设置为输入模式
+	//SDQ_H; 							//释放总线
 	SysTick_DeleyuS(15);	//等待从机响应
 
-	if(0!=SDQ_Read)				//读取总线状态
+	if(0!=GetBQPinLevel)				//读取总线状态
 		bit = 1;
 	else
 		bit = 0;	
@@ -479,9 +549,8 @@ void sdq_write_byte(unsigned char dat)
 {             
 	unsigned char j;
 	unsigned char testb;
-	
-	SDQ_SetOut;							//SET PG11 OUTPUT;
-	
+	//SysTick_ReLoad();
+	SDQ_SetOut;							//SET PG11 OUTPUT;	
 	for (j=1; j<=8; j++)
 	{
 		testb = dat&0x01;
@@ -529,11 +598,11 @@ sdq_result bq26100_rest(void)		//复位Dallas,返回结果
 {
 	unsigned short retry=0;
 	//----------------------复位时间：拉低信号大于480us
-	SDQ_H;
+	SetBQPinLevel	=	1;
 	SDQ_SetOut;							//SET PG11 OUTPUT
-	SDQ_H;
+	SetBQPinLevel	=	1;
 	SysTick_DeleyuS(10);		//拉低750us（大于480uS)
-	SDQ_L;									//拉低DQ
+	SetBQPinLevel	=	0;									//拉低DQ
 	SysTick_DeleyuS(750);		//拉低750us（大于480uS)
 //	SDQ_H;								//DQ=1 
 //	SysTick_DeleyuS(15);		//15US---检测响应需要在15uS后
@@ -544,8 +613,9 @@ sdq_result bq26100_rest(void)		//复位Dallas,返回结果
 	//3从机拉低总线60uS~240uS
 	//4从机释放/拉高总线
 	SDQ_SetIn;				//SET PG11 INPUT		//输入模式
+	SetBQPinLevel	=	1;
 	SysTick_DeleyuS(15);		//15US---检测响应需要在15uS后
-	while(SDQ_Read	&& (retry < 260))			//响应检测时间不超过240uS
+	while(GetBQPinLevel	&& (retry < 260))			//响应检测时间不超过240uS
 	{
 		retry++;
 		SysTick_DeleyuS(1);
@@ -554,6 +624,8 @@ sdq_result bq26100_rest(void)		//复位Dallas,返回结果
 		return sdq_error;
 	else
 		retry=0;
+	SDQ_SetOut;							//SET PG11 OUTPUT
+	SetBQPinLevel	=	1;
 	//增加延时--为了满足总的检测时间480uS
 	SysTick_DeleyuS(480);		//总的检测响应时间需要大于480uS
 	return sdq_success;
@@ -591,7 +663,7 @@ unsigned char TestPresence(void)
 	GotPulse = 0;			//Initialize as no pulse detected
 	while ((PresenceTimer > 0) && (GotPulse == 0))
 	{
-		InputData = SDQ_Read;	//Monitor logic state of GPIO 
+		InputData = GetBQPinLevel;	//Monitor logic state of GPIO 
 		if (InputData == 0) 
 		{  		//If GPIO is Low,
 			GotPulse = 1;			//it means that device responded
