@@ -446,7 +446,7 @@ void CAN_SCE_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void EXTI9_5_IRQHandler(void)
+__weak void EXTI9_5_IRQHandler(void)
 {
 	EXTI_Server();
 }

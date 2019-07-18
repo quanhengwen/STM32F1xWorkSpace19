@@ -1,5 +1,5 @@
-#ifndef __SHA1_H
-#define __SHA1_H
+#ifndef __HMAC_H
+#define __HMAC_H
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 /* Includes ------------------------------------------------------------------*/

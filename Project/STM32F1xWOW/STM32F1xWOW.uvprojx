@@ -1316,6 +1316,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1342,14 +1352,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -1425,11 +1435,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -2900,6 +2905,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2926,14 +2941,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -3009,11 +3024,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -4708,6 +4718,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4734,14 +4754,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -4945,11 +4965,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -6548,6 +6563,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6574,14 +6599,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -6657,11 +6682,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -8132,6 +8152,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -8158,14 +8188,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -8241,11 +8271,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -9716,6 +9741,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -9742,14 +9777,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -9825,11 +9860,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -11300,6 +11330,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -11326,14 +11366,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -11409,11 +11449,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -12884,6 +12919,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -12910,14 +12955,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -12993,11 +13038,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -14468,6 +14508,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -14494,14 +14544,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -14577,11 +14627,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -16052,6 +16097,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -16078,14 +16133,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -16161,11 +16216,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -17636,6 +17686,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -17662,14 +17722,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -17745,11 +17805,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -19220,6 +19275,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -19246,14 +19311,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -19329,11 +19394,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -20804,6 +20864,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -20830,14 +20900,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -20913,11 +20983,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -22388,6 +22453,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -22414,14 +22489,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -22497,11 +22572,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -23972,6 +24042,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -23998,14 +24078,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -24081,11 +24161,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -25556,6 +25631,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -25582,14 +25667,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -25665,11 +25750,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -27140,6 +27220,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -27166,14 +27256,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -27249,11 +27339,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -28724,6 +28809,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -28750,14 +28845,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -28833,11 +28928,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -30308,6 +30398,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -30334,14 +30434,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -30417,11 +30517,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -31892,6 +31987,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -31918,14 +32023,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -32001,11 +32106,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -33476,6 +33576,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -33502,14 +33612,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -33585,11 +33695,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -35060,6 +35165,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -35086,14 +35201,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -35169,11 +35284,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -36644,6 +36754,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -36670,14 +36790,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -36753,11 +36873,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -38228,6 +38343,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -38254,14 +38379,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -38337,11 +38462,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -39812,6 +39932,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -39838,14 +39968,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -39921,11 +40051,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -41396,6 +41521,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -41422,14 +41557,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -41505,11 +41640,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -42980,6 +43110,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -43006,14 +43146,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -43089,11 +43229,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -44564,6 +44699,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -44590,14 +44735,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -44673,11 +44818,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -46148,6 +46288,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -46174,14 +46324,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -46257,11 +46407,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -47732,6 +47877,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -47758,14 +47913,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -47841,11 +47996,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -49316,6 +49466,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -49342,14 +49502,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -49425,11 +49585,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -50900,6 +51055,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -50926,14 +51091,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -51009,11 +51174,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -52484,6 +52644,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -52510,14 +52680,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -52593,11 +52763,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -54068,6 +54233,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -54094,14 +54269,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -54177,11 +54352,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -55782,6 +55952,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -55808,14 +55988,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -55955,11 +56135,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -57735,6 +57910,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -57761,14 +57946,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -57891,11 +58076,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -59588,6 +59768,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -59614,14 +59804,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -59697,11 +59887,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -61300,6 +61485,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -61326,14 +61521,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -61409,11 +61604,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -63140,6 +63330,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -63166,14 +63366,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -63296,11 +63496,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -65027,6 +65222,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -65053,14 +65258,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -65136,11 +65341,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -66739,6 +66939,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -66765,14 +66975,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -66848,11 +67058,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -68579,6 +68784,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -68605,14 +68820,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -68876,11 +69091,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -70573,6 +70783,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -70599,14 +70819,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -70682,11 +70902,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -72285,6 +72500,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -72311,14 +72536,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -72441,11 +72666,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -74172,6 +74392,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -74198,14 +74428,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -74281,11 +74511,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -76014,6 +76239,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -76040,14 +76275,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -76123,11 +76358,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -77856,6 +78086,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -77882,14 +78122,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -77965,11 +78205,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -79745,6 +79980,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -79771,14 +80016,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -79901,11 +80146,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -81634,6 +81874,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -81660,14 +81910,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -81743,11 +81993,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -83476,6 +83721,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -83502,14 +83757,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -83585,11 +83840,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -85412,6 +85662,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -85438,14 +85698,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -85649,11 +85909,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -87382,6 +87637,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -87408,14 +87673,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -87538,11 +87803,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -89318,6 +89578,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -89344,14 +89614,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -89474,11 +89744,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -91254,6 +91519,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -91280,14 +91555,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -91410,11 +91685,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -92073,7 +92343,7 @@
               <MiscControls></MiscControls>
               <Define>SDQ_TEST</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\INC;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
+              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\SCR;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -93190,6 +93460,16 @@
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Components\SCR\BQ26100.C</FilePath>
             </File>
+            <File>
+              <FileName>BQ26100Slave.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Slave.C</FilePath>
+            </File>
+            <File>
+              <FileName>BQ26100Master.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Components\SCR\BQ26100Master.C</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -93216,14 +93496,14 @@
               <FilePath>..\..\Driver\Tool\BMP.C</FilePath>
             </File>
             <File>
-              <FileName>SHA1.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Tool\SHA1.C</FilePath>
-            </File>
-            <File>
               <FileName>usb_data.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Tool\usb_data.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMAC.C</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Driver\Tool\HMAC.C</FilePath>
             </File>
           </Files>
         </Group>
@@ -93346,11 +93626,6 @@
               <FileName>IIC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\Protocol\IIC.C</FilePath>
-            </File>
-            <File>
-              <FileName>SDQ.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\Protocol\SDQ.C</FilePath>
             </File>
           </Files>
         </Group>

@@ -168,8 +168,7 @@ void api_usb_virtual_com_configuration(void)		//虚拟串口配置
 //	 PWM_OUT(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	
-	//while(1)
-	//api_BqApp_certification_message_server();
+
 }
 /*******************************************************************************
 *函数名			:	function

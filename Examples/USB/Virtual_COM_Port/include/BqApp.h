@@ -35,13 +35,27 @@ typedef struct
 /* Exported functions ------------------------------------------------------- */
 void api_BqApp_configuration(void);
 void api_BqApp_server(void);
-void api_BqApp_sample_data_verify(void);
-void api_BqApp_sample_data_get_digest(void);
+
+
 unsigned short api_BqApp_get_digest(void);
 void api_BqApp_gpio_configuration(void);
 
 
-void api_BqApp_certification_message_server(void);
+unsigned char api_BqApp_Work_As_Smt_Server(void);
+unsigned char api_BqApp_Work_As_Feeder_Server(void);
+unsigned char api_BqApp_Sample_Data_Verify(void);
+unsigned char api_BqApp_Get_Sample_Digest(void);
+
+
+static void api_BqApp_usb_to_feeder(void);
+static void api_BqApp_set_sys_led(unsigned char flag);
+//static void api_BqApp_set_feeder_connect(unsigned char flag);
+static void api_BqApp_set_usart_connect(void);
+
+
+
+
+
 static unsigned char api_BqApp_set_certification_message(const unsigned char* message);
 
 #endif  /*__USB_PWR_H*/

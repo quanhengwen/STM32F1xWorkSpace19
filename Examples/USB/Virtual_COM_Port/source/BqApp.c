@@ -43,8 +43,10 @@
 #include "STM32_SYSTICK.H"
 #include "STM32_PWM.H"
 
-#include "BQ26100.H"
+#include "BQ26100Master.H"
 #include "BQ26100DATA.H"
+
+#include "STM32F10x_BitBand.H"
 
 #include "usb_lib.h"
 //#include "usb_prop.h"
@@ -64,19 +66,21 @@
 #define bq26100V1	0
 #define bq26100V2	1
 
-#define bq26100Master 0
-#define bq26100Verify 1
+#define bq26100WorkAsSMT 				0		//模拟SMT发送认证数据
+#define bq26100WorkAsFeeder 		1		//模拟飞达接收认证数据并认证
+#define bq26100SampleVerify 		0		//校验样品数据
+#define bq26100GetSampleDigest 	0		//对样品数据重新认证--
 
 
 #if bq26100V1
-		#define G1Port   	GPIOB  
-		#define G1Pin    	GPIO_Pin_4
+		#define G1Port   		GPIOB  
+		#define G1Pin    		GPIO_Pin_4
 		
-		#define G2Port   	GPIOB  
-		#define G2Pin    	GPIO_Pin_3
+		#define G2Port   		GPIOB  
+		#define G2Pin    		GPIO_Pin_3
 		
-		#define G3Port   	GPIOB  
-		#define G3Pin    	GPIO_Pin_9
+		#define G3Port   		GPIOB  
+		#define G3Pin    		GPIO_Pin_9
 		
 		#define V24Port   	GPIOB  
 		#define V24Pin    	GPIO_Pin_8
@@ -93,7 +97,7 @@
 		#define SDQPort   	GPIOB  
 		#define SDQPin    	GPIO_Pin_7
 		
-	#elif bq26100V2
+#elif bq26100V2
 		
 		#define ComPortIn		USART2
 		#define ComPortOut	USART3
@@ -121,14 +125,21 @@
 		#define FeederCheckPort   	GPIOB  
 		#define FeederCheckPin    	GPIO_Pin_2
 		
+		#define GetSlavePortCheckInLevel	PB2in
+		
 		//-------------------作为从机模拟接入控制
 		#define FeederConnectPort   	GPIOB  
 		#define FeederConnectPin    	GPIO_Pin_9
 		
+		#define SetFeederConnect   			(PB9=1)  
+		#define SetFeederDisConnect    	(PB9=0)
+		
+		//GPIO_SetBits(GPIOA,GPIO_Pin_0);	
+		
 #endif
 
 #define bqstartnum 0
-#define bqendnum	 0
+#define bqendnum	 bq26100BufferSize
 #define bqusartsize 64
 
 /* Private macro -------------------------------------------------------------*/
@@ -140,12 +151,7 @@ CertificationDataDef	CertificationData;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-unsigned short api_BqApp_Smt_Command_Server(void);
-static void api_BqApp_usb_to_feeder(void);
-static void api_BqApp_set_sys_led(unsigned char flag);
-static void api_BqApp_set_feeder_connect(unsigned char flag);
-static void api_BqApp_set_usart_connect(unsigned char flag);
-static void api_BqApp_master_to_feeder(void);
+
 
 /*******************************************************************************
 * Function Name  : Set_System
@@ -157,18 +163,15 @@ void api_BqApp_configuration(void)
 {	
 	
 	api_BqApp_gpio_configuration();
-#if bq26100Master
-	api_BqApp_set_usart_connect(0);
-#else
-	api_BqApp_set_usart_connect(0);
-#endif
+	api_BqApp_set_usart_connect();
+
   
 //	while(1)
 //	{
 //		api_usb_virtual_com_server();
 //	}
 //	 PWM_OUT(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
-	//SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
+	SysTick_Configuration(100);	//系统嘀嗒时钟配置72MHz,单位为uS
 }
 //------------------------------------------------------------------------------
 
@@ -208,170 +211,27 @@ void api_BqApp_server(void)
 	}
 	
 	
-#if bq26100Master
-	//api_BqApp_usb_to_feeder();
-	api_BqApp_master_to_feeder();
-#elif bq26100Verify
-	api_BqApp_sample_data_verify();
+#if bq26100WorkAsSMT					//模拟SMT发送认证数据
+	api_BqApp_Work_As_Smt_Server();
+#elif bq26100WorkAsFeeder			//模拟飞达接收认证数据并认证
+	api_BqApp_Work_As_Feeder_Server();
+#elif bq26100SampleVerify			//校验样品数据
+	api_BqApp_Sample_Data_Verify();
+#elif bq26100GetSampleDigest	//对样品数据重新认证
+	api_BqApp_Get_Sample_Digest();
 #else
-	api_BqApp_Smt_Command_Server();
+	
 #endif
 }
 //------------------------------------------------------------------------------
 
 
-/*******************************************************************************
-*函数名			:	bq26100Verify
-*功能描述		:	校验数据
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-void api_BqApp_sample_data_verify(void)
-{
-	
-	unsigned short i = 0;
-	static unsigned short time=0;
-	static unsigned short start=0;
-	static unsigned short printfserial=0;
-	static unsigned short serial=0;
-	unsigned char* message=NULL;
-	unsigned char digest[20];
-	
-	//启动等待时间
-	if(start<2000)
-	{
-		start++;
-		return;
-	}
-	//测试时间间隔
-	if(time++<100)
-		return ;
-	time=0;
-	
-	if(serial>bqendnum)
-	{
-		serial	=	bqstartnum;
-		SysTick_DeleymS(500);				//SysTick延时nmS
-		return;
-	}
-	api_BqApp_set_sys_led(1);	
-	if(bqstartnum==serial)
-	{
-		printfserial=0;
-		api_usb_printf("\r\n\t{\r\n");
-	}
-	//---------------------获取待验证原始消息
-	message	=	(unsigned char*)bq26100_sample_data[serial][0];
-	//---------------------获取消息摘要
-	api_bq26100_get_digest(message,digest);
-	//---------------------与原消息摘要对比及打印
-	for(i=0;i<2500;i++)
-	{
-		if(0==memcmp(digest,bq26100_sample_data[i][1],20))
-		{
-			api_usb_printf("/*%0.4d:%0.4d:*/\t",printfserial,serial);
-			printfserial++;
-			api_usb_printf("{{");
-			//-----------message
-			for(i=0;i<19;i++)
-			{
-				api_usb_printf("0x%0.2X,",message[i]);
-			}
-			api_usb_printf("0x%0.2X",message[19]);
-			
-			api_usb_printf("},\t{");
-			
-			//-----------digest
-			for(i=0;i<19;i++)
-			{
-				api_usb_printf("0x%0.2X,",digest[i]);
-			}
-			api_usb_printf("0x%0.2X",digest[19]);
-			api_usb_printf("}},\r\n");
-			
-			break;
-		}
-	}
-	if(bqendnum==serial)
-		api_usb_printf("\t}\r\n");
-	serial++;
-	api_usb_in_set_complete_end();
-	api_BqApp_set_sys_led(0);
-}
-//------------------------------------------------------------------------------
 
 
-/*******************************************************************************
-*函数名			:	bq26100Verify
-*功能描述		:	校验数据
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-void api_BqApp_sample_data_get_digest(void)
-{	
-	unsigned short i = 0;
-	static unsigned short time=0;
-	static unsigned short start=0;
-	static unsigned short serial=0;
-	unsigned char* message=NULL;
-	unsigned char digest[20];
-	
-	//启动等待时间
-	if(start<2000)
-	{
-		start++;
-		return;
-	}
-	//测试时间间隔
-	if(time++<100)
-		return ;
-	time=0;
-	
-	if(serial>bqendnum)
-	{
-		SysTick_DeleymS(500);				//SysTick延时nmS
-		return;
-	}
-	api_BqApp_set_sys_led(1);
-	if(bqstartnum==serial)
-		api_usb_printf("\r\n\t{\r\n");
-	//---------------------获取待验证原始消息
-	message	=	(unsigned char*)bq26100_sample_data[serial][0];
-	//---------------------获取消息摘要
-	api_bq26100_get_digest(message,digest);			//获取消息摘要	
-	//---------------------打印消息及对应的摘要	
-	api_usb_printf("/*%0.4d:*/\t",serial);
-	api_usb_printf("{{");
-	//-----------message
-	for(i=0;i<19;i++)
-	{
-		api_usb_printf("0x%0.2X,",message[i]);
-	}
-	api_usb_printf("0x%0.2X",message[19]);
-	
-	api_usb_printf("},\t{");
-	
-	//-----------digest
-	for(i=0;i<19;i++)
-	{
-		api_usb_printf("0x%0.2X,",digest[i]);
-	}
-	api_usb_printf("0x%0.2X",digest[19]);
-	api_usb_printf("}},\r\n");		
 
-	if(bqendnum==serial)
-		api_usb_printf("\t}\r\n");
-	serial++;
-	api_usb_in_set_complete_end();
-	api_BqApp_set_sys_led(0);
-}
-//------------------------------------------------------------------------------
+
+
+
 
 /*******************************************************************************
 *函数名			:	bq26100Verify
@@ -412,7 +272,7 @@ unsigned char api_BqApp_message_data_get_digest(const unsigned char* message)
 	//---------------------获取待验证原始消息
 	//message	=	(unsigned char*)bq26100_sample_data[serial][0];
 	//---------------------获取消息摘要
-	api_bq26100_get_digest(message,digest);			//获取消息摘要	
+	api_bq26100Master_get_digest(message,digest);			//获取消息摘要	
 	//---------------------打印消息及对应的摘要	
 	api_usb_printf("/*%0.6d:*/\t",serial);
 	api_usb_printf("{{");
@@ -443,6 +303,9 @@ unsigned char api_BqApp_message_data_get_digest(const unsigned char* message)
 //------------------------------------------------------------------------------
 
 
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -452,7 +315,274 @@ unsigned char api_BqApp_message_data_get_digest(const unsigned char* message)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short api_BqApp_Smt_Command_Server(void)
+unsigned char api_BqApp_Work_As_Smt_Server(void)
+{
+	unsigned short len	=	0;
+	static unsigned char time	=	0;
+	static unsigned char time2	=	0;
+	static unsigned char step	=	0;
+	static unsigned short serial = 0;
+	unsigned char rxbuffer[bqusartsize]={0};
+	unsigned char txbuffer[bqusartsize]={0};
+	//unsigned char* sample	=	0;
+	unsigned char sample[20]={0xB8,0xD3,0xAA,0x20,0x82,0xFE,0xD1,0xF0,0x7C,0x0A,0x07,0x8E,0x26,0xC7,0xDE,0x10,0xCA,0xA3,0x2C,0xC8};
+	
+	//st1----------获取状态
+	len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+	//----空闲状态
+	if(2==len)
+	{
+		api_BqApp_set_sys_led(1);
+		if(0x01==rxbuffer[0])	//空闲
+		{
+			if(0==step)
+			{
+				step=1;
+				time2=0;
+			}
+		}
+	}
+	else if(5==len)
+	{
+		if(0xCA==rxbuffer[0])
+		{
+			step=2;
+			time2=0;
+		}
+		else if(0x4C==rxbuffer[0])
+		{
+			step=3;
+			time2=0;
+		}
+	}
+	
+	//-------------------从机未接入时不工作
+	if(1==GetSlavePortCheckInLevel)
+	{
+		time	=	0;
+		time2	=	0;
+		step	=	0;
+		return 0;
+	}
+	//-------------------飞达已连接
+	else
+	{
+		//=================先检测飞达返回数据
+		len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+		//----空闲状态
+		if(2==len)
+		{
+			api_BqApp_set_sys_led(1);
+			if(0x01==rxbuffer[0])	//空闲
+			{
+				if(0==step)
+				{
+					step=1;
+					time2=0;
+				}
+			}
+		}
+		else if(5==len)
+		{
+			if(0xCA==rxbuffer[0])
+			{
+				step=2;
+				time2=0;
+			}
+			else if(0x4C==rxbuffer[0])
+			{
+				step=3;
+				time2=0;
+			}
+		}
+		//=================根据step状态发送相应的数据
+		if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
+		{
+			return 0;
+		}
+		//-----------------帧消息间隔
+		if(time++<2)		//连续帧间隔8ms
+		{
+			return 0;
+		}
+		else
+		{
+			time = 0;
+		}
+		//-----------------检测空闲
+		if(0==step)
+		{
+			txbuffer[0]=0x00;
+			txbuffer[1]=0x00;
+			txbuffer[2]=0xFF;
+			api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+		}
+		else if(1==step)
+		{
+			txbuffer[0]=0xCA;
+			txbuffer[1]=0x00;
+			txbuffer[2]=0x35;
+			api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+		}
+		//-----------------发送校验数据
+		else if(2==step)
+		{
+			txbuffer[0]=0x4C;
+			txbuffer[1]=0x14;
+			txbuffer[22]=0x7D;
+			memcpy(sample,bq26100_sample_data[serial][0],20);
+			if(serial<bqendnum)
+				serial++;
+			else
+				serial = 0;
+			for(len=0;len<20;len++)
+			{
+				txbuffer[len+2]=sample[19-len];
+			}
+			api_usart_dma_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
+			api_BqApp_set_sys_led(0);
+		}
+		//-----------------流程完成，等待下次连接
+		else if(3==step)
+		{
+			
+			txbuffer[0]=0x00;
+			txbuffer[1]=0x00;
+			txbuffer[2]=0xFF;
+		}
+	}
+	return 1;
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
+{
+	unsigned short len	=	0;
+	static unsigned char time	=	0;
+	static unsigned char time2	=	0;
+	static unsigned char step	=	0;
+	static unsigned short serial = 0;
+	unsigned char rxbuffer[bqusartsize]={0};
+	unsigned char txbuffer[bqusartsize]={0};
+	//unsigned char* sample	=	0;
+	unsigned char sample[20]={0xB8,0xD3,0xAA,0x20,0x82,0xFE,0xD1,0xF0,0x7C,0x0A,0x07,0x8E,0x26,0xC7,0xDE,0x10,0xCA,0xA3,0x2C,0xC8};
+	
+	//st1----------获取状态
+	len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+	//----空闲状态
+	if(2==len)
+	{
+		api_BqApp_set_sys_led(1);
+		if(0x01==rxbuffer[0])	//空闲
+		{
+			if(0==step)
+			{
+				step=1;
+				time2=0;
+			}
+		}
+	}
+	else if(5==len)
+	{
+		if(0xCA==rxbuffer[0])
+		{
+			step=2;
+			time2=0;
+		}
+		else if(0x4C==rxbuffer[0])
+		{
+			step=3;
+			time2=0;
+		}
+	}
+	
+	//-------------------从机未接入时不工作
+	if(GPIO_ReadInputDataBit(FeederCheckPort,FeederCheckPin))
+	{
+		time	=	0;
+		time2	=	0;
+		step	=	0;
+		return 0;
+	}
+	
+	if(3==step)
+	{
+		return 0;
+	}
+	
+
+	if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
+	{
+		return 0;
+	}
+	
+	if(time++<2)		//连续帧间隔8ms
+		return 0;	
+	time = 0;
+	
+	//ST2-----------------------
+	if(0==step)
+	{
+		txbuffer[0]=0x00;
+		txbuffer[1]=0x00;
+		txbuffer[2]=0xFF;
+		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+	}
+	else if(1==step)
+	{
+		txbuffer[0]=0xCA;
+		txbuffer[1]=0x00;
+		txbuffer[2]=0x35;
+		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+	}
+	else if(2==step)
+	{
+		txbuffer[0]=0x4C;
+		txbuffer[1]=0x14;
+		txbuffer[22]=0x7D;
+		memcpy(sample,bq26100_sample_data[serial][0],20);
+		if(serial<bqendnum)
+			serial++;
+		else
+			serial = 0;
+		for(len=0;len<20;len++)
+		{
+			txbuffer[len+2]=sample[19-len];
+		}
+		api_usart_dma_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
+		api_BqApp_set_sys_led(0);
+	}
+	else if(3==step)
+	{
+		
+		txbuffer[0]=0x00;
+		txbuffer[1]=0x00;
+		txbuffer[2]=0xFF;
+		//api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+	}
+	return 1;
+	//time2++;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_BqApp_Work_As_Feeder_Server(void)
 {
 	#include 	"TOOL.H"
 	unsigned short i	=	0;
@@ -468,14 +598,14 @@ unsigned short api_BqApp_Smt_Command_Server(void)
 		//return 0;
 	}
 	connecttime++;
-	if(connecttime==50)
+	if(connecttime==1000)
 	{
-		api_BqApp_set_feeder_connect(1);
+		SetFeederConnect;
 	}
-	else if(connecttime>600)
+	else if(connecttime>10000)
 	{
 		connecttime=0;
-		api_BqApp_set_feeder_connect(0);
+		SetFeederDisConnect;
 	}
 	
 	len	=	api_usart_dma_receive(ComPortIn,rxbuffer);	
@@ -488,15 +618,15 @@ unsigned short api_BqApp_Smt_Command_Server(void)
 	//初始化完成返回：0x01,0xFE	应该为空闲指令
 	//正在校验返回：0x03,0xFC
 	//校验完成返回：0x01,0xFE	应该为空闲指令
-	if((3==len)&&(0x00==rxbuffer[0]))
+	else if((3==len)&&(0x00==rxbuffer[0]))
 	{
 		txbuffer[0]=0x01;
 		txbuffer[1]=0xFE;
-		connecttime=0;
+		//connecttime=0;
 		api_usart_dma_send(ComPortIn,txbuffer,2);
 	}
 	//----------------------------------0xCA,0x00,0x35连接指令,返回0xCA,0x02,0x01,0x01,0x31
-	if((3==len)&&(0xCA==rxbuffer[0]))
+	else if((3==len)&&(0xCA==rxbuffer[0]))
 	{
 		txbuffer[0]=0xCA;
 		txbuffer[1]=0x02;
@@ -505,10 +635,10 @@ unsigned short api_BqApp_Smt_Command_Server(void)
 		txbuffer[4]=0x31;
 		api_usart_dma_send(ComPortIn,txbuffer,5);
 		
-		connecttime=0;
+		//connecttime=0;
 	}
 	//----------------------------------0x4C,0x14发送认证消息指令,认证消息，返0x4C,0x02,0x03,0x00,0xAE
-	if((23==len)&&(0x4C==rxbuffer[0]))
+	else if((23==len)&&(0x4C==rxbuffer[0]))
 	{
 		txbuffer[0]=0x4C;
 		txbuffer[1]=0x02;
@@ -517,23 +647,193 @@ unsigned short api_BqApp_Smt_Command_Server(void)
 		txbuffer[4]=0xAE;
 		api_usart_dma_send(ComPortIn,txbuffer,5);
 		
-		connecttime=0;
+		//connecttime=0;
 		
 		//-------------------------------提取待认证消息，串口前字节在认证时最好发送到BQ
 		for(i=0;i<20;i++)
 		{
 			message[19-i]=rxbuffer[2+i];
 		}
-		api_BqApp_set_feeder_connect(0);
+		SetFeederDisConnect;
 		SysTick_DeleymS(10);				//SysTick延时nmS		
 		
-		api_BqApp_set_feeder_connect(1);
-		//api_BqApp_set_certification_message(message);
-		api_BqApp_message_data_get_digest(message);		//认证消息摘要		
+		SetFeederConnect;
+		//connecttime=0;
+		//connecttime = 0;
+		api_BqApp_message_data_get_digest(message);		//认证消息摘要
+		connecttime = 0;		
 	}
 	return 0;
 }
 //------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	bq26100Verify
+*功能描述		:	校验数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_BqApp_Sample_Data_Verify(void)
+{	
+	unsigned short i = 0;
+	static unsigned short time=0;
+	static unsigned short start=0;
+	static unsigned short printfserial=0;
+	static unsigned short serial=0;
+	unsigned char* message=NULL;
+	unsigned char digest[20];
+	
+	//启动等待时间
+	if(start<2000)
+	{
+		start++;
+		return 0;
+	}
+	//测试时间间隔
+	if(time++<100)
+		return 0;
+	time=0;
+	
+	if(serial>bqendnum)
+	{
+		serial	=	bqstartnum;
+		SysTick_DeleymS(500);				//SysTick延时nmS
+		return 0;
+	}
+	api_BqApp_set_sys_led(1);	
+	if(bqstartnum==serial)
+	{
+		printfserial=0;
+		api_usb_printf("\r\n\t{\r\n");
+	}
+	//---------------------获取待验证原始消息
+	message	=	(unsigned char*)bq26100_sample_data[serial][0];
+	//---------------------获取消息摘要
+	api_bq26100Master_get_digest(message,digest);
+	//---------------------与原消息摘要对比及打印
+	for(i=0;i<2500;i++)
+	{
+		if(0==memcmp(digest,bq26100_sample_data[i][1],20))
+		{
+			api_usb_printf("/*%0.4d:%0.4d:*/\t",printfserial,serial);
+			printfserial++;
+			api_usb_printf("{{");
+			//-----------message
+			for(i=0;i<19;i++)
+			{
+				api_usb_printf("0x%0.2X,",message[i]);
+			}
+			api_usb_printf("0x%0.2X",message[19]);
+			
+			api_usb_printf("},\t{");
+			
+			//-----------digest
+			for(i=0;i<19;i++)
+			{
+				api_usb_printf("0x%0.2X,",digest[i]);
+			}
+			api_usb_printf("0x%0.2X",digest[19]);
+			api_usb_printf("}},\r\n");
+			
+			break;
+		}
+	}
+	if(bqendnum==serial)
+		api_usb_printf("\t}\r\n");
+	serial++;
+	api_usb_in_set_complete_end();
+	api_BqApp_set_sys_led(0);
+	
+	return 1;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	bq26100Verify
+*功能描述		:	校验数据
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char api_BqApp_Get_Sample_Digest(void)
+{	
+	unsigned short i = 0;
+	static unsigned short time=0;
+	static unsigned short start=0;
+	static unsigned short serial=0;
+	unsigned char* message=NULL;
+	unsigned char digest[20];
+	
+	//启动等待时间
+	if(start<2000)
+	{
+		start++;
+		return 0;
+	}
+	//测试时间间隔
+	if(time++<100)
+		return 0;
+	time=0;
+	
+//	if(serial>bqendnum)
+//	{
+//		SysTick_DeleymS(500);				//SysTick延时nmS
+//		return 0;
+//	}
+	SysTick_DeleymS(100);				//SysTick延时nmS
+	//---------------------获取待验证原始消息
+	message	=	(unsigned char*)bq26100_sample_data[serial][0];
+	
+	
+	api_BqApp_set_sys_led(1);
+	
+	
+	if(bqstartnum==serial)
+		api_usb_printf("\r\n\t{\r\n");
+	
+	//---------------------获取消息摘要
+	api_bq26100Master_get_digest(message,digest);			//获取消息摘要	
+	//---------------------打印消息及对应的摘要	
+	api_usb_printf("/*%0.4d:*/\t",serial);
+	api_usb_printf("{{");
+	//-----------message
+	for(i=0;i<19;i++)
+	{
+		api_usb_printf("0x%0.2X,",message[i]);
+	}
+	api_usb_printf("0x%0.2X",message[19]);
+	
+	api_usb_printf("},\t{");
+	
+	//-----------digest
+	for(i=0;i<19;i++)
+	{
+		api_usb_printf("0x%0.2X,",digest[i]);
+	}
+	api_usb_printf("0x%0.2X",digest[19]);
+	api_usb_printf("}},\r\n");		
+
+	if(bqendnum==serial)
+		api_usb_printf("\t}\r\n");
+
+	api_usb_in_set_complete_end();
+	api_BqApp_set_sys_led(0);
+	
+	if(serial<bqendnum)
+		serial ++;
+	else
+		serial = 0;
+	return 1;
+}
+//------------------------------------------------------------------------------
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -572,140 +872,7 @@ static void api_BqApp_usb_to_feeder(void)
 	}
 }
 //------------------------------------------------------------------------------
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void api_BqApp_master_to_feeder(void)
-{
-	unsigned short len	=	0;
-	static unsigned char time	=	0;
-	static unsigned char time2	=	0;
-	static unsigned char step	=	0;
-	static unsigned char ledflag=0;
-	static unsigned short ledtime=0;
-	unsigned char rxbuffer[bqusartsize]={0};
-	unsigned char txbuffer[bqusartsize]={0};
-	unsigned char sample[20]={0xB8,0xD3,0xAA,0x20,0x82,0xFE,0xD1,0xF0,0x7C,0x0A,0x07,0x8E,0x26,0xC7,0xDE,0x10,0xCA,0xA3,0x2C,0xC8};
-	
-	if(ledflag)
-	{
-		ledtime++;
-		if(ledtime%300<150)
-		{
-			api_BqApp_set_sys_led(1);
-		}
-		else
-		{
-			api_BqApp_set_sys_led(0);
-		}
-	}
-	if(ledtime>1500)
-	{
-		ledtime=0;
-		ledflag=0;
-		api_BqApp_set_sys_led(0);
-	}
-	
-	
-	//GPIO_Toggle(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
-	
-	//GPIO_Toggle(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
-	//st1----------获取状态
-	len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
-	//----空闲状态
-	if(2==len)
-	{
-		if(0x01==rxbuffer[0])	//空闲
-		{
-			if(0==step)
-			{
-				step=1;
-				time2=0;
-			}
-		}
-	}
-	else if(5==len)
-	{
-		if(0xCA==rxbuffer[0])
-		{
-			step=2;
-			time2=0;
-		}
-		else if(0x4C==rxbuffer[0])
-		{
-			step=3;
-			time2=0;
-		}
-	}
-	
-	//-------------------从机未接入时不工作
-	if(GPIO_ReadInputDataBit(FeederCheckPort,FeederCheckPin))
-	{
-		time	=	0;
-		time2	=	0;
-		step	=	0;
-		ledtime=0;
-		//ledflag=0;
-		return;
-	}
-	
-	if(3==step)
-	{
-		return;
-	}
-	
-	ledflag	=	1;
-	if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
-	{
-		return ;
-	}
-	
-	if(time++<2)		//连续帧间隔8ms
-		return ;	
-	time = 0;
-	
-	//ST2-----------------------
-	if(0==step)
-	{
-		txbuffer[0]=0x00;
-		txbuffer[1]=0x00;
-		txbuffer[2]=0xFF;
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
-	}
-	else if(1==step)
-	{
-		txbuffer[0]=0xCA;
-		txbuffer[1]=0x00;
-		txbuffer[2]=0x35;
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
-	}
-	else if(2==step)
-	{
-		txbuffer[0]=0x4C;
-		txbuffer[1]=0x14;
-		txbuffer[22]=0x7D;
-		for(len=0;len<20;len++)
-		{
-			txbuffer[len+2]=sample[19-len];
-		}
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
-	}
-	else if(3==step)
-	{
-		txbuffer[0]=0x00;
-		txbuffer[1]=0x00;
-		txbuffer[2]=0xFF;
-		//api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
-	}
-	//time2++;
-}
-//------------------------------------------------------------------------------
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -727,60 +894,6 @@ static void api_BqApp_set_sys_led(unsigned char flag)
 		GPIO_ResetBits(GPIOA,GPIO_Pin_0);
 	}
 }
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void api_BqApp_set_feeder_connect(unsigned char flag)
-{
-	if(0==flag)	//断开连接
-	{		
-		GPIO_ResetBits(FeederConnectPort,FeederConnectPin);		
-	}
-	else
-	{
-		//GPIO_ResetBits(FeederConnectPort,FeederConnectPin);
-		GPIO_SetBits(FeederConnectPort,FeederConnectPin);
-	}
-}
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static void api_BqApp_set_usart_connect(unsigned char flag)
-{
-	if(0==flag)	//断开连接
-	{
-		GPIO_ResetBits(TxEnConnectPort,TxEnConnectPin);
-		GPIO_ResetBits(RxEnConnectPort,RxEnConnectPin);
-#if bq26100Master		
-		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
-		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
-#else
-		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
-		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
-#endif
-	}
-	else
-	{
-		GPIO_Configuration_INF(TxEnConnectPort,	TxEnConnectPin);			//将GPIO相应管脚配置为浮空输入模式----V20170605
-		GPIO_Configuration_INF(RxEnConnectPort,	RxEnConnectPin);			//将GPIO相应管脚配置为浮空输入模式----V20170605
-		
-		GPIO_SetBits(TxEnConnectPort,TxEnConnectPin);
-		GPIO_SetBits(RxEnConnectPort,RxEnConnectPin);
-	}
-}
-//------------------------------------------------------------------------------
 
 /*******************************************************************************
 *函数名			:	function
@@ -791,43 +904,44 @@ static void api_BqApp_set_usart_connect(unsigned char flag)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void api_BqApp_certification_message_server(void)
+static void api_BqApp_set_usart_connect(void)
 {
-	if(CertificationData.flag)	//有数据
-	{
-		api_BqApp_message_data_get_digest(CertificationData.message);		//认证消息摘要
-		CertificationData.flag=0;
-	}
+
+	//#define bq26100WorkAsSMT 				0		//模拟SMT发送认证数据
+	//#define bq26100WorkAsFeeder 		1		//模拟飞达接收认证数据并认证
+	//#define bq26100SampleVerify 		0		//校验样品数据
+	//#define bq26100GetSampleDigest 	0		//对样品数据重新认证--
+#if bq26100WorkAsSMT					//模拟SMT发送认证数据
+	api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);	
+#elif bq26100WorkAsFeeder			//模拟飞达接收认证数据并认证
+	api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
+#elif bq26100SampleVerify			//校验样品数据
+	
+#elif bq26100GetSampleDigest	//对样品数据重新认证--
+	
+#endif	
+//	{
+//		GPIO_ResetBits(TxEnConnectPort,TxEnConnectPin);
+//		GPIO_ResetBits(RxEnConnectPort,RxEnConnectPin);
+//#if bq26100Master		
+//		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
+//		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
+//#else
+//		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
+//		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
+//#endif
+
+//		GPIO_Configuration_INF(TxEnConnectPort,	TxEnConnectPin);			//将GPIO相应管脚配置为浮空输入模式----V20170605
+//		GPIO_Configuration_INF(RxEnConnectPort,	RxEnConnectPin);			//将GPIO相应管脚配置为浮空输入模式----V20170605
+//		
+//		GPIO_SetBits(TxEnConnectPort,TxEnConnectPin);
+//		GPIO_SetBits(RxEnConnectPort,RxEnConnectPin);
+//	}
 }
 //------------------------------------------------------------------------------
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-static unsigned char api_BqApp_set_certification_message(const unsigned char* message)
-{
-	if(CertificationData.flag)	//有数据
-	{
-		return 0;
-	}
-	else
-	{
-		unsigned char i = 0;
-		for(i=0;i<20;i++)
-		{
-			CertificationData.message[i]=message[i];
-		}
-		CertificationData.flag=1;
-		return 1;
-	}
-	return 0;
-}
-//------------------------------------------------------------------------------
+
+
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -894,7 +1008,8 @@ void api_BqApp_gpio_configuration(void)
 	
 	//-------------------作为从机模拟接入控制
 	GPIO_Configuration_OPP50(FeederConnectPort,FeederConnectPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(FeederConnectPort,FeederConnectPin);
+	SetFeederDisConnect;
+	//GPIO_ResetBits(FeederConnectPort,FeederConnectPin);
 #endif
 }
 //------------------------------------------------------------------------------
