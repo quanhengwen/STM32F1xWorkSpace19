@@ -24,16 +24,21 @@
 #define	SetBQ26100slavePinLevel		PA6
 #define	GetBQ26100slavePinLevel		PA6in
 
-#define	SetBQ26100slavePinOut		{	/*SetBQ26100slavePinLevel=0;*/\
-																	GPIOA->CRL&=0xF3FFFFFF;\
-																	GPIOA->CRL|=0x03000000;\
+#define	SetBQ26100slavePinOutL		{	/*SetBQ26100slavePinLevel=0;*/\
+																	GPIOA->CRL&=0xF7FFFFFF;\
+																	GPIOA->CRL|=0x07000000;\
 																	SetBQ26100slavePinLevel=0;}		//配置为OD输出模式并拉低
+#define	SetBQ26100slavePinOutH		{	/*SetBQ26100slavePinLevel=0;*/\
+																	GPIOA->CRL&=0xF7FFFFFF;\
+																	GPIOA->CRL|=0x07000000;\
+																	SetBQ26100slavePinLevel=1;}		//配置为OD输出模式并拉低
 													
 #define	SetBQ26100slavePinIntrr	{	GPIOA->CRL&=0xF0FFFFFF;\
 																	GPIOA->CRL|=0x08000000;\
 																	/*SetBQ26100slavePinLevel=1;*/}			//配置为上拉输入模式
 
-
+unsigned char bqrecord[64]={0};
+unsigned char crflag=0;
 bq26100slave_def* SDQ_SAMPLE=0;
 RCC_ClocksTypeDef bqRCC_ClocksStatus;				//时钟状态---时钟值
 
@@ -70,18 +75,20 @@ void api_bq26100slave_configuration(bq26100slave_def *sSDQ)		//SDQ从机设备配置
 void api_bq26100slave_server(void)		//SDQ从机设备服务
 {
 	static unsigned short time = 0;
-	//====================有错误
-	if(api_bq26100slave_get_error_status())		//无错误返回0，有错误返回1
-	{
-		if(time++>1000)
-		{
-			api_bq26100slave_reset_error_status();
-		}
-	}
-	else
-	{
-		time = 0;
-	}
+	//====================查询摘要
+	api_bq26100slave_set_digest();
+//	//====================有错误
+//	if(api_bq26100slave_get_error_status())		//无错误返回0，有错误返回1
+//	{
+//		if(time++>1000)
+//		{
+//			api_bq26100slave_reset_error_status();
+//		}
+//	}
+//	else
+//	{
+//		time = 0;
+//	}
 }
 //------------------------------------------------------------------------------
 
@@ -235,6 +242,7 @@ unsigned char api_bq26100slave_MenCmd(void)
 		
 		//---------------Digest
 		SDQ_SAMPLE->data.Digest.Flag.Auth	=	0;
+		
 		//---------------Ctrl
 		SDQ_SAMPLE->data.Ctrl.Read.Times	=	0;
 		
@@ -261,6 +269,7 @@ unsigned char api_bq26100slave_MenCmd(void)
 		
 		//---------------Digest
 		SDQ_SAMPLE->data.Digest.Flag.Auth	=	1;
+		SDQ_SAMPLE->data.Digest.Flag.Digested	=	0;
 		
 		SDQ_SAMPLE->status									=	sdq_master_write;
 	}
@@ -271,6 +280,39 @@ unsigned char api_bq26100slave_MenCmd(void)
 //------------------------------------------------------------------------------
 
 
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void api_bq26100slave_set_digest(void)
+{
+	if((1==SDQ_SAMPLE->data.Digest.Flag.Auth)		//未启动转换:发回message
+		&&(0==SDQ_SAMPLE->data.Digest.Flag.Digested))
+	{
+		unsigned short i = 0;
+		for(i=0;i<bq26100BufferSize;i++)
+		{
+			if(0==memcmp(SDQ_SAMPLE->data.Message.Buffer,bq26100_sample_data[i][0],20))
+			{
+				memcpy(SDQ_SAMPLE->data.Digest.Buffer,bq26100_sample_data[i][1],20);
+				break;
+			}
+		}
+		//------------------------未匹配到数据
+		if(i>=bq26100BufferSize)
+		{
+			api_bq26100slave_digest_match_error();
+			memset(SDQ_SAMPLE->data.Digest.Buffer,0x00,20);
+		}
+		SDQ_SAMPLE->data.Digest.Flag.Digested = 1;
+	}
+}
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
 *函数名			:	function
@@ -310,29 +352,35 @@ unsigned char api_bq26100slave_read_digest(void)
 			if(0==SDQ_SAMPLE->data.Digest.Flag.Auth)		//未启动转换:发回message
 			{
 				memcpy(SDQ_SAMPLE->data.Digest.Buffer,SDQ_SAMPLE->data.Message.Buffer,20);
+				crflag	=	0;
 			}
-			//--------------第二次返回摘要为转换后的摘要消息--已设置控制位，如果未匹配到摘要则做异常处理
 			else
 			{
-				unsigned short i = 0;
-				for(i=0;i<bq26100BufferSize;i++)
-				{
-					if(0==memcmp(SDQ_SAMPLE->data.Message.Buffer,bq26100_sample_data[i][0],20))
-					{
-						memcpy(SDQ_SAMPLE->data.Digest.Buffer,bq26100_sample_data[i][1],20);
-						break;
-					}
-				}
-				//------------------------未匹配到数据
-				if(i>=bq26100BufferSize)
-				{
-					api_bq26100slave_digest_match_error();
-					return 0;
-				}
+				crflag	=	1;
 			}
+			//--------------第二次返回摘要为转换后的摘要消息--已设置控制位，如果未匹配到摘要则做异常处理
+//			else
+//			{
+//				unsigned short i = 0;
+//				for(i=0;i<bq26100BufferSize;i++)
+//				{
+//					if(0==memcmp(SDQ_SAMPLE->data.Message.Buffer,bq26100_sample_data[i][0],20))
+//					{
+//						memcpy(SDQ_SAMPLE->data.Digest.Buffer,bq26100_sample_data[i][1],20);
+//						break;
+//					}
+//				}
+//				//------------------------未匹配到数据
+//				if(i>=bq26100BufferSize)
+//				{
+//					api_bq26100slave_digest_match_error();
+//					return 0;
+//				}
+//			}
 			//--------------启动发送
 			SDQ_SAMPLE->data.Digest.Flag.Start	=	1;
 			SDQ_SAMPLE->data.Digest.Serial			=	0;
+			
 			SDQ_SAMPLE->data.SendByte		=	SDQ_SAMPLE->data.Digest.Buffer[SDQ_SAMPLE->data.Digest.Serial];				
 		}
 		//----------------已启动传输
@@ -354,6 +402,10 @@ unsigned char api_bq26100slave_read_digest(void)
 			{
 				SDQ_SAMPLE->status							=	sdq_ilde;
 				SDQ_SAMPLE->data.receivelen	=	0;
+				if(1==SDQ_SAMPLE->data.Digest.Flag.Auth)		//未启动转换:发回message
+				{
+					crflag	=	0;
+				}
 				return 1;
 			}					
 		}
@@ -720,7 +772,7 @@ unsigned short api_bq26100slave_get_receivelen(void)
 *******************************************************************************/
 unsigned char api_bq26100slave_send_bit(unsigned char bit)
 {	
-	SetBQ26100slavePinOut;
+	SetBQ26100slavePinOutL;
 	SetBQ26100slavePinLevel	=	bit;
 	SysTick_DeleyuS(30);				//SysTick延时nuS
 	SetBQ26100slavePinIntrr;
@@ -805,7 +857,8 @@ unsigned char api_bq26100slave_receive_bit(void)
 unsigned char api_bq26100slave_send_byte(void)
 {	
 	api_bq26100slave_send_bit(SDQ_SAMPLE->data.SendByte&0x01);
-	
+	if(0==SDQ_SAMPLE->data.SendBitLen)
+		RecordData(SDQ_SAMPLE->data.SendByte);
 	//=======================右移一位:低位先传
 	SDQ_SAMPLE->data.SendByte		>>=	1;
 	//=======================传输计数
@@ -882,7 +935,7 @@ unsigned char api_bq26100slave_start(void)
 {	
 	//------启动条件：主机拉低信号480us-960us
 	//------等待15us-60us后从机拉低总线60us-240us作为对主机的应答
-	SetBQ26100slavePinOut;
+	SetBQ26100slavePinOutH;
 	SetBQ26100slavePinLevel=1;
 	SysTick_DeleyuS(20);				//SysTick延时nuS
 	SetBQ26100slavePinLevel=0;
@@ -937,6 +990,82 @@ unsigned char  api_bq26100slave_default(void)
 	return 1;
 }
 //------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void RecordData(unsigned char bytedata)
+{
+	static unsigned short serial=0;
+	
+	if(1==crflag)
+	{
+		bqrecord[serial]=bytedata;
+		
+		if(serial++>=20)
+			serial=0;
+	}
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char* api_bq26100slave_get_message_address(unsigned short serial)
+{
+	unsigned char* address = 0;
+	if(serial<bq26100BufferSize)
+		address = (unsigned char*)bq26100_sample_data[serial][0];
+	else
+		address = 0;
+	return address;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char* api_bq26100slave_get_digest_address(unsigned short serial)
+{
+	unsigned char* address = 0;
+	if(serial<bq26100BufferSize)
+		address = (unsigned char*)bq26100_sample_data[serial][1];
+	else
+		address = 0;
+	return address;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_bq26100slave_get_sample_data_size(void)
+{
+	return bq26100BufferSize;
+}
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
 *函数名			:	function
@@ -953,8 +1082,8 @@ void EXTI9_5_IRQHandler(void)
 	//=======================高电平:上升沿
 	if(0==GetBQ26100slavePinLevel)	//低电平
 	{	
-//		if((SDQ_SAMPLE->status==sdq_master_read)||(SDQ_SAMPLE->status==sdq_master_readCRC))
-//			SetBQ26100slavePinOut;
+		if((SDQ_SAMPLE->status==sdq_master_read)||(SDQ_SAMPLE->status==sdq_master_readCRC))
+			SetBQ26100slavePinOutL;
 		api_bq26100slave_process();
 	}
 	//=======================低电平:下降沿

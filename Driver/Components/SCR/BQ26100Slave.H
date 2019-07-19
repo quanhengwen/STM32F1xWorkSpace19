@@ -3,6 +3,7 @@
 
 #include "stm32f10x_gpio.h"
 
+
 #define sdq_receive_buffer_size	256		//数据接收缓冲大小
 //#define sdq_sample_size			250			//样品数据个数
 
@@ -79,6 +80,7 @@ typedef	struct	_sdq_digest			//
 	{
 		unsigned char Auth		:1;		//0--未设置控制位/未启动转换上报主机发送的message；1--已设置控制位，可以匹配digest并准备上报
 		unsigned char Start		:1;		//0--未启动传输，需要做传输前数据处理；1--已启动传输，做传输处理
+		unsigned char Digested:1;		//0--未准备好digest,1-准备好digeset
 	}Flag;
 	unsigned char 	Serial;					//已发送摘要计数
 	unsigned char 	Buffer[20];			//消息摘要
@@ -163,7 +165,7 @@ unsigned char api_bq26100slave_write_message(void);				//主机写消息
 unsigned char api_bq26100slave_read_control(void);		//主机读控制寄存器
 unsigned char api_bq26100slave_write_control(void);		//主机写控制寄存器
 
-
+void api_bq26100slave_set_digest(void);
 unsigned char api_bq26100slave_digest_match_error(void);
 unsigned char api_bq26100slave_get_error_status(void);			//无错误返回0，有错误返回1
 unsigned char api_bq26100slave_reset_error_status(void);
@@ -179,6 +181,12 @@ unsigned char api_bq26100slave_receive_byte(void);	//返回0--未读完一字节，返回1-
 
 unsigned char api_bq26100slave_start(void);
 unsigned char api_bq26100slave_default(void);
+
+void RecordData(unsigned char bytedata);
+
+unsigned char* api_bq26100slave_get_message_address(unsigned short serial);
+unsigned char* api_bq26100slave_get_digest_address(unsigned short serial);
+unsigned short api_bq26100slave_get_sample_data_size(void);
 
 //unsigned char api_sdq_get_level(void);
 
