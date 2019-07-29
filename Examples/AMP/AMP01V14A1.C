@@ -1,6 +1,6 @@
-#ifdef AMP01V11A3
+#ifdef AMP01V14A1
 
-#include "AMP01V11A3.H"
+#include "AMP01V14A1.H"
 
 #include	"AMP_Protocol.H"
 
@@ -98,7 +98,7 @@ ampdef ampsys;
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void AMP01V11A3_Configuration(void)
+void API_AMP01V14A1_Configuration(void)
 {	
 	SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
 	
@@ -126,7 +126,7 @@ void AMP01V11A3_Configuration(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void AMP01V11A3_Server(void)
+void API_AMP01V14A1_Server(void)
 { 
 	IWDG_Feed();								//独立看门狗喂狗
 	test_cabinet_address_none_process();		//未拨码柜接口发LCD测试程序
@@ -198,11 +198,11 @@ static ampCachedef* get_cache_addr(ampPortDef port)
 	if(NonPort	==	port)
 		return 0;
 	else if(PcPort	==	port)
-		return ampsys.commdata.pc;
+		return ampsys.Pc.Data;
 	else if(CabPort	==	port)
-		return ampsys.commdata.cab;
+		return ampsys.Cab.Data;
 	else if(LayPort	==	port)
-		return ampsys.commdata.lay;
+		return ampsys.Lay.Data;
 	else
 		return 0;
 }
@@ -584,13 +584,13 @@ static void pc_send_data_process(void)
 		return;
 	}	
 	//----------------------------------------------检查有无应答数据要发送
-	if(ampsys.commdata.PcAck.size)
+	if(ampsys.Pc.Ack.flag)
 	{
-		Cache	=	&ampsys.commdata.PcAck;
-		sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		unsigned char* addr	=	&ampsys.Pc.Ack.head;
+		sendnum	=	api_usart_dma_send(ampCommPcPort,addr,ampAckSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
-			ampsys.commdata.PcAck.size	=	0;
+			ampsys.Pc.Ack.flag	=	0;
 			ampsys.time.PcSendTime	=	2;
 			del_ack_wait_flag(PcPort);		//0--无需等待应答，1--需等待应答				
 		}
@@ -1100,30 +1100,31 @@ static void set_ackup_frame(ampPortDef Port)
 {  
 	ampphydef*	frame;
 
-	ampCachedef*	Cache;
+	ampAckDef* ack  = 0;
 	if(PcPort	==	Port)
-		Cache	=	&ampsys.commdata.PcAck;
+		ack	=	(ampAckDef*)&ampsys.Pc.Ack;
 	else if(CabPort	==	Port)
-		Cache	=	&ampsys.commdata.CbAck;
+		ack	=	(ampAckDef*)&ampsys.commdata.CbAck;
 	else if(LayPort	==	Port)
-		Cache	=	&ampsys.commdata.LyAck;
+		ack	=	(ampAckDef*)&ampsys.commdata.LyAck;
 	else
 		return ;	
 
-	frame=(ampphydef*)Cache->data;
+	frame=(ampphydef*)ack;
 	
-	frame->head	=	headcode;
-	frame->msg.length	=	5;
-	frame->msg.cmd.cmd	=	ampCmdAck;
-	frame->msg.cmd.rv		=	0;
-	frame->msg.cmd.dir	=	1;
-	frame->msg.addr.address1	=	ampsys.sysdata.Cab_Addr;		//向上应答为柜地址
-	frame->msg.addr.address2	=	0;
-	frame->msg.addr.address3	=	0;
-	frame->msg.data[0]=0;
+	ack->head	=	headcode;
+	ack->length	=	5;
+	ack->cmd.cmd	=	ampCmdAck;
+	ack->cmd.rv		=	0;
+	ack->cmd.dir	=	1;
+	ack->address1	=	ampsys.sysdata.Cab_Addr;		//向上应答为柜地址
+	ack->address2	=	0;
+	ack->address3	=	0;
+	ack->status=0;
 	
-	Cache->arry	=	1;
-	Cache->size	=	api_set_frame(frame,ampCmdAck,1);    //补充消息的CRC和结束符，返回帧长度
+	api_set_frame(frame,ampCmdAck,1);    //补充消息的CRC和结束符，返回帧长度
+	
+	ack->flag		=	1;
 }
 /*******************************************************************************
 *函数名			:	getframe
@@ -1138,17 +1139,17 @@ static void set_ackdown_frame(ampPortDef Port)
 {  
   ampphydef*	frame;
 
-	ampCachedef*	Cache;
+	ampAckDef* ack  = 0;
 	if(PcPort	==	Port)
-		Cache	=	&ampsys.commdata.PcAck;
+		ack	=	(ampAckDef*)&ampsys.Pc.Ack;
 	else if(CabPort	==	Port)
-		Cache	=	&ampsys.commdata.CbAck;
+		ack	=	(ampAckDef*)&ampsys.commdata.CbAck;
 	else if(LayPort	==	Port)
-		Cache	=	&ampsys.commdata.LyAck;
+		ack	=	(ampAckDef*)&ampsys.commdata.LyAck;
 	else
 		return;	
 
-	frame=(ampphydef*)Cache->data;
+	frame=(ampphydef*)ack;
 	
 	frame->head	=	headcode;
 	frame->msg.length	=	5;
@@ -1159,9 +1160,10 @@ static void set_ackdown_frame(ampPortDef Port)
 	frame->msg.addr.address2	=	0;
 	frame->msg.addr.address3	=	0;
 	frame->msg.data[0]=0;
+
+	api_set_frame(frame,ampCmdAck,0);    //补充消息的CRC和结束符，返回帧长度
 	
-	Cache->arry	=	1;
-	Cache->size	=	api_set_frame(frame,ampCmdAck,0);    //补充消息的CRC和结束符，返回帧长度
+	ack->flag		=	1;
 }
 /*******************************************************************************
 *函数名			:	function
@@ -1524,6 +1526,12 @@ static void Tim_Server(void)
   }	
 }
 //------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 //--------------------------------static-configuration

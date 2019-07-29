@@ -153,7 +153,10 @@
 #endif
 
 
-
+//*********************************BQ_Authentication*********************************//
+#ifdef BQ_Authentication
+	#include "BQ_Authentication.H"
+#endif
 
 
 

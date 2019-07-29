@@ -75,7 +75,7 @@ bq26100slave_def SDQ_SLAVE;
 
 unsigned short bq_test_serial=0;
 
-unsigned char bq_rxd[20]={0};
+
 
 /*******************************************************************************
 * 函数名		:	
@@ -122,8 +122,7 @@ void SDQ_TEST_Server(void)
 	static unsigned short len_bac = 0;
 	unsigned short len_temp = 0;
 	
-	//------------测试校验
-	AuthTest();
+	
 	//api_bq26100slave_server();		//SDQ从机设备配置
 	//------------
 	if(GetSlavePortCheckInLevel)	//高信号，未接入
@@ -134,7 +133,8 @@ void SDQ_TEST_Server(void)
 		return ;
 	}
 	
-	
+	//------------测试校验：测试模式
+	AuthTest();
 	
 	if(api_bq26100slave_get_error_status())		//无错误返回0，有错误返回1
 	{
@@ -227,7 +227,7 @@ static void AuthTest(void)
 	static unsigned short serial=0;
 	static unsigned short num=0;
 	unsigned char Message[23]={0x4C,0x14,0xC5,0x14,0xE1,0x78,0x2D,0x56,0xF2,0x07,0x7B,0xB8,0x21,0xB8,0xEC,0x19,0x25,0x78,0x89,0xE9,0xFE,0x57,0x7C};
-	unsigned char GetDigest[3]={0x4B,0x00,0xB4};
+	unsigned char GetDigest[3]={0x4B,0x00,0xB4};		//让FD返回校验消息
 	unsigned char rxbuff[128]={0};
 	unsigned char rxlen=0;
 	
@@ -245,27 +245,27 @@ static void AuthTest(void)
 		{
 			SysLedOn;
 			MessgeFramTest(Message,0);
-			api_usart_dma_send(ComPortOut,Message,23);
+			api_usart_dma_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证
 		}
 		else if(time==5)
 		{
-			api_usart_dma_send(ComPortOut,GetDigest,3);
+			api_usart_dma_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
 		}
 		else if(time>100)
 		{
 			time=0;
-			MessgeFramTest(rxbuff,3);
+			MessgeFramTest(rxbuff,2);
 		}
 		
-		rxlen	=	api_usart_dma_receive(ComPortOut,rxbuff);
+		rxlen	=	api_usart_dma_receive(ComPortOut,rxbuff);	
 		if(rxlen)
 		{		
 			SysLedOff;
+			//----------------对比校验数据
 			if((0x4B==rxbuff[0])&&(0x16==rxbuff[1]))
 				MessgeFramTest(rxbuff,1);
 		}
-	}
-	
+	}	
 }
 //------------------------------------------------------------------------------
 /*******************************************************************************
@@ -286,9 +286,10 @@ static void MessgeFramTest(unsigned char* message,unsigned char flag)
 	unsigned char i = 0;
 	unsigned char temp = 0;
 	unsigned char* address = 0;
+	//------------------获取相应样品组数据
 	if(0==flag)
-	{
-		address = api_bq26100slave_get_message_address(bq_test_serial);
+	{		
+		address = api_bq26100slave_get_sample_message_address(bq_test_serial);
 		if(address)
 		{
 			for(i=0;i<20;i++)
@@ -300,21 +301,22 @@ static void MessgeFramTest(unsigned char* message,unsigned char flag)
 		}
 		
 	}
+	//------------------对比主控获取的摘要和实际存储的摘要:防止时序出错造成主控读取出错
 	else if(1==flag)
 	{
+		unsigned char bq_rxd[20]={0};
 		for(i=0;i<20;i++)
 		{
-			bq_rxd[i]	=	message[23-i];
-			
+			bq_rxd[i]	=	message[23-i];			
 		}
-		address = api_bq26100slave_get_message_address(bq_test_serial);
+		address = api_bq26100slave_get_sample_digest_address(bq_test_serial);
 		if(address)
 		{
 			if(0!=memcmp(bq_rxd,address,20))
 			{
 				for(i=0;i<10;i++)
 				{
-					SysTick_DeleyuS(500);				//SysTick延时nuS
+					//SysTick_DeleymS(1000);				//SysTick延时nuS
 					if(i%2==0)
 						SysLedOn;
 					else
@@ -323,7 +325,8 @@ static void MessgeFramTest(unsigned char* message,unsigned char flag)
 			}
 		}
 	}
-	else
+	//------------------测试数据组序号增加
+	else if(2==flag)
 	{
 		bq_test_serial++;
 		if(bq_test_serial>=api_bq26100slave_get_sample_data_size())

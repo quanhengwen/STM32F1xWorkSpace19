@@ -439,6 +439,7 @@ void GPIO_Configuration_OPP50(
 	//3）初始化GPIO
 	GPIO_Init(GPIOx,&GPIO_InitStructure);			//GPIOA	
 }
+
 /*******************************************************************************
 * 函数名		:	GPIO_Configuration_OPP50
 * 功能描述	:	将GPIO相应管脚配置为PP(推挽)输出模式，最大速度10MHz----V20170605

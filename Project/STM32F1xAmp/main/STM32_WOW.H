@@ -127,6 +127,10 @@
 	#include "IOTReaderTest.H"
 #endif
 
+//*********************************IOTReaderTest*********************************//
+#ifdef AMP01V14A1
+	#include "AMP01V14A1.H"
+#endif
 
 
 

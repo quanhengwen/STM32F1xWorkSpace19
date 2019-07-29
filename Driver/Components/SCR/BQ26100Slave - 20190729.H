@@ -13,27 +13,19 @@ typedef	struct	_sdq_port				//
 	GPIO_TypeDef*	SDQ_Port;
 	u16	SDQ_Pin;
 }sdq_port_def;
-//------------------------------------------------------------------------------
-typedef	enum	_sdq_MasterStatus			//主机当前执行的状态
+
+
+typedef	enum	_sdq_status				//带反馈锁控制标志及吸合时间
 {
 	//-------------------------SDQ驱动
-	sdq_master_ilde								=	0,	//空闲
-	sdq_master_start								=	1,	//启动
+	sdq_ilde								=	0,	//空闲
+	sdq_start								=	1,	//启动
 	sdq_master_readCRC			= 2,	//主机读CRC
 	sdq_master_read					= 3,	//主机读
+	//sdq_master_read_digest	= 5,	//读
 	sdq_master_write				=	6,	//主机写.
-	sdq_master_error								=	7,	//主机写
-}sdq_MasterStatus_def;
-//------------------------------------------------------------------------------
-typedef	enum	_sdq_TransType				//带反馈锁控制标志及吸合时间
-{
-	//-------------------------SDQ驱动
-	sdq_Trans_ilde		=	0,		//空闲
-	sdq_Trans_CRC			= 1,		//传输CRC
-	sdq_Trans_Data		= 2,		//传输数据
-	sdq_Trans_error		=	0xFF,	//传输出错
-}sdq_TransType_def;
-//------------------------------------------------------------------------------
+	sdq_error								=	7,	//主机写
+}sdq_status_def;
 typedef enum
 {
 	sdq_rom_idle			=	(unsigned char)0x00,			//
@@ -42,7 +34,6 @@ typedef enum
 	sdq_rom_ReadID		=	(unsigned char)0x33,			//
 	sdq_rom_SearchID	=	(unsigned char)0xF0,			//
 }sdq_rom_cmd;
-//------------------------------------------------------------------------------
 typedef enum		//相对于主机
 {
 	sdq_mem_idle					=	(unsigned char)0x00,			//
@@ -61,7 +52,7 @@ typedef enum		//相对于主机
 	sdq_mem_read_page4		=	(unsigned char)0xFA,
 	sdq_mem_write_page4		=	(unsigned char)0xAF,
 }sdq_mem_cmd;
-//------------------------------------------------------------------------------
+
 typedef	struct	_sdq_time				//
 {	
 	unsigned char	 timeper;			//根据系统时钟计时的时间分频
@@ -72,14 +63,17 @@ typedef	struct	_sdq_time				//
 	unsigned long  time2;				//新时间
 	unsigned long  time_sys;		//总时间
 }sdq_time_def;
-//------------------------------------------------------------------------------
+
 typedef	struct	_sdq_message			//
 {	
-	unsigned char				MessageLen;					//接收的摘要长度计数
-	unsigned char 			MessageBuffer[20];	//消息缓存
-	sdq_TransType_def		MessageTransType;		//当前消息传输类型
+	unsigned char 	MessageLen;				//摘要长度计数
+	//unsigned char 	MessageCrcFlag;		//摘要CRC设置标志
+	//unsigned char 	MessageGetFlag;		//获取对message对应的Digest标志
+	//unsigned char 	MessageGetStart;	//开始传输数据
+	//unsigned char 	Serial;						//已发接收message数据计数
+	unsigned char 	Buffer[20];				//
 }bq26100slave_message_def;
-//------------------------------------------------------------------------------
+
 typedef	struct	_sdq_digest			//
 {
 	struct
@@ -88,12 +82,10 @@ typedef	struct	_sdq_digest			//
 		unsigned char Start		:1;		//0--未启动传输，需要做传输前数据处理；1--已启动传输，做传输处理
 		unsigned char Digested:1;		//0--未准备好digest,1-准备好digeset
 	}Flag;
-	
-	unsigned char 			Serial;					//已发送摘要计数
-	unsigned char 			DigestBuffer[20];			//消息摘要
-	sdq_TransType_def		DigestTransType;		//当前消息传输类型
+	unsigned char 	Serial;					//已发送摘要计数
+	unsigned char 	Buffer[20];			//消息摘要
 }bq26100slave_digest_def;
-//------------------------------------------------------------------------------
+
 typedef	struct	_bq26100slave_ctrl			//
 {	
 	struct
@@ -115,54 +107,46 @@ typedef	struct	_bq26100slave_ctrl			//
 		unsigned char Ctrl1;		//地址1
 		unsigned char Serial;		//主机已写入计数
 	}Write;
-	sdq_TransType_def		CtrlTransType;		//当前消息传输类型
 }bq26100slave_ctrl_def;
-//------------------------------------------------------------------------------
-typedef	struct	_sdq_TransData			//位传输数据
-{	
-	unsigned char 	SendBitLen;				//发送位计数
-	unsigned char 	SendByte;					//发送数据	
-	unsigned char 	RcvBitlen;				//接收位计数
-	unsigned char 	RcvByte;					//接收数据
-	unsigned char 	receive[sdq_receive_buffer_size];	//消息数组
-}bq26100slave_TransData_def;
-//------------------------------------------------------------------------------
-typedef	struct	_sdq_PublicData			//
+
+typedef	struct	_sdq_data			//
 {	
 	unsigned long 	intrrcout;		//中断次数计数
 	unsigned long 	startcout;		//启动次数计数
 	unsigned short 	receivelen;		//消息长度计数
+	unsigned char 	addressL;			//地址-低字节
+	unsigned char 	addressH;			//地址-高字节
+	unsigned char 	SendBitLen;		//应答位计数
+	unsigned char 	SendByte;			//应答数据	
+	unsigned char 	RcvBitlen;		//位数接收计数
+	unsigned char 	RcvByte;			//位数据
+//	unsigned char 	Ctllen;				//控制数据计算
+//	unsigned char 	CtlFlag;			//控制标志位---判断是否发送控制消息
+//	unsigned char 	messgaelen;		//消息长度计数
+//	unsigned char 	digestlen;		//摘要长度计数
+//	unsigned char 	DigestGetFlag;		//获取对message对应的Digest标志
+//	unsigned char 	DigestGetStart;		//开始传输数据
 	unsigned char 	receive[sdq_receive_buffer_size];	//消息数组
-}bq26100slave_PublicData_def;
-//------------------------------------------------------------------------------
-typedef	struct	_sdq_InitData			//每条消息的起始标准格式
-{	
-	sdq_rom_cmd			RomCmd;			//第一字节:ROM命令
-	sdq_mem_cmd			MemCmd;			//第二字节:RAM命令
-	unsigned char 	addressL;		//第三字节:地址-低字节
-	unsigned char 	addressH;		//第四字节:地址-高字节
-	unsigned char 	InitFlag;		//0--未传输完初始化数据，1--传输完初始化数据
-}bq26100slave_InitData_def;
-//------------------------------------------------------------------------------
-typedef	struct	_sdq_MemData	//RAM命令数据
-{	
-	bq26100slave_message_def		Message;		//消息数据
-	bq26100slave_digest_def			Digest;			//摘要数据
-	bq26100slave_ctrl_def				Ctrl;				//控制命令数据
-}bq26100slave_MemData_def;
-//------------------------------------------------------------------------------
+//	unsigned char 	message[20];	//消息数组
+	unsigned char 	CtlData[10];			//控制命令
+	
+	
+	bq26100slave_message_def		Message;
+	bq26100slave_digest_def			Digest;
+	bq26100slave_ctrl_def				Ctrl;	
+}bq26100slave_data_def;
+
 typedef	struct	_sdq				//带反馈锁控制标志及吸合时间
 {
+	//-------------------------SDQ驱动
 //	sdq_port_def 		port;	
-	
-	bq26100slave_TransData_def		TransData;		//正在传输的数据--按位接收或者发送
-	bq26100slave_PublicData_def		PublicData;		//公共数据--临时数据
-	bq26100slave_InitData_def			InitData;			//每条消息的起始标准格式数据	
-	bq26100slave_MemData_def			MemData;			//RAM命令数据	
-	sdq_MasterStatus_def					MasterStatus;		//主机当前执行的状态
-	sdq_time_def									time;
+	sdq_time_def						time;
+	bq26100slave_data_def		data;
+	sdq_rom_cmd							RomCmd;
+	sdq_mem_cmd							MemCmd;
+	sdq_status_def					status;
 }bq26100slave_def;
-//------------------------------------------------------------------------------
+
 
 
 
@@ -197,7 +181,7 @@ unsigned short api_bq26100slave_get_receivelen(void);		//返回接收长度
 unsigned char bq26100slave_send_bit(unsigned char bit);
 unsigned char bq26100slave_receive_bit(void);
 
-unsigned char	bq26100slave_send_byte(void);			//返回0--未发送完一字节，返回1--发送完一字节
+unsigned char	bq26100slave_send_byte(void);
 unsigned char	bq26100slave_receive_byte(void);	//返回0--未读完一字节，返回1--读完一字节，返回0xFF--复位信号
 
 unsigned char	bq26100slave_start(void);

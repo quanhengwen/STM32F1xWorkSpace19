@@ -362,6 +362,10 @@ void WOW_Configuration(void)
 	SDQ_TEST_Configuration();
 #endif
 
+//*********************************BQ_Authentication*********************************//
+#ifdef BQ_Authentication
+	BQ_Authentication_Configuration();
+#endif
 
 
 }
@@ -707,6 +711,11 @@ void WOW_Server(void)
 //*********************************SDQ_TEST*********************************//
 #ifdef SDQ_TEST
 	SDQ_TEST_Server();
+#endif
+
+//*********************************BQ_Authentication*********************************//
+#ifdef BQ_Authentication
+	BQ_Authentication_Server();
 #endif
 
 
