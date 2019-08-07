@@ -56968,7 +56968,7 @@
               <MiscControls></MiscControls>
               <Define>AMPTest</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\INC;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
+              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\SCR;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -90667,7 +90667,7 @@
               <MiscControls></MiscControls>
               <Define>BQ26100_TEST</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\INC;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
+              <IncludePath>..\..\Library\STM32F10x_StdPeriph_Driver\INC;..\..\Library\Startup\STM32F10x;..\..\Library\C;..\..\Library\ARM\Include;..\..\Driver\WOW\INC;..\..\Driver\Components\SCR;..\..\Driver\Protocol;..\..\Examples\DEMO\include;..\..\Examples\WOW;.\main;..\..\Driver\Tool;..\..\Driver\FatFs\source</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

@@ -37,7 +37,8 @@
 																	GPIOA->CRL|=0x08000000;\
 																	SetBQ26100slavePinLevel=1;}			//配置为上拉输入模式
 
-unsigned char bqrecord[64]={0};
+//unsigned char bqrecord[64]={0};
+//unsigned char all_data_reset_flag=0;
 
 bq26100slave_def* SDQ_SAMPLE=0;
 RCC_ClocksTypeDef bqRCC_ClocksStatus;				//时钟状态---时钟值
@@ -55,10 +56,12 @@ RCC_ClocksTypeDef bqRCC_ClocksStatus;				//时钟状态---时钟值
 void api_bq26100slave_configuration(bq26100slave_def *sSDQ)		//SDQ从机设备配置
 {
 	SDQ_SAMPLE	=	sSDQ;
-	EXTI_Configuration_ITF(BQ26100slavePort, BQ26100slavePin);		//外部边沿触发中断配置,抢占1，响应1--20171213	
+	
 	
 	RCC_GetClocksFreq(&bqRCC_ClocksStatus);		//获取时钟参数
 	SDQ_SAMPLE->time.timeper=bqRCC_ClocksStatus.SYSCLK_Frequency/8000000;
+	
+	EXTI_Configuration_ITF(BQ26100slavePort, BQ26100slavePin);		//外部边沿触发中断配置,抢占1，响应1--20171213	
 }
 //------------------------------------------------------------------------------
 
@@ -75,19 +78,16 @@ void api_bq26100slave_server(void)		//SDQ从机设备服务
 {
 	//static unsigned short time = 0;
 	//====================查询摘要
-	bq26100slave_set_digest();
-//	//====================有错误
-//	if(api_bq26100slave_get_error_status())		//无错误返回0，有错误返回1
-//	{
-//		if(time++>1000)
-//		{
-//			api_bq26100slave_reset_error_status();
-//		}
-//	}
-//	else
-//	{
-//		time = 0;
-//	}
+	bq26100slave_set_digest();	
+	//====================超时
+	if(0!=SDQ_SAMPLE->PublicData.receivelen)
+	{
+		if(SDQ_SAMPLE->time.time_out++>0x200)
+		{
+			api_bq26100slave_all_data_default();
+		}
+	}
+
 }
 //------------------------------------------------------------------------------
 
@@ -166,7 +166,6 @@ unsigned char bq26100slave_process(void)
 	
 	//=========================发送或者接收数据
 	if((sdq_master_ilde	==SDQ_SAMPLE->MasterStatus)
-		||(sdq_master_start	==SDQ_SAMPLE->MasterStatus)
 		||(sdq_master_write	==SDQ_SAMPLE->MasterStatus))
 	{
 		result	=	bq26100slave_receive_byte();			//返回0--未读完一字节，返回1--读完一字节，返回0xFF--复位信号
@@ -193,41 +192,30 @@ unsigned char bq26100slave_process(void)
 	else if(0xFF == result)
 	{
 		bq26100slave_start();
-		api_bq26100slave_default();
+	}
+	else
+	{
+		unsigned short time = 0;
+		//========================检查有无重启消息
+		while(0==GetBQ26100slavePinLevel)	//低电平
+		{
+			SysTick_DeleyuS(1);				//SysTick延时nuS
+			if(time++>100)
+			{
+				bq26100slave_start();
+			}
+		}
+	}
+	if(0!=SDQ_SAMPLE->PublicData.receivelen)
+	{
+		if((!is_bq26100_rom_cmd(SDQ_SAMPLE->InitData.RomCmd))||(!is_bq26100_ram_cmd(SDQ_SAMPLE->InitData.MemCmd)))
+		{
+			api_bq26100slave_all_data_default();
+		}
 	}
 	return result;
 }
 //------------------------------------------------------------------------------
-
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char bq26100slave_processbac(void)
-{
-	//unsigned long fitime=0;
-	//----滤波
-	SDQ_SAMPLE->time.time1=SysTick_ReLoad();			//设置SYSTICK初始值
-	SDQ_SAMPLE->PublicData.intrrcout++;									//中断次数计数
-	//=========================BQ初始化：接收ROM命令、RAM命令和地址过程
-	if(SDQ_SAMPLE->PublicData.receivelen<4)
-	{
-		bq26100slave_Initialize();
-	}
-	//=========================根据初始化后的RAM命令执行相应的操作
-	else
-	{
-		bq26100slave_command_process();
-	}
-	return 0;
-}
-//------------------------------------------------------------------------------
-
 
 /*******************************************************************************
 *函数名			:	function
@@ -244,12 +232,12 @@ unsigned char	bq26100slave_Initialize(void)
 	//-----------------------获取ROM命令
 	if(1==SDQ_SAMPLE->PublicData.receivelen)
 	{
-		SDQ_SAMPLE->InitData.RomCmd	=	(sdq_rom_cmd)SDQ_SAMPLE->PublicData.receive[0];
+		SDQ_SAMPLE->InitData.RomCmd	=	(sdq_rom_cmd)SDQ_SAMPLE->PublicData.receive[0];		
 	}
 	//-----------------------获取RAM命令
 	else if(2==SDQ_SAMPLE->PublicData.receivelen)
 	{
-		SDQ_SAMPLE->InitData.MemCmd	=	(sdq_mem_cmd)SDQ_SAMPLE->PublicData.receive[1];
+		SDQ_SAMPLE->InitData.MemCmd	=	(sdq_mem_cmd)SDQ_SAMPLE->PublicData.receive[1];		
 	}
 	//-----------------------获取地址低字节
 	else if(3==SDQ_SAMPLE->PublicData.receivelen)
@@ -265,55 +253,6 @@ unsigned char	bq26100slave_Initialize(void)
 	}
 	return 1;
 }
-
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	BQ初始化：接收ROM命令、RAM命令和地址过程
-							每次命令先传rom、ram、地址低位、地址高位
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char	bq26100slave_Initializebac(void)
-{
-	//=========================接收一字节数据:每次需要接收完一字节才执行，否则数据不完整
-	unsigned char receive_result=bq26100slave_receive_byte();
-	//=========================等待接收完一字节
-	//-------------------------每次命令先传rom、ram、地址低位、地址高位
-	if(1==receive_result)	//未接收完一字节
-	{
-		//-----------------------获取ROM命令
-		if(1==SDQ_SAMPLE->PublicData.receivelen)
-		{
-			SDQ_SAMPLE->InitData.RomCmd	=	(sdq_rom_cmd)SDQ_SAMPLE->PublicData.receive[0];
-		}
-		//-----------------------获取RAM命令
-		else if(2==SDQ_SAMPLE->PublicData.receivelen)
-		{
-			SDQ_SAMPLE->InitData.MemCmd	=	(sdq_mem_cmd)SDQ_SAMPLE->PublicData.receive[1];
-		}
-		//-----------------------获取地址低字节
-		else if(3==SDQ_SAMPLE->PublicData.receivelen)
-		{
-			SDQ_SAMPLE->InitData.addressL	=	(sdq_mem_cmd)SDQ_SAMPLE->PublicData.receive[2];
-		}
-		//-----------------------获取地址高字节
-		else if(4==SDQ_SAMPLE->PublicData.receivelen)
-		{
-			SDQ_SAMPLE->InitData.addressH	=	(sdq_mem_cmd)SDQ_SAMPLE->PublicData.receive[3];
-			bq26100slave_MenCmd_InitializeData();		//根据命令对相应的数据进行初始化
-		}
-	}
-	//=========================复位信号
-	else if(0xFF == receive_result)
-	{
-		bq26100slave_start();
-		api_bq26100slave_default();
-	}
-	return receive_result;
-}
 //------------------------------------------------------------------------------
 
 /*******************************************************************************
@@ -326,8 +265,7 @@ unsigned char	bq26100slave_Initializebac(void)
 *注释				:	wegam@sina.com
 *******************************************************************************/
 unsigned char bq26100slave_command_process(void)
-{
-	unsigned char time = 0;
+{	
 	//========================主机写消息
 	if(sdq_mem_write_message==SDQ_SAMPLE->InitData.MemCmd)
 	{
@@ -348,21 +286,10 @@ unsigned char bq26100slave_command_process(void)
 	else if((sdq_mem_write_control==SDQ_SAMPLE->InitData.MemCmd)&&(20==SDQ_SAMPLE->MemData.Message.MessageLen))
 	{
 		bq26100slave_write_control();
-	}
-	//========================检查有无重启消息
-	while(0==GetBQ26100slavePinLevel)	//低电平
-	{
-		SysTick_DeleyuS(1);				//SysTick延时nuS
-		if(time++>100)
-		{
-			bq26100slave_start();
-			api_bq26100slave_default();
-		}
-	}
+	}	
 	return 1;
 }
 //------------------------------------------------------------------------------
-
 
 /*******************************************************************************
 *函数名			:	bq26100slave_MenCmd_InitializeData
@@ -386,14 +313,12 @@ unsigned char	bq26100slave_MenCmd_InitializeData(void)
 		
 		//---------------Ctrl
 		SDQ_SAMPLE->MemData.Ctrl.Read.Times	=	0;		
-		SDQ_SAMPLE->MemData.Ctrl.Flag.Start	=	0;
 		
 		SDQ_SAMPLE->MasterStatus	=	sdq_master_write;
 	}
 	//=========================主机读摘要
 	else if(sdq_mem_read_digest==SDQ_SAMPLE->InitData.MemCmd)
 	{		
-		SDQ_SAMPLE->MemData.Digest.Flag.Start	=	0;
 		SDQ_SAMPLE->MemData.Digest.Serial			=	0;
 		
 		SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
@@ -414,7 +339,6 @@ unsigned char	bq26100slave_MenCmd_InitializeData(void)
 	else if(sdq_mem_write_control==SDQ_SAMPLE->InitData.MemCmd)
 	{		
 		SDQ_SAMPLE->MemData.Ctrl.Write.Serial	=	0;
-		SDQ_SAMPLE->MemData.Ctrl.Flag.Start		=	0;
 		
 		//---------------Digest
 		SDQ_SAMPLE->MemData.Digest.Flag.Auth			=	1;
@@ -441,7 +365,15 @@ unsigned char	bq26100slave_MenCmd_InitializeData(void)
 *******************************************************************************/
 unsigned char bq26100slave_write_message(void)
 {
-	//====================第一步:主机写数据，写完数据需要返回主机CRC
+	//----第一步:主机写数据0
+	//----第二步:主机读取"RAM命令和两字节地址长度和数据"校验
+	//----第三步:主机读回数据0
+	//-----------主机写剩下19字节消息
+	//----第1步:主机写数据n
+	//----第2步:主机读数据n与对应地址异或后对应的CRC5
+	//----第3步:主机读回数据n
+	
+	//====================主机写数据，写完数据需要返回主机CRC
 	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
 	{
 		if(SDQ_SAMPLE->MemData.Message.MessageLen<20)	//message合法字节数据只能为20
@@ -465,14 +397,13 @@ unsigned char bq26100slave_write_message(void)
 			SDQ_SAMPLE->MemData.Message.MessageTransType	=	sdq_Trans_CRC;
 		}
 	}
-	//====================主机读数据
+	//====================主机读数据:读CRC和原数据
 	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
 	{
 		//------------------传输完的是CRC:下一步传输最后接收的一字节数据
 		if(sdq_Trans_CRC == SDQ_SAMPLE->MemData.Message.MessageTransType)
 		{
-			SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
+			SDQ_SAMPLE->TransData.SendByte								=	SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
 			SDQ_SAMPLE->MemData.Message.MessageTransType	=	sdq_Trans_Data;
 		}
 		//------------------传输完的是数据:下一步是接收主机数据或者传输完成检查
@@ -480,148 +411,13 @@ unsigned char bq26100slave_write_message(void)
 		{
 			if(20	<=	SDQ_SAMPLE->MemData.Message.MessageLen)
 			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;						//空闲:主机发送完所有的message
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
+				SDQ_SAMPLE->MasterStatus					=	sdq_master_ilde;						//空闲:主机发送完所有的message
 			}
 			else
 			{
 				SDQ_SAMPLE->MasterStatus	=	sdq_master_write;		//主机继续发送下一字节数据
 			}
 		}
-	}
-	return 1;
-	//====================第一步:主机写数据
-	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
-	{
-		unsigned char receive_result=bq26100slave_receive_byte();
-		if(1==receive_result)		//接收完一字节
-		{
-			if(SDQ_SAMPLE->MemData.Message.MessageLen<20)	//message合法字节数据只能为20
-			{
-				SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen]	=	SDQ_SAMPLE->TransData.RcvByte;
-				SDQ_SAMPLE->MemData.Message.MessageLen		+=	1;
-				
-				//----------------主机发送完第一字节message后需要读取"RAM命令和两字节地址长度和数据"校验
-				if(1==SDQ_SAMPLE->MemData.Message.MessageLen)
-				{					
-					SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],SDQ_SAMPLE->PublicData.receivelen-1);
-				}
-				//----------------主机发完第二条message后的校验方式:当前地址与当前数据异或出结果再求对应结果的CRC
-				else
-				{
-					unsigned char temp=(SDQ_SAMPLE->MemData.Message.MessageLen-1)^SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
-					SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&temp,1);
-				}
-				//----------------主机每发送完一字节数据后需要读取CRC
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_readCRC;				
-			}
-			//协议失败:发送数据个数超过20个字节
-			else
-			{
-			}
-		}
-		return receive_result;
-	}
-	//====================主机读CRC和数据时，启动bit只能为1
-	//====================第二步:主机读CRC，主机读完CRC后读回原字节数据
-	else if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{
-			SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-		}
-	}
-	//====================第三步:主机读回数据,读回数据后主机继续发送下一字节数据，直到主机发送完20个字节
-	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(1==bq26100slave_send_byte())								//返回1表示发送完一字节
-		{
-			if(20	<=	SDQ_SAMPLE->MemData.Message.MessageLen)
-			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;						//空闲:主机发送完所有的message
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
-			}
-			else
-			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_write;		//主机继续发送下一字节数据
-			}
-		}		
-	}
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-
-
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char bq26100slave_write_messagebac(void)
-{
-	//====================第一步:主机写数据
-	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
-	{
-		unsigned char receive_result=bq26100slave_receive_byte();
-		if(1==receive_result)		//接收完一字节
-		{
-			if(SDQ_SAMPLE->MemData.Message.MessageLen<20)	//message合法字节数据只能为20
-			{
-				SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen]	=	SDQ_SAMPLE->TransData.RcvByte;
-				SDQ_SAMPLE->MemData.Message.MessageLen		+=	1;
-				
-				//----------------主机发送完第一字节message后需要读取"RAM命令和两字节地址长度和数据"校验
-				if(1==SDQ_SAMPLE->MemData.Message.MessageLen)
-				{					
-					SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],SDQ_SAMPLE->PublicData.receivelen-1);
-				}
-				//----------------主机发完第二条message后的校验方式:当前地址与当前数据异或出结果再求对应结果的CRC
-				else
-				{
-					unsigned char temp=(SDQ_SAMPLE->MemData.Message.MessageLen-1)^SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
-					SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&temp,1);
-				}
-				//----------------主机每发送完一字节数据后需要读取CRC
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_readCRC;				
-			}
-			//协议失败:发送数据个数超过20个字节
-			else
-			{
-			}
-		}
-		return receive_result;
-	}
-	//====================主机读CRC和数据时，启动bit只能为1
-	//====================第二步:主机读CRC，主机读完CRC后读回原字节数据
-	else if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{
-			SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Message.MessageBuffer[SDQ_SAMPLE->MemData.Message.MessageLen-1];
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-		}
-	}
-	//====================第三步:主机读回数据,读回数据后主机继续发送下一字节数据，直到主机发送完20个字节
-	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(1==bq26100slave_send_byte())								//返回1表示发送完一字节
-		{
-			if(20	<=	SDQ_SAMPLE->MemData.Message.MessageLen)
-			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;						//空闲:主机发送完所有的message
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
-			}
-			else
-			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_write;		//主机继续发送下一字节数据
-			}
-		}		
 	}
 	return 1;
 }
@@ -638,108 +434,76 @@ unsigned char bq26100slave_write_messagebac(void)
 *******************************************************************************/
 unsigned char bq26100slave_read_control(void)
 {
-	//----------------第一步:上传RAM,AddressL,AddressH校验
-	//----------------第二步:上传00地址状态值
-	//----------------第三步:上传01地址状态值
-	//----------------第四步:上传(RAM,AddressL,AddressH)&(RAM,AddressL,AddressH校验结果)&(00地址内容)&(01地址内容)的CRC校验
-	//====================第一步:主机读取RAM命令和两字节地址校验
-	//====================准备数据
-	if(0==SDQ_SAMPLE->MemData.Ctrl.Flag.Start)
+	//----------------第一步:主机读RAM,AddressL,AddressH校验
+	//----------------第二步:主机读00地址状态值
+	//----------------第三步:主机读01地址状态值
+	//----------------第四步:主机读(RAM,AddressL,AddressH)&(RAM,AddressL,AddressH校验结果)&(00地址内容)&(01地址内容)的CRC校验
+	//====================第一步:主机写数据
+	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
 	{
-		//==================校验数据
-		if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
-		{
-			//---------------------第一次校验为RAM命令和两字节地址校验
-			if(0 == SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
-			{
-				SDQ_SAMPLE->MemData.Ctrl.Read.CrcData	=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],3);
-				SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Read.CrcData;
-				//---------------------第一次读取状态为0x04,0xA1
-				if(0	==	SDQ_SAMPLE->MemData.Ctrl.Read.Times)
-				{				
-					SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0		=	0x04;
-					SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1		=	0xA1;
-				}
-				//---------------------第二次读取状态为0x06,0xA1
-				else if(1	==	SDQ_SAMPLE->MemData.Ctrl.Read.Times)
-				{				
-					SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0		=	0x06;
-					SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1		=	0xA1;
-				}
-			}
-			//---------------------第二次校验为(RAM,AddressL,AddressH)&(RAM,AddressL,AddressH校验结果)&(00地址内容)&(01地址内容)的CRC校验
-			else
-			{
-				unsigned char buffer[6]={0};
-				memcpy(buffer,&SDQ_SAMPLE->PublicData.receive[1],3);
-				buffer[3]	=	SDQ_SAMPLE->MemData.Ctrl.Read.CrcData;
-				buffer[4]	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0;
-				buffer[5]	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1;
-				SDQ_SAMPLE->TransData.SendByte	=	CRC8_8541_lsb(buffer,6);
-			}
-		}
-		//==================寄存器状态数据
-		else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
-		{
-			//---------------------寄存器地址0状态值
-			if(0 == SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
-			{
-				SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0;
-			}
-			//---------------------寄存器地址1状态值
-			else
-			{
-				SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1;
-			}
-		}
-		SDQ_SAMPLE->MemData.Ctrl.Flag.Start		=	1;
 	}
-	//====================上传数据
-	if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
+	//====================主机读数据
+	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
 	{
-		//==================校验数据
-		if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
+		//---------------------第一步:主机读取RAM命令和两字节地址校验
+		if(0==SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
 		{
-			//---------------------第一次校验为RAM命令和两字节地址校验
-			if(0 == SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
-			{				
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-			}
-			//---------------------第二次校验为(RAM,AddressL,AddressH)&(RAM,AddressL,AddressH校验结果)&(00地址内容)&(01地址内容)的CRC校验
-			else
-			{				
-				if(0==SDQ_SAMPLE->MemData.Ctrl.Read.Times)
-				{
-					SDQ_SAMPLE->MemData.Ctrl.Read.Times	=1;
-				}
-				else
-				{
-					SDQ_SAMPLE->MemData.Ctrl.Read.Times	=0;
-				}
-				SDQ_SAMPLE->PublicData.receivelen				=	0;
-				SDQ_SAMPLE->MemData.Ctrl.Read.Serial	=	0;
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;
-			}
+			SDQ_SAMPLE->MemData.Ctrl.Read.CrcData	=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],3);		//第一次校验为RAM命令和两字节地址校验
+			SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Read.CrcData;
 		}
-		//==================寄存器状态数据
-		else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
+		//---------------------第二步:读取状态地址0的值
+		else if(1==SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
 		{
-			if(0 == SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
+			//-------------------第一次读取状态地址0的值为0x04
+			if(0	==	SDQ_SAMPLE->MemData.Ctrl.Read.Times)
 			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
+				SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0		=	0x04;	//0x04;
+				SDQ_SAMPLE->TransData.SendByte				=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0;
 			}
+			//-------------------第二次读取状态地址0的值为0x06
 			else
 			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_readCRC;
+				SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0		=	0x06;
+				SDQ_SAMPLE->TransData.SendByte				=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0;
 			}
-			SDQ_SAMPLE->MemData.Ctrl.Read.Serial+=1;
 		}
-		SDQ_SAMPLE->MemData.Ctrl.Flag.Start	=	0;
-	}
+		//---------------------第三步:读取状态地址1的值--两次读取都为0xA1
+		else if(2==SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
+		{
+			SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1		=	0xA1;
+			SDQ_SAMPLE->TransData.SendByte				=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1;
+		}
+		//---------------------第四步:校验为(RAM,AddressL,AddressH)&(RAM,AddressL,AddressH校验结果)&(00地址内容)&(01地址内容)的CRC校验
+		else if(3==SDQ_SAMPLE->MemData.Ctrl.Read.Serial)
+		{
+			unsigned char buffer[6]={0};
+			memcpy(buffer,&SDQ_SAMPLE->PublicData.receive[1],3);
+			buffer[3]	=	SDQ_SAMPLE->MemData.Ctrl.Read.CrcData;
+			buffer[4]	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl0;
+			buffer[5]	=	SDQ_SAMPLE->MemData.Ctrl.Read.Ctrl1;
+			SDQ_SAMPLE->TransData.SendByte	=	CRC8_8541_lsb(buffer,6);
+		}
+		//---------------------完成读取
+		else
+		{
+			if(0==SDQ_SAMPLE->MemData.Ctrl.Read.Times)
+			{
+				SDQ_SAMPLE->MemData.Ctrl.Read.Times	=1;
+			}
+			else
+			{
+				SDQ_SAMPLE->MemData.Ctrl.Read.Times	=0;
+			}			
+			SDQ_SAMPLE->MemData.Ctrl.Read.Serial=0;
+			SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;
+			return 1;
+		}
+		SDQ_SAMPLE->MemData.Ctrl.Read.Serial+=1;
+		SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
+	}	
 	return 1;
 }
 //------------------------------------------------------------------------------
-
 
 /*******************************************************************************
 *函数名			:	function
@@ -751,100 +515,71 @@ unsigned char bq26100slave_read_control(void)
 *注释				:	wegam@sina.com
 *******************************************************************************/
 unsigned char bq26100slave_write_control(void)
-{
-	//====================第一步:主机写数据
+{	
+	//----第一步:主机写状态寄存器0
+	//----第二步:主机读取"RAM命令和两字节地址长度和数据"校验
+	//----第三步:主机读取状态寄存器0
+	//----第四步:主机写状态寄存器1
+	//----第五步:主机读取状态寄存器地址1与写入的状态寄存器值异或后对应的CRC5
+	//----第六步:主机读取状态寄存器1的值
+	
+	//====================主机写控制寄存器：写完寄存器后主机先读取CRC
 	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
 	{
-		unsigned char receive_result=bq26100slave_receive_byte();
-		//------------------第一步:接收第一个数据
-		if(1==receive_result)	//未接收完一字节
+		//------------------主机写入状态寄存器0数据
+		if(0==SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
 		{
-			SDQ_SAMPLE->MemData.Ctrl.Write.Serial+=1;
-			//------------------主机发完第一个状态寄存器：下一步返回CRC
-			if(1 == SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
-			{
-				//----------------主机发送第一个字节
-				SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0R	=	SDQ_SAMPLE->TransData.RcvByte;				
-				//----------------从机需要返回的状态值
-				SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0T	=	0x06;
-				//----------------主机发送完第一字节控制寄存器值后需要读取"RAM命令和两字节地址长度和数据"校验
-				SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],SDQ_SAMPLE->PublicData.receivelen-1);
-				//----------------下一条操作为向主机返回CRC
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_readCRC;
-			}
-			//------------------主机发完第二个状态寄存器：下一步返回CRC
-			else if(2 == SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
-			{
-				unsigned char temp	=	0;
-				SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1	=	SDQ_SAMPLE->TransData.RcvByte;
-				//----------------当前地址与当前数据异或出结果再求对应结果的CRC
-				temp	=	0x01^SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1;
-				//----------------获取CRC
-				SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&temp,1);
-				//----------------下一条操作为向主机返回CRC
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_readCRC;
-			}
-			return 1;
+			SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0R	=	SDQ_SAMPLE->TransData.RcvByte;			//主机发送的状态寄存器0的值
+			SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0T	=	0x06;																//主机待读取的状态寄存器0的值
+			SDQ_SAMPLE->TransData.SendByte	=	CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],SDQ_SAMPLE->PublicData.receivelen-1);	//主机发送完第一字节控制寄存器值后需要读取"RAM命令和两字节地址长度和数据"校验
 		}
-	}
-	//====================向主机返回CRC
-	//--------------------第一步返回CRC：原状态为向主机发送CRC，下一步为向主机发送控制寄存器状态
-	else if(sdq_master_readCRC==SDQ_SAMPLE->MasterStatus)
-	{
-		//----------------------发送CRC
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
+		//------------------主机写入状态寄存器1数据
+		else if(1==SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
 		{
-			//------------------主机读完第一个CRC：下一步读取第一个状态寄存器值
-			if(1 ==	SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
+			unsigned char temp	=	0;
+			SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1	=	SDQ_SAMPLE->TransData.RcvByte;		//主机发送的状态寄存器1的值
+			temp	=	0x01^SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1;						//当前地址与当前数据异或出结果再求对应结果的CRC
+			SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(&temp,1);		//CRC
+		}		
+		SDQ_SAMPLE->MemData.Ctrl.Write.Serial+=1;									//主机写完数据后转为读取模式
+		SDQ_SAMPLE->MasterStatus	=	sdq_master_read;							//写完寄存器后主机先读取CRC
+		SDQ_SAMPLE->MemData.Ctrl.CtrlTransType	=	sdq_Trans_CRC;	//写完寄存器后主机先读取CRC
+	}
+	//====================主机读数据CRC和数据
+	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
+	{
+		//------------------主机读取完CRC
+		if(sdq_Trans_CRC	==	SDQ_SAMPLE->MemData.Ctrl.CtrlTransType)
+		{
+			if(1==SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
 			{
-				//----------------控制寄存器0的值
-				SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0T;
-				//----------------等待主机读取数据
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
+				SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl0T;	//读取完第一个CRC,然后读取第一个状态寄存器
 			}
-			//------------------主机读完第二个状态值的CRC：下一步读取第二个状态寄存器
-			else if(2 ==	SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
-			{
-				//----------------控制寄存器0的值
-				SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1;
-				//----------------等待主机读取数据
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-			}
-			//------------------
+			//----------------读取完第二个CRC
 			else
 			{
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;		//主机继续发送下一字节数据
-				//SDQ_SAMPLE->data.receivelen	=	0;
+				SDQ_SAMPLE->TransData.SendByte	=	SDQ_SAMPLE->MemData.Ctrl.Write.Ctrl1;		//主机读完CRC后读取状态寄存器值		
 			}
-			return 1;
+			SDQ_SAMPLE->MemData.Ctrl.CtrlTransType	=	sdq_Trans_Data;
 		}
-		return 1;
-	}
-	//====================第三步:返回寄存器值
-	else if(sdq_master_read==SDQ_SAMPLE->MasterStatus)
-	{
-		//----------------------发送数据
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
+		//------------------主机读取完状态寄存器值
+		else
 		{
-			//------------------主机读完第一个状态寄存器：下一步主机发送第二个状态寄存器值
-			if(1 ==	SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
+			if(1==SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
 			{
-				//----------------等待主机发送寄存器1数据
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_write;
+				SDQ_SAMPLE->MasterStatus	=	sdq_master_write;		//主机读完第一个状态寄存器后主机准备写状态寄存器2的值
 			}
-			//------------------主机读完第二个状态寄存器：完成整个写控制寄存器操作
-			else if(2 ==	SDQ_SAMPLE->MemData.Ctrl.Write.Serial)
+			else
 			{
-				//----------------等待主机发送寄存器1数据：完成
-				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
+				SDQ_SAMPLE->MemData.Ctrl.Write.Serial	=	0;
+				SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;		//主机读完第二个状态寄存器后完成写寄存器过程
 			}
 		}
-		return 1;
 	}
 	return 1;
 }
 //------------------------------------------------------------------------------
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -857,6 +592,13 @@ unsigned char bq26100slave_write_control(void)
 *******************************************************************************/
 unsigned char	bq26100slave_read_digest(void)
 {
+	//----第一步:主机读RAM,AddressL,AddressH校验
+	//----第二步:主机读取"RAM命令和两字节地址长度和数据"校验
+	//----第三步:主机读取状态寄存器0
+	//----第四步:主机写状态寄存器1
+	//----第五步:主机读取状态寄存器地址1与写入的状态寄存器值异或后对应的CRC5
+	//----第六步:主机读取状态寄存器1的值
+	
 	//====================第一步:主机写数据
 	if(sdq_master_write	==	SDQ_SAMPLE->MasterStatus)
 	{
@@ -864,15 +606,14 @@ unsigned char	bq26100slave_read_digest(void)
 	//====================主机读数据
 	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
 	{
-		//====================第一步:主机读取RAM命令和两字节地址校验
+		//------------------第一步:主机读取RAM命令和两字节地址校验
 		if(sdq_Trans_ilde == SDQ_SAMPLE->MemData.Digest.DigestTransType)
 		{
-			//---------------------RAM命令和两字节地址校验
+			//----------------RAM命令和两字节地址校验
 			SDQ_SAMPLE->TransData.SendByte	=		CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],3);
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
 			SDQ_SAMPLE->MemData.Digest.DigestTransType	=	sdq_Trans_CRC;
 		}
-		//====================传输20字节摘要
+		//====================传输第一字节摘要
 		else if(sdq_Trans_CRC == SDQ_SAMPLE->MemData.Digest.DigestTransType)
 		{
 			//--------------第一次返回摘要为原message消息----未设置控制位
@@ -885,13 +626,11 @@ unsigned char	bq26100slave_read_digest(void)
 			SDQ_SAMPLE->MemData.Digest.Serial			=	0;			
 			SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Digest.DigestBuffer[SDQ_SAMPLE->MemData.Digest.Serial];
 			
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
 			SDQ_SAMPLE->MemData.Digest.DigestTransType	=	sdq_Trans_Data;
 		}
-		//====================传输20字节摘要
+		//====================传输剩下19字节摘要
 		else if(sdq_Trans_Data == SDQ_SAMPLE->MemData.Digest.DigestTransType)
 		{
-			//SDQ_SAMPLE->data.SendByte	=	SDQ_SAMPLE->data.message[SDQ_SAMPLE->data.messgaelen-1];
 			SDQ_SAMPLE->MemData.Digest.Serial	+=	1;		//已发送数量计数
 			if(20>SDQ_SAMPLE->MemData.Digest.Serial)
 			{
@@ -904,153 +643,24 @@ unsigned char	bq26100slave_read_digest(void)
 			}
 			else	//发送完摘要和CRC
 			{
-				SDQ_SAMPLE->MasterStatus							=	sdq_master_ilde;
+				SDQ_SAMPLE->MemData.Digest.Serial	=	0;
 				SDQ_SAMPLE->PublicData.receivelen	=	0;
+				SDQ_SAMPLE->MasterStatus					=	sdq_master_ilde;
 				return 1;
 			}
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
 			SDQ_SAMPLE->MemData.Digest.DigestTransType	=	sdq_Trans_Data;
 		}
 	}
 	return 1;
-	//====================第一步:主机读取RAM命令和两字节地址校验
-	if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(0==SDQ_SAMPLE->MemData.Digest.Flag.Start)
-		{
-			//---------------------RAM命令和两字节地址校验
-			SDQ_SAMPLE->TransData.SendByte	=		CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],3);
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	1;
-		}
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{				
-			//SDQ_SAMPLE->data.SendByte	=	SDQ_SAMPLE->data.message[SDQ_SAMPLE->data.messgaelen-1];
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	0;
-		}
-		return 1;
-	}
-	//====================第二步:返回消息摘要
-	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
-	{
-		//----------------未启动传输
-		if(0==SDQ_SAMPLE->MemData.Digest.Flag.Start)		//未设置消息
-		{	
-			//--------------第一次返回摘要为原message消息----未设置控制位
-			if(0==SDQ_SAMPLE->MemData.Digest.Flag.Auth)		//未启动转换:发回message
-			{
-				memcpy(SDQ_SAMPLE->MemData.Digest.DigestBuffer,SDQ_SAMPLE->MemData.Message.MessageBuffer,20);
-			}
-			//--------------第二次返回摘要为转换后的摘要消息--已设置控制位，如果未匹配到摘要则做异常处理
-			//--------------启动发送
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	1;
-			SDQ_SAMPLE->MemData.Digest.Serial			=	0;
-			
-			SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Digest.DigestBuffer[SDQ_SAMPLE->MemData.Digest.Serial];				
-		}
-		//----------------已启动传输
-		//===========================发送数据
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{				
-			//SDQ_SAMPLE->data.SendByte	=	SDQ_SAMPLE->data.message[SDQ_SAMPLE->data.messgaelen-1];
-			SDQ_SAMPLE->MemData.Digest.Serial	+=	1;		//已发送数量计数
-			if(20>SDQ_SAMPLE->MemData.Digest.Serial)
-			{
-				SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Digest.DigestBuffer[SDQ_SAMPLE->MemData.Digest.Serial];
-			}
-			//--------------发送所有的Digest数据校验
-			else if(20==SDQ_SAMPLE->MemData.Digest.Serial)
-			{
-				SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(SDQ_SAMPLE->MemData.Digest.DigestBuffer,20);
-			}
-			else	//发送完摘要和CRC
-			{
-				SDQ_SAMPLE->MasterStatus							=	sdq_master_ilde;
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
-				return 1;
-			}					
-		}
-		SDQ_SAMPLE->MasterStatus					=	sdq_master_read;
-		return 1;
-	}
-	return 0;
 }
 //------------------------------------------------------------------------------
 
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char	bq26100slave_read_digestbac(void)
-{
-	//====================第一步:主机读取RAM命令和两字节地址校验
-	if(sdq_master_readCRC	==	SDQ_SAMPLE->MasterStatus)
-	{
-		if(0==SDQ_SAMPLE->MemData.Digest.Flag.Start)
-		{
-			//---------------------RAM命令和两字节地址校验
-			SDQ_SAMPLE->TransData.SendByte	=		CRC8_8541_lsb(&SDQ_SAMPLE->PublicData.receive[1],3);
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	1;
-		}
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{				
-			//SDQ_SAMPLE->data.SendByte	=	SDQ_SAMPLE->data.message[SDQ_SAMPLE->data.messgaelen-1];
-			SDQ_SAMPLE->MasterStatus	=	sdq_master_read;
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	0;
-		}
-		return 1;
-	}
-	//====================第二步:返回消息摘要
-	else if(sdq_master_read	==	SDQ_SAMPLE->MasterStatus)
-	{
-		//----------------未启动传输
-		if(0==SDQ_SAMPLE->MemData.Digest.Flag.Start)		//未设置消息
-		{	
-			//--------------第一次返回摘要为原message消息----未设置控制位
-			if(0==SDQ_SAMPLE->MemData.Digest.Flag.Auth)		//未启动转换:发回message
-			{
-				memcpy(SDQ_SAMPLE->MemData.Digest.DigestBuffer,SDQ_SAMPLE->MemData.Message.MessageBuffer,20);
-			}
-			//--------------第二次返回摘要为转换后的摘要消息--已设置控制位，如果未匹配到摘要则做异常处理
-			//--------------启动发送
-			SDQ_SAMPLE->MemData.Digest.Flag.Start	=	1;
-			SDQ_SAMPLE->MemData.Digest.Serial			=	0;
-			
-			SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Digest.DigestBuffer[SDQ_SAMPLE->MemData.Digest.Serial];				
-		}
-		//----------------已启动传输
-		//===========================发送数据
-		if(1==bq26100slave_send_byte())	//返回1表示发送完一字节
-		{				
-			//SDQ_SAMPLE->data.SendByte	=	SDQ_SAMPLE->data.message[SDQ_SAMPLE->data.messgaelen-1];
-			SDQ_SAMPLE->MemData.Digest.Serial	+=	1;		//已发送数量计数
-			if(20>SDQ_SAMPLE->MemData.Digest.Serial)
-			{
-				SDQ_SAMPLE->TransData.SendByte		=	SDQ_SAMPLE->MemData.Digest.DigestBuffer[SDQ_SAMPLE->MemData.Digest.Serial];
-			}
-			//--------------发送所有的Digest数据校验
-			else if(20==SDQ_SAMPLE->MemData.Digest.Serial)
-			{
-				SDQ_SAMPLE->TransData.SendByte		=	CRC8_8541_lsb(SDQ_SAMPLE->MemData.Digest.DigestBuffer,20);
-			}
-			else	//发送完摘要和CRC
-			{
-				SDQ_SAMPLE->MasterStatus							=	sdq_master_ilde;
-				SDQ_SAMPLE->PublicData.receivelen	=	0;
-				return 1;
-			}					
-		}
-		SDQ_SAMPLE->MasterStatus					=	sdq_master_read;
-		return 1;
-	}
-	return 0;
-}
-//------------------------------------------------------------------------------
+
+
+
+
+
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -1063,8 +673,7 @@ unsigned char	bq26100slave_read_digestbac(void)
 *******************************************************************************/
 unsigned char api_bq26100slave_digest_match_error(void)
 {
-	SDQ_SAMPLE->MasterStatus	=	sdq_master_error;
-	//api_bq26100slave_default();
+	SDQ_SAMPLE->MemData.Digest.Flag.match_error	=	1;
 	return 0;
 }
 //------------------------------------------------------------------------------
@@ -1081,15 +690,7 @@ unsigned char api_bq26100slave_digest_match_error(void)
 unsigned char api_bq26100slave_get_error_status(void)
 {
 	//==================无错误:返回0
-	if(sdq_master_error !=	SDQ_SAMPLE->MasterStatus)
-	{
-		return 0;
-	}
-	//==================有错误:返回1
-	else
-	{
-		return 1;
-	}
+	return SDQ_SAMPLE->MemData.Digest.Flag.match_error;
 }
 //------------------------------------------------------------------------------
 
@@ -1104,7 +705,7 @@ unsigned char api_bq26100slave_get_error_status(void)
 *******************************************************************************/
 unsigned char api_bq26100slave_reset_error_status(void)
 {
-	SDQ_SAMPLE->MasterStatus	=	sdq_master_ilde;
+	SDQ_SAMPLE->MemData.Digest.Flag.match_error	=	0;
 	return 1;
 }
 
@@ -1158,7 +759,7 @@ unsigned char bq26100slave_receive_bit(void)
 	unsigned char flag=0;
 	unsigned char bit = 0x80;
 	//-----------------主机写数据或者空闲状态时
-	if((sdq_master_start==SDQ_SAMPLE->MasterStatus)||(sdq_master_ilde==SDQ_SAMPLE->MasterStatus)||(sdq_master_write==SDQ_SAMPLE->MasterStatus))
+	if((sdq_master_ilde==SDQ_SAMPLE->MasterStatus)||(sdq_master_write==SDQ_SAMPLE->MasterStatus))
 	{
 		SDQ_SAMPLE->time.count=0;
 		SDQ_SAMPLE->time.time_sys=0;	
@@ -1315,7 +916,61 @@ unsigned char bq26100slave_start(void)
 	SetBQ26100slavePinLevel=0;
 	SysTick_DeleyuS(160);					//SysTick延时nuS
 	SetBQ26100slavePinIntrr;
-	//===========================
+	//===========================数据初始化
+	bq26100slave_start_data_init();
+	return 1;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	bq26100slave_start_data_init
+*功能描述		:	检测到重启时序时的数据初始化
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char	bq26100slave_start_data_init(void)
+{
+	unsigned char all_data_reset_flag=0;
+	//====================
+	if(sdq_master_ilde	!=	SDQ_SAMPLE->MasterStatus)
+	{
+		all_data_reset_flag=1;
+	}
+	//====================TransData
+	else if((0!=SDQ_SAMPLE->TransData.RcvBitlen)&&(0!=SDQ_SAMPLE->TransData.SendBitLen))
+	{
+		all_data_reset_flag=2;
+	}
+	//====================MemData.Message
+	else if((0!=SDQ_SAMPLE->MemData.Message.MessageLen)&&(20!=SDQ_SAMPLE->MemData.Message.MessageLen))
+	{
+		all_data_reset_flag=3;
+	}
+	//====================MemData.Digest
+	else if(0!=SDQ_SAMPLE->MemData.Digest.Serial)
+	{
+		all_data_reset_flag=4;
+	}
+	//====================MemData.Ctrl
+	else if((0!=SDQ_SAMPLE->MemData.Ctrl.Read.Serial)&&(0!=SDQ_SAMPLE->MemData.Ctrl.Write.Serial))
+	{
+		all_data_reset_flag=5;
+	}
+	if(all_data_reset_flag)
+	{
+		all_data_reset_flag=0;
+		api_bq26100slave_all_data_default();
+	}
+	else
+	{
+		all_data_reset_flag=0;
+		SDQ_SAMPLE->InitData.InitFlag	=	0;			//初始化完成
+		SDQ_SAMPLE->PublicData.receivelen	=	0;
+		SDQ_SAMPLE->MasterStatus	=	sdq_master_write;
+	}
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -1329,84 +984,34 @@ unsigned char bq26100slave_start(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned char  api_bq26100slave_data_init(void)
+unsigned char	api_bq26100slave_all_data_default(void)
 {
-//	//----------------time
-//	SDQ_SAMPLE->time.high	=	0;
-//	SDQ_SAMPLE->time.low	=	0;	
+	//====================
+	SDQ_SAMPLE->MasterStatus	=	sdq_master_write;
 	
-	//----------------data
-	//SDQ_SAMPLE->data.intrrcout=0;
-	SDQ_SAMPLE->PublicData.startcout++;
-	SDQ_SAMPLE->PublicData.receivelen=0;
-	SDQ_SAMPLE->InitData.addressL	=	0;
-	SDQ_SAMPLE->InitData.addressH	=	0;
-	//SDQ_SAMPLE->data.SendBitLen	=	0;
-	SDQ_SAMPLE->TransData.SendByte	=	0;
-	SDQ_SAMPLE->TransData.RcvBitlen	=	0;
-	SDQ_SAMPLE->TransData.RcvByte	=	0;
-
+	//====================TransData
+	SDQ_SAMPLE->TransData.RcvBitlen		=	0;
+	SDQ_SAMPLE->TransData.SendBitLen	=	0;
 	
-	//---------------Message
-	//SDQ_SAMPLE->data.Message.MessageLen=0;
+	//====================PublicData
+	SDQ_SAMPLE->PublicData.receivelen	=	0;
+	SDQ_SAMPLE->PublicData.intrrcout	=	0;
 	
-	//---------------Digest
-	SDQ_SAMPLE->MemData.Digest.Serial=0;	
-	
-	//----------------RomCmd
-	SDQ_SAMPLE->InitData.RomCmd	=	sdq_rom_idle;
-	
-	//----------------MemCmd
-	SDQ_SAMPLE->InitData.MemCmd	=	sdq_mem_idle;
-	
-	//----------------status
-	SDQ_SAMPLE->MasterStatus	=	sdq_master_start;
-	return 1;
-}
-//------------------------------------------------------------------------------
-
-/*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
-*输入				: 
-*返回值			:	无
-*修改时间		:	无
-*修改说明		:	无
-*注释				:	wegam@sina.com
-*******************************************************************************/
-unsigned char  api_bq26100slave_default(void)
-{
-//	//----------------time
-//	SDQ_SAMPLE->time.high	=	0;
-//	SDQ_SAMPLE->time.low	=	0;	
-	
+	//====================InitData
 	SDQ_SAMPLE->InitData.InitFlag	=	0;
-	//----------------data
-	//SDQ_SAMPLE->data.intrrcout=0;
-	SDQ_SAMPLE->PublicData.startcout++;
-	SDQ_SAMPLE->PublicData.receivelen=0;
-	SDQ_SAMPLE->InitData.addressL	=	0;
-	SDQ_SAMPLE->InitData.addressH	=	0;
-	//SDQ_SAMPLE->data.SendBitLen	=	0;
-	SDQ_SAMPLE->TransData.SendByte	=	0;
-	SDQ_SAMPLE->TransData.RcvBitlen	=	0;
-	SDQ_SAMPLE->TransData.RcvByte	=	0;
+	
+	//====================MemData.Message
+	SDQ_SAMPLE->MemData.Message.MessageLen	=	0;
+	
+	//====================MemData.Digest
+	SDQ_SAMPLE->MemData.Digest.Serial					=	0;
+	SDQ_SAMPLE->MemData.Digest.Flag.Auth			=	0;
+	SDQ_SAMPLE->MemData.Digest.Flag.Digested	=	0;
+	//====================MemData.Ctrl
+	SDQ_SAMPLE->MemData.Ctrl.Read.Serial	=	0;
+	SDQ_SAMPLE->MemData.Ctrl.Write.Serial	=	0;
+	SDQ_SAMPLE->MemData.Ctrl.Read.Times		=	0;
 
-	
-	//---------------Message
-	//SDQ_SAMPLE->data.Message.MessageLen=0;
-	
-	//---------------Digest
-	SDQ_SAMPLE->MemData.Digest.Serial=0;	
-	
-	//----------------RomCmd
-	SDQ_SAMPLE->InitData.RomCmd	=	sdq_rom_idle;
-	
-	//----------------MemCmd
-	SDQ_SAMPLE->InitData.MemCmd	=	sdq_mem_idle;
-	
-	//----------------status
-	SDQ_SAMPLE->MasterStatus	=	sdq_master_start;
 	return 1;
 }
 //------------------------------------------------------------------------------
@@ -1458,6 +1063,7 @@ void	bq26100slave_set_digest(void)
 			}
 		}
 		//------------------------未匹配到数据
+		api_bq26100slave_reset_error_status();
 		if(i>=bq26100BufferSize)
 		{
 			api_bq26100slave_digest_match_error();
@@ -1483,9 +1089,10 @@ void EXTI9_5_IRQHandler(void)
 	//=======================高电平:上升沿
 	if(0==GetBQ26100slavePinLevel)	//低电平
 	{	
-		if((SDQ_SAMPLE->MasterStatus==sdq_master_read)||(SDQ_SAMPLE->MasterStatus==sdq_master_readCRC))
+		if(SDQ_SAMPLE->MasterStatus==sdq_master_read)
 			SetBQ26100slavePinOutL;
-			bq26100slave_process();
+		bq26100slave_process();
+		SDQ_SAMPLE->time.time_out	=	0;
 	}
 	//=======================低电平:下降沿
 	else

@@ -23,7 +23,7 @@
 //#include "stm32f10x_conf.h"
 //#include "stm32f10x_map.h"
 
-//#include "STM32F10x_BitBand.H"
+#include "STM32F10x_BitBand.H"
 
 
 //#include "STM32_WOW.H"
@@ -77,6 +77,177 @@ void GPIO_Configuration_APP50	(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);			//½«GPIOÏ
 void GPIO_Toggle	(GPIO_TypeDef* GPIOx,	u16 GPIO_Pin_n);		//½«GPIOÏàÓ¦¹Ü½ÅÊä³ö·­×ª----V20170605
 
 
+
+
+
+
+
+
+//=================================================
+void API_GPIO_SET_Clock_Eable(GPIO_TypeDef* GPIOx);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªPP(ÍÆÍì)Êä³öÄ£Ê½-¼Ä´æÆ÷°æ±¾£¬×î´óËÙ¶È50MHz----V20190805
+void API_GPIO_SET_OPP50_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OPP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªOD(¿ªÂ©)Êä³öÄ£Ê½-¼Ä´æÆ÷°æ±¾£¬×î´óËÙ¶È50MHz----V20190805
+void API_GPIO_SET_OOD50_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_OOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAPP(¸´ÓÃÍÆÍì)Êä³öÄ£Ê½-¼Ä´æÆ÷°æ±¾£¬×î´óËÙ¶È50MHz----V20190805
+void API_GPIO_SET_APP50_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_APP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªAOD(¸´ÓÃ¿ªÂ©)Êä³öÄ£Ê½-¼Ä´æÆ÷°æ±¾£¬×î´óËÙ¶È50MHz----V20190805
+void API_GPIO_SET_AOD50_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_AOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+
+//*************************************************ÊäÈëÄ£Ê½
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªINA(Ä£Äâ)ÊäÈëÄ£Ê½-¼Ä´æÆ÷°æ±¾----V20190805
+void API_GPIO_SET_INA_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INA_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªINF(¸¡¿Õ)ÊäÈëÄ£Ê½-¼Ä´æÆ÷°æ±¾----V20190805
+void API_GPIO_SET_INF_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_INF_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªIPU(ÉÏÀ­)ÊäÈëÄ£Ê½-¼Ä´æÆ÷°æ±¾----V20190805
+void API_GPIO_SET_IPU_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPU_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
+
+//=================================================½«GPIOÏàÓ¦¹Ü½ÅÅäÖÃÎªIPD(ÏÂÀ­)ÊäÈëÄ£Ê½-¼Ä´æÆ÷°æ±¾----V20190805
+void API_GPIO_SET_IPD_REG_Pin_0(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_1(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_2(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_3(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_4(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_5(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_6(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_7(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_8(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_9(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_10(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_11(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_12(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_13(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_14(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_15(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_All(GPIO_TypeDef* GPIOx);
+void API_GPIO_SET_IPD_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n);
 
 //void GPIO_Conf(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_x,GPIOMode_TypeDef GPIO_Mode,GPIOSpeed_TypeDef GPIO_Speed);								//GPIOÅäÖÃ
 //void GPIO_Configuration(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_x,GPIOMode_TypeDef GPIO_Mode,GPIOSpeed_TypeDef GPIO_Speed);			//GPIOÅäÖÃ

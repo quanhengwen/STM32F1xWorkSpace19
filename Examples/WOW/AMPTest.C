@@ -91,7 +91,7 @@ unsigned char LenName = 0;
 
 UINT br, bw;          //文件读/写字节计数
 u16 xh=0,yv=0;
-char Key = 0;
+char	Power_Flag = 0;
 unsigned  short color = 0;
 unsigned	short	Rait	=	0;
 unsigned	long	ImageAr	=	0;
@@ -196,16 +196,16 @@ void AMPTest_Server(void)
 {
 //  ClockServer();
   RTC_Server();
-//	USART_Server();
+	USART_Server();
   //USART_TEST();	
 		
-	BT459ATEST();
+	//BT459ATEST();		//博途称重模块
 	
-	SHT20MTEST();		//温湿度模块测试
+	//SHT20MTEST();		//温湿度模块测试
 	
-	SHT20TEST();
+	SHT20TEST();		//温湿度IIC接口
 	
-	xpt2046TEST();
+	xpt2046TEST();	//触摸屏
 	
 }
 //------------------------------------------------------------------------------
@@ -235,8 +235,8 @@ static void xpt2046TEST(void)
 	LCD_Printf(600,0,16,LCD565_BLACK,"x轴%0.6d  y轴%0.6d",xpt2046x,xpt2046y);
 }
 /*******************************************************************************
-*函数名			:	function
-*功能描述		:	function
+*函数名			:	BT459ATEST
+*功能描述		:	博途称重模块
 *输入				: 
 *返回值			:	无
 *修改时间		:	无
@@ -416,7 +416,7 @@ void RS485Configuration(void)
 	RS485B.RS485_RxEn_PORT	=	GPIOA;
 	RS485B.RS485_RxEn_Pin		=	GPIO_Pin_1;
 	
-	api_rs485_dma_configurationNR(&RS485B,9600,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	api_rs485_dma_configurationNR(&RS485B,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -760,7 +760,7 @@ void Power_Server(void)
 {
   unsigned  short  temp  = 0;
 
-  if((0  ==  PB4in)&&(1==Key))
+  if((0  ==  PB4in)&&(1==Power_Flag))
   {
     while(0  ==  PB4in)
     {
@@ -768,7 +768,7 @@ void Power_Server(void)
       temp++;
       if(temp>3000)
       {
-        Key = 0;
+        Power_Flag = 0;
         PF10  = 0;
         PWM_OUT(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
         while(0  ==  PB4in);
@@ -778,7 +778,7 @@ void Power_Server(void)
   }
   else if(1 ==PB4in)
   {
-    Key = 1;
+    Power_Flag = 1;
   }
   
   if(temp<3000)

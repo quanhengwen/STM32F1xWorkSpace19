@@ -1,7 +1,7 @@
 #ifndef __BQ26100DATA_H
 #define __BQ26100DATA_H
 
-#define bq26100BufferSize	358
+#define bq26100BufferSize	3000
 
 const unsigned char bq26100_sample_data[bq26100BufferSize][2][20]=
 {		

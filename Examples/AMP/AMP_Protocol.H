@@ -34,7 +34,7 @@ typedef enum  _ampPort
   LayPort     = 3,  //层通讯接口
   CardPort    = 4   //读卡器通讯接口
 }ampPortDef;
-typedef enum _ampStype		//状态类型
+typedef enum _ampStype			//状态类型
 {
   ampStypeNone      = 0,    //不支持的命令/空命令
   ampStypeLock      = 1,    //锁状态,0--

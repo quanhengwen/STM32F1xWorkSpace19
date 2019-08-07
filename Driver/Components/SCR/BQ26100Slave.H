@@ -18,11 +18,8 @@ typedef	enum	_sdq_MasterStatus			//主机当前执行的状态
 {
 	//-------------------------SDQ驱动
 	sdq_master_ilde								=	0,	//空闲
-	sdq_master_start								=	1,	//启动
-	sdq_master_readCRC			= 2,	//主机读CRC
 	sdq_master_read					= 3,	//主机读
 	sdq_master_write				=	6,	//主机写.
-	sdq_master_error								=	7,	//主机写
 }sdq_MasterStatus_def;
 //------------------------------------------------------------------------------
 typedef	enum	_sdq_TransType				//带反馈锁控制标志及吸合时间
@@ -43,7 +40,7 @@ typedef enum
 	sdq_rom_SearchID	=	(unsigned char)0xF0,			//
 }sdq_rom_cmd;
 //------------------------------------------------------------------------------
-typedef enum		//相对于主机
+typedef enum					//相对于主机
 {
 	sdq_mem_idle					=	(unsigned char)0x00,			//
 	sdq_mem_read_memory		=	(unsigned char)0xF0,			//
@@ -66,11 +63,10 @@ typedef	struct	_sdq_time				//
 {	
 	unsigned char	 timeper;			//根据系统时钟计时的时间分频
 	unsigned short count;				//计时时间
-//	unsigned short high;				//高电平时间
-//	unsigned short low;					//低电平时间
 	unsigned long	 time1;				//开始前时间
 	unsigned long  time2;				//新时间
 	unsigned long  time_sys;		//总时间
+	unsigned long  time_out;		//超时时间:开始接收数据后超时时间开始计时
 }sdq_time_def;
 //------------------------------------------------------------------------------
 typedef	struct	_sdq_message			//
@@ -84,22 +80,17 @@ typedef	struct	_sdq_digest			//
 {
 	struct
 	{
-		unsigned char Auth		:1;		//0--未设置控制位/未启动转换上报主机发送的message；1--已设置控制位，可以匹配digest并准备上报
-		unsigned char Start		:1;		//0--未启动传输，需要做传输前数据处理；1--已启动传输，做传输处理
-		unsigned char Digested:1;		//0--未准备好digest,1-准备好digeset
-	}Flag;
-	
-	unsigned char 			Serial;					//已发送摘要计数
-	unsigned char 			DigestBuffer[20];			//消息摘要
+		unsigned char Auth				:1;		//0--未设置控制位/未启动转换上报主机发送的message；1--已设置控制位，可以匹配digest并准备上报
+		unsigned char Digested		:1;		//0--未准备好digest,1-准备好digeset
+		unsigned char match_error	:1;		//0--匹配正确,1-未找到匹配数据
+	}Flag;	
+	unsigned char 			Serial;							//已发送摘要计数
+	unsigned char 			DigestBuffer[20];		//消息摘要
 	sdq_TransType_def		DigestTransType;		//当前消息传输类型
 }bq26100slave_digest_def;
 //------------------------------------------------------------------------------
 typedef	struct	_bq26100slave_ctrl			//
 {	
-	struct
-	{
-		unsigned char Start		:1;		//0--未启动传输，需要做传输前数据处理；1--已启动传输，做传输处理
-	}Flag;
 	struct
 	{
 		unsigned char Ctrl0;		//地址0
@@ -124,7 +115,6 @@ typedef	struct	_sdq_TransData			//位传输数据
 	unsigned char 	SendByte;					//发送数据	
 	unsigned char 	RcvBitlen;				//接收位计数
 	unsigned char 	RcvByte;					//接收数据
-	unsigned char 	receive[sdq_receive_buffer_size];	//消息数组
 }bq26100slave_TransData_def;
 //------------------------------------------------------------------------------
 typedef	struct	_sdq_PublicData			//
@@ -155,15 +145,38 @@ typedef	struct	_sdq				//带反馈锁控制标志及吸合时间
 {
 //	sdq_port_def 		port;	
 	
-	bq26100slave_TransData_def		TransData;		//正在传输的数据--按位接收或者发送
-	bq26100slave_PublicData_def		PublicData;		//公共数据--临时数据
-	bq26100slave_InitData_def			InitData;			//每条消息的起始标准格式数据	
-	bq26100slave_MemData_def			MemData;			//RAM命令数据	
+	bq26100slave_TransData_def		TransData;			//正在传输的数据--按位接收或者发送
+	bq26100slave_PublicData_def		PublicData;			//公共数据--临时数据
+	bq26100slave_InitData_def			InitData;				//每条消息的起始标准格式数据	
+	bq26100slave_MemData_def			MemData;				//RAM命令数据
+	
 	sdq_MasterStatus_def					MasterStatus;		//主机当前执行的状态
 	sdq_time_def									time;
 }bq26100slave_def;
 //------------------------------------------------------------------------------
 
+#define is_bq26100_rom_cmd(cmd)	(														\
+																(sdq_rom_idle			==	cmd)	\
+															||(sdq_rom_MatchID	==	cmd)	\
+															||(sdq_rom_SkipID		==	cmd)	\
+															||(sdq_rom_ReadID		==	cmd)	\
+															||(sdq_rom_SearchID	==	cmd))
+
+#define is_bq26100_ram_cmd(cmd)	(																		\
+																(sdq_mem_idle			==	cmd)					\
+															||(sdq_mem_read_memory	==	cmd)			\
+															||(sdq_mem_write_memory		==	cmd)		\
+															||(sdq_mem_read_page		==	cmd)			\
+															||(sdq_mem_read_digest		==	cmd)		\
+															||(sdq_mem_write_message		==	cmd)	\
+															||(sdq_mem_read_status		==	cmd)		\
+															||(sdq_mem_write_status		==	cmd)		\
+															||(sdq_mem_read_control		==	cmd)		\
+															||(sdq_mem_write_control		==	cmd)	\
+															||(sdq_mem_read_eeprom		==	cmd)		\
+															||(sdq_mem_profile		==	cmd)				\
+															||(sdq_mem_read_page4		==	cmd)			\
+															||(sdq_mem_write_page4	==	cmd))
 
 
 void api_bq26100slave_configuration(bq26100slave_def *sSDQ);		//SDQ从机设备配置
@@ -201,8 +214,9 @@ unsigned char	bq26100slave_send_byte(void);			//返回0--未发送完一字节，返回1--发
 unsigned char	bq26100slave_receive_byte(void);	//返回0--未读完一字节，返回1--读完一字节，返回0xFF--复位信号
 
 unsigned char	bq26100slave_start(void);
-unsigned char api_bq26100slave_data_init(void);
-unsigned char api_bq26100slave_default(void);
+unsigned char	bq26100slave_start_data_init(void);
+unsigned char api_bq26100slave_all_data_default(void);
+
 
 void RecordData(unsigned char bytedata);
 

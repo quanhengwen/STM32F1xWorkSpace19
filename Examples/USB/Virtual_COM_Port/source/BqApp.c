@@ -97,6 +97,12 @@
 		#define SDQPort   	GPIOB  
 		#define SDQPin    	GPIO_Pin_7
 		
+		//-------------------LED运行指示灯
+		#define SYSLEDPort   			GPIOA  
+		#define SYSLEDPin   			GPIO_Pin_0
+		#define SysLedOn					(PA0=0)
+		#define SysLedOff					(PA0=1)
+		
 #elif bq26100V2
 		
 		#define ComPortIn		USART2
@@ -134,6 +140,12 @@
 		#define SetFeederConnect   			(PB9=1)  
 		#define SetFeederDisConnect    	(PB9=0)
 		
+		//-------------------LED运行指示灯
+		#define SYSLEDPort   			GPIOA  
+		#define SYSLEDPin   			GPIO_Pin_0
+		#define SysLedOn					(PA0=0)
+		#define SysLedOff					(PA0=1)
+		
 		//GPIO_SetBits(GPIOA,GPIO_Pin_0);	
 		
 #endif
@@ -146,6 +158,7 @@
 /* Private variables ---------------------------------------------------------*/
 unsigned char BqAppState	=	0;
 CertificationDataDef	CertificationData;
+unsigned long connecttime=0;
 /* Extern variables ----------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -588,7 +601,7 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 	unsigned short i	=	0;
 	unsigned short len	=	0;
 	static unsigned char time=0;
-	static unsigned short connecttime=0;
+//	static unsigned long connecttime=0;
 	unsigned char rxbuffer[bqusartsize]={0};
 	unsigned char txbuffer[bqusartsize]={0};
 	unsigned char message[20]={0};
@@ -597,15 +610,24 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
   {
 		//return 0;
 	}
+	//----------------------------------设置飞达周期连接：0.1ms计时方式
 	connecttime++;
-	if(connecttime==1000)
-	{
+	if(connecttime==3000)				//150ms后连接飞达
+	{		
 		SetFeederConnect;
+		api_BqApp_set_sys_led(1);
 	}
-	else if(connecttime>10000)
+	else if(connecttime>15000)	//1500ms后断开
 	{
 		connecttime=0;
 		SetFeederDisConnect;
+		api_BqApp_set_sys_led(0);
+	}
+	else if(connecttime>50000)	//5秒后断开重新连接
+	{
+		connecttime=0;
+		//SetFeederDisConnect;
+		//api_BqApp_set_sys_led(0);
 	}
 	
 	len	=	api_usart_dma_receive(ComPortIn,rxbuffer);	
@@ -655,13 +677,14 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 			message[19-i]=rxbuffer[2+i];
 		}
 		SetFeederDisConnect;
-		SysTick_DeleymS(10);				//SysTick延时nmS		
-		
-		SetFeederConnect;
+		api_BqApp_set_sys_led(0);
+		//SysTick_DeleymS(10);				//SysTick延时nmS		
+		//SetFeederConnect;
 		//connecttime=0;
 		//connecttime = 0;
 		api_BqApp_message_data_get_digest(message);		//认证消息摘要
-		connecttime = 0;		
+		
+		connecttime = 1000;
 	}
 	return 0;
 }
@@ -1009,6 +1032,7 @@ void api_BqApp_gpio_configuration(void)
 	//-------------------作为从机模拟接入控制
 	GPIO_Configuration_OPP50(FeederConnectPort,FeederConnectPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	SetFeederDisConnect;
+	
 	//GPIO_ResetBits(FeederConnectPort,FeederConnectPin);
 #endif
 }

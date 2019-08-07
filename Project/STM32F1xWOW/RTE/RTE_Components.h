@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xWOW' 
- * Target:  'BQ_Authentication' 
+ * Target:  'BQ26100_TEST' 
  */
 
 #ifndef RTE_COMPONENTS_H

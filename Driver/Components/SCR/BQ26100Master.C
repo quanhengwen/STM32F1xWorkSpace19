@@ -33,7 +33,7 @@
 
 		#define	SetBQ26100MasterPinOut			{	GPIOA->CRL&=0xF0FFFFFF;\
 																					GPIOA->CRL|=0x07000000;\
-																					SetBQ26100MasterPinLevel=0;}		//配置为OD输出模式并拉低
+																					SetBQ26100MasterPinLevel=0;}			//配置为OD输出模式并拉低
 															
 		#define	SetBQ26100MasterPinInUp			{	GPIOA->CRL&=0xF0FFFFFF;\
 																					GPIOA->CRL|=0x08000000;\
