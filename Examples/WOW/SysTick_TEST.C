@@ -27,12 +27,7 @@ void SysTick_TEST_Configuration(void)
 	SysTick_DeleyS(2);						//SysTick延时nS
 	SysTick_Configuration(1000);		//系统嘀嗒时钟配置72MHz,单位为uS----定时扫描PC006V21_Server
 	GPIO_Configuration_OPP50	(GPIOA,	GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-//	while(1)
-//	{
-////		SysTick_DeleyS(15);				//SysTick延时nuS
-//		SysTick_DeleymS(100);								//
-//		GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
-//	}
+
 }
 
 /*******************************************************************************
@@ -50,7 +45,7 @@ void SysTick_TEST_Server(void)
 	if(SYSTIME%10==0)
 	{
 		SysTick_DeleyS(1);						//SysTick延时nS
-		GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
 	}
 }
 

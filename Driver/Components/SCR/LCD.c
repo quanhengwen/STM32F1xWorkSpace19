@@ -11,7 +11,7 @@
 #include "stm32f10x_fsmc.h"
 
 #include "STM32_GPIO.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SYSTICK.H"
 #include "font.h"
 #include "string.h"				//串和内存操作函数头文件

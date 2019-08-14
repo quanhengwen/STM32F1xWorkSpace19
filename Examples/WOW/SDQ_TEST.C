@@ -98,14 +98,6 @@ void SDQ_TEST_Configuration(void)
 	{
 		api_bq26100slave_server();		//SDQ从机设备配置
 	}
-//	while(1)
-//	{
-//		if(1000==TIM3->CR1)
-//		{
-//			TIM3->CR1=0;
-//			GPIO_Toggle(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
-//		}
-//	}
 }
 
 /*******************************************************************************
@@ -245,11 +237,11 @@ static void AuthTest(void)
 		{
 			SysLedOn;
 			MessgeFramTest(Message,0);
-			api_usart_dma_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证
+			api_usart_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证
 		}
 		else if(time==5)
 		{
-			api_usart_dma_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
+			api_usart_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
 		}
 		else if(time>100)
 		{
@@ -257,7 +249,7 @@ static void AuthTest(void)
 			MessgeFramTest(rxbuff,2);
 		}
 		
-		rxlen	=	api_usart_dma_receive(ComPortOut,rxbuff);	
+		rxlen	=	api_usart_receive(ComPortOut,rxbuff);	
 		if(rxlen)
 		{		
 			SysLedOff;

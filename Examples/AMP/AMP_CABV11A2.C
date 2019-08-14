@@ -12,7 +12,7 @@
 #include "STM32_SYS.H"
 #include "STM32_SYSTICK.H"
 #include "STM32_WDG.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_USART.H"
 
 #include "SWITCHID.H"
@@ -147,7 +147,7 @@ void CardReaderInitLoop(void)
   unsigned char data[64]={0};
   unsigned char RxNum  = 0;
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dma_receive(&stCardRS485Ly,data);
+  RxNum = api_rs485_receive(&stCardRS485Ly,data);
   if(RxNum)
   {
     unsigned char i=0;
@@ -171,7 +171,7 @@ void CardReaderInitLoop(void)
         {
           InitCardReaderFlag=1;
           InitCardUSART_BaudRate=19200;
-          api_rs485_dma_configurationNR(&stCardRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+          api_rs485_configuration_NR(&stCardRS485Ly,InitCardUSART_BaudRate,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
         }
       }
     }
@@ -192,7 +192,7 @@ void AMPCAB_Receive(void)
 //  unsigned char rxd[300]={0};
   //==========================================================接收查询
   //---------------------PC接口 USART1
-  RxNum = api_usart_dma_receive(CommPcPort,rxd);
+  RxNum = api_usart_receive(CommPcPort,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -200,7 +200,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(PcPort,rxd,RxNum);                //柜消息处理
   }
   //---------------------副柜接口 UART4
-  RxNum = api_rs485_dma_receive(&stCbRS485Cb,rxd);
+  RxNum = api_rs485_receive(&stCbRS485Cb,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -208,7 +208,7 @@ void AMPCAB_Receive(void)
     Msg_ProcessCB(CabPort,rxd,RxNum);
   }  
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dma_receive(&stCbRS485Ly,rxd);
+  RxNum = api_rs485_receive(&stCbRS485Ly,rxd);
   if(RxNum)
   {
 		if(RxNum>maxmsgsize)
@@ -522,14 +522,14 @@ void AMPCABCOMM_Configuration(void)
   stCbRS485Ly.USARTx  = CommLayPort;
   stCbRS485Ly.RS485_CTL_PORT  = CommLayCTLPort;
   stCbRS485Ly.RS485_CTL_Pin   = CommLayCTLPin;
-  api_rs485_dma_configurationNR(&stCbRS485Ly,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_configuration_NR(&stCbRS485Ly,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OOD50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
   //-----------------------------副柜接口UART4
   stCbRS485Cb.USARTx  = CommCbPort;
   stCbRS485Cb.RS485_CTL_PORT  = CommCbCTLPort;
   stCbRS485Cb.RS485_CTL_Pin   = CommCbCTLPin;
-  api_rs485_dma_configurationNR(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_configuration_NR(&stCbRS485Cb,19200,gDatasize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OOD50(GPIOC,GPIO_Pin_9);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOC,GPIO_Pin_9);
 }
@@ -548,13 +548,13 @@ unsigned short AMPCAB_SendBuff(enCCPortDef Port,unsigned char* pBuffer,unsigned 
   switch(Port)
   {
     case  NonPort   : return 0;   //不继续执行
-    case  PcPort    : sendedlen = api_usart_dma_send(CommPcPort,pBuffer,length);
+    case  PcPort    : sendedlen = api_usart_send(CommPcPort,pBuffer,length);
       break;
-    case  CabPort   : sendedlen = api_rs485_dma_send(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
+    case  CabPort   : sendedlen = api_rs485_send(&stCbRS485Cb,pBuffer,length);	//RS485-DMA发送程序
       break;
-    case  LayPort   : sendedlen = api_rs485_dma_send(&stCbRS485Ly,pBuffer,length);	//RS485-DMA发送程序
+    case  LayPort   : sendedlen = api_rs485_send(&stCbRS485Ly,pBuffer,length);	//RS485-DMA发送程序
       break;
-    case  CardPort  : sendedlen = api_rs485_dma_send(&stCardRS485Ly,pBuffer,length);	//RS485-DMA发送程序
+    case  CardPort  : sendedlen = api_rs485_send(&stCardRS485Ly,pBuffer,length);	//RS485-DMA发送程序
       break;
     default :return 0;      //不继续执行
   }

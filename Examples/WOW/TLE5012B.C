@@ -317,16 +317,16 @@ void USART_Server(void)
     memcpy(u2txbuffer,u1rxbuffer,RxNum);
 
     
-    api_usart_dma_send(USART1,u1txbuffer,sizeof(str)-1);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+    api_usart_send(USART1,u1txbuffer,sizeof(str)-1);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
     
-    api_rs485_dma_send(&stRS485BS,u2txbuffer,RxNum);
+    api_rs485_send(&stRS485BS,u2txbuffer,RxNum);
 
   }
-  RxNum = api_rs485_dma_receive(&stRS485BS,u2rxbuffer);
+  RxNum = api_rs485_receive(&stRS485BS,u2rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    api_usart_send(USART1,u1txbuffer,RxNum);
   }
 }
 /*******************************************************************************
@@ -365,7 +365,7 @@ void COMM_Configuration(void)
   stRS485BS.USARTx  = USART2;
   stRS485BS.RS485_CTL_PORT  = GPIOB;
   stRS485BS.RS485_CTL_Pin   = GPIO_Pin_11;
-  api_rs485_dma_configurationNR			(&stRS485BS,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_configuration_NR(&stRS485BS,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 * 函数名			:	function

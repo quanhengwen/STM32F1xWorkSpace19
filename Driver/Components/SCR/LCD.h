@@ -13,7 +13,7 @@
 #include "stm32f10x_gpio.h"
 #include "GT32L32M0180.H"
 
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 
 
 
@@ -161,8 +161,8 @@ extern LCDDef *LCDSYS;			//内部驱动使用，不可删除
 #define LCD_RS_LOW					LCD_DC_LOW
 
 #if 1
-	#define LCD_BL_ON		PWM_OUT((TIM_TypeDef*) TIM2_BASE,PWM_OUTChannel4,1000,100)	//(R61509V_BL_PORT->BSRR = R61509V_BL_PIN)
-	#define LCD_BL_OFF	PWM_OUT((TIM_TypeDef*) TIM2_BASE,PWM_OUTChannel4,5,0)		//(R61509V_BL_PORT->BRR = R61509V_BL_PIN)
+	#define LCD_BL_ON		api_pwm_oc_configuration((TIM_TypeDef*) TIM2_BASE,PWM_OUTChannel4,1000,100)	//(R61509V_BL_PORT->BSRR = R61509V_BL_PIN)
+	#define LCD_BL_OFF	api_pwm_oc_configuration((TIM_TypeDef*) TIM2_BASE,PWM_OUTChannel4,5,0)		//(R61509V_BL_PORT->BRR = R61509V_BL_PIN)
 //	#define LCD_BL_ON		PWM_OUT((TIM_TypeDef*) TIM3_BASE,PWM_OUTChannel3,2000,10)	//(R61509V_BL_PORT->BSRR = R61509V_BL_PIN)
 //	#define LCD_BL_OFF	PWM_OUT((TIM_TypeDef*) TIM3_BASE,PWM_OUTChannel3,5,0)		//(R61509V_BL_PORT->BRR = R61509V_BL_PIN)
 #else

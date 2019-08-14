@@ -372,7 +372,7 @@ void USART_ITConfig(USART_TypeDef* USARTx, u16 USART_IT, FunctionalState NewStat
 
   itmask = (((u32)0x01) << itpos);
     
-  if (usartreg == 0x01) /* The IT is in CR1 register */
+  if (usartreg == 0x01) 		/* The IT is in CR1 register */
   {
     usartxbase += 0x0C;
   }

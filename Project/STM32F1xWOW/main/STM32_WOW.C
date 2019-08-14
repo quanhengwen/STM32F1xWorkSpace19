@@ -151,19 +151,23 @@ void WOW_Configuration(void)
 #ifdef SteepMotorTest	
 	SteepMotorTest_Configuration();
 #endif
+
+
+//***********************************GPIO_TEST***********************************//
+#ifdef GPIO_TEST
+	GPIO_TEST_Configuration();
+#endif
+
 //***********************************PWM_TEST***********************************//
-#ifdef PWM_TEST
-	PWM_TEST_Configuration();
+#ifdef TIM_TEST
+	TIM_TEST_Configuration();
 #endif
 
 //***********************************PwrTest***********************************//
 #ifdef PwrTest
 	PwrTest_Configuration();
 #endif
-//***********************************TIM_TEST***********************************//
-#ifdef TIM_TEST
-	TIM_TEST_Configuration();
-#endif
+
 //********************************OLED096_TEST*********************************//
 #ifdef OLED096_TEST
 	OLED096_TEST_Configuration();
@@ -508,19 +512,22 @@ void WOW_Server(void)
 #ifdef SteepMotorTest	
 	SteepMotorTest_Server();
 #endif
+
 //***********************************PWM_TEST***********************************//
-#ifdef PWM_TEST	
-	PWM_TEST_Server();
+#ifdef GPIO_TEST	
+	GPIO_TEST_Server();
+#endif
+
+//***********************************PWM_TEST***********************************//
+#ifdef TIM_TEST	
+	TIM_TEST_Server();
 #endif
 
 //***********************************PwrTest***********************************//
 #ifdef PwrTest	
 	PwrTest_Server();
 #endif
-//***********************************TIM_TEST***********************************//
-#ifdef TIM_TEST	
-	TIM_TEST_Server();
-#endif
+
 
 //********************************OLED096_TEST*********************************//
 #ifdef OLED096_TEST
@@ -545,10 +552,6 @@ void WOW_Server(void)
 	Buzzer_TEST_Server();
 #endif
 
-//*********************************PWM_LED*********************************//
-#ifdef PWM_LED
-	PWM_LED_Server();
-#endif
 
 //*********************************STM32F103C8T6ºËÐÄ°å*********************************//
 #ifdef STM32F103C8T6

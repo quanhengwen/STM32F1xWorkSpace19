@@ -154,9 +154,7 @@ void USBDEMO_Server(void)
 	if(millisecond++>500)
 	{
 		millisecond=0;
-//		GPIO_Toggle(GPIOB,GPIO_Pin_6);
-//		GPIO_Toggle(GPIOB,GPIO_Pin_7);
-//		GPIO_Toggle(GPIOB,GPIO_Pin_8);
+
 	}
 //  unsigned short RxNum  = 0;
 //  ClockServer();

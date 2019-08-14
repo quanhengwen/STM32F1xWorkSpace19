@@ -31,7 +31,7 @@ void StepMotorConfiguration(SteepMotorDef *STEP_MOTOx)
 	//==================配置方向输出管脚
 	GPIO_Configuration_OPP50	(STEP_MOTOx->SetDIRPort,	STEP_MOTOx->SetDIRPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	//==================配置定时器
-	TIM_ConfigurationFreq(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);					//定时器频率配置方式，最小频率1Hz,最大100KHz
+	api_tim_configuration(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);					//定时器频率配置方式，最小频率1Hz,最大100KHz
 }
 /*******************************************************************************
 *函数名			:	function
@@ -69,12 +69,12 @@ unsigned char StepMotorServer(SteepMotorDef *STEP_MOTOx)
 		if(STEP_MOTOx->SetPlusUp	&&	STEP_MOTOx->SetPlusUpNum	&&	(STEP_MOTOx->GetPulsTotal<STEP_MOTOx->SetPlusUpNum)	&&(STEP_MOTOx->PulsFlag	!=0))
 		{
 			STEP_MOTOx->SetFrequency+=STEP_MOTOx->SetPlusUp;
-			TIM_SetFreq(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
+			api_tim_configuration(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
 		}
 		else if(STEP_MOTOx->SetPlusDown	&&	STEP_MOTOx->SetPlusDownNum	&&	((STEP_MOTOx->GetPulsTotal+STEP_MOTOx->SetPlusDownNum)>STEP_MOTOx->SetPulsTotal)	&&	(STEP_MOTOx->PulsFlag	!=0))
 		{
 			STEP_MOTOx->SetFrequency-=STEP_MOTOx->SetPlusDown;
-			TIM_SetFreq(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
+			api_tim_configuration(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
 		}
 		STEP_MOTOx->SetTIMx->SR = (u16)~TIM_IT_Update;			//清除中断标志
 		return 1;
@@ -119,7 +119,7 @@ void StepMotorCW(SteepMotorDef *STEP_MOTOx,u16	SetFrequency,u16 SetPlusUp,u16 Se
 		STEP_MOTOx->GetPlusUpNum		=	0;												//加速脉冲个数
 		STEP_MOTOx->GetPulsTotal		=	0;												//已经输出脉冲计数
 
-		TIM_SetFreq(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
+		api_tim_configuration(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
 		
 		STEP_MOTOx->SetTIMx->CR1 |= ((u16)0x0001);							//CR1_CEN_Set开启定时器
 
@@ -163,7 +163,7 @@ void StepMotorCCW(SteepMotorDef *STEP_MOTOx,u16	SetFrequency,u16 SetPlusUp,u16 S
 		STEP_MOTOx->GetPlusUpNum		=	0;												//加速脉冲个数
 		STEP_MOTOx->GetPulsTotal		=	0;												//已经输出脉冲计数
 		
-		TIM_SetFreq(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
+		api_tim_configuration(STEP_MOTOx->SetTIMx,STEP_MOTOx->SetFrequency);		//设定频率
 		
 		STEP_MOTOx->SetTIMx->CR1 |= ((u16)0x0001);							//CR1_CEN_Set开启定时器
 //		TIM_Cmd(STEP_MOTOx->SetTIMx, ENABLE);		

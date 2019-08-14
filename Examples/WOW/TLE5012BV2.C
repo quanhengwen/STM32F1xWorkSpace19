@@ -161,7 +161,7 @@ void TLE5012BV2_Server(void)
 		if(SYSLEDtime++>=50)		//设置时按键指示灯快速闪烁
 		{
 			SYSLEDtime=0;
-			GPIO_Toggle	(SYSLED_Port,SYSLED_Pin);		//将GPIO相应管脚输出翻转----V20170605
+			API_GPIO_Toggle(SYSLED_Port,SYSLED_Pin);		//将GPIO相应管脚输出翻转----V20170605
 		}
 		MSTP();	//释放电机控制
 		MotorRunFlg	=	0;			//正反转标志
@@ -175,7 +175,7 @@ void TLE5012BV2_Server(void)
 	if(SYSLEDtime++>=500)
 	{
 		SYSLEDtime=0;
-		GPIO_Toggle	(SYSLED_Port,SYSLED_Pin);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle(SYSLED_Port,SYSLED_Pin);		//将GPIO相应管脚输出翻转----V20170605
 	}
 	
 	if(0!=MotorRunFlg)	//电机忙，不检查触发信号

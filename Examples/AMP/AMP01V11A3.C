@@ -9,7 +9,7 @@
 #include "STM32_SYS.H"
 #include "STM32_SYSTICK.H"
 #include "STM32_WDG.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_USART.H"
 #include "STM32_SPI.H"
 
@@ -107,7 +107,7 @@ void AMP01V11A3_Configuration(void)
   GPIO_Configuration_OPP50(ampSYSLEDPort,ampSYSLEDPin);
 
 	//SysTick_DeleymS(500);				//SysTick延时nmS
-  PWM_OUT(TIM2,PWM_OUTChannel1,2,500);	//PWM设定-20161127版本	占空比1/1000
+  api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,2,500);	//PWM设定-20161127版本	占空比1/1000
 	
 	IWDG_Configuration(3000);			//独立看门狗配置---参数单位ms
   
@@ -522,7 +522,7 @@ static void pc_receive_data_process(void)
 	
 	ampphydef* frame;
 	
-	rxnum	=	api_usart_dma_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_usart_receive(ampCommPcPort,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(0==rxnum)
 	{
 		return;
@@ -587,7 +587,7 @@ static void pc_send_data_process(void)
 	if(ampsys.commdata.PcAck.size)
 	{
 		Cache	=	&ampsys.commdata.PcAck;
-		sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_usart_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			ampsys.commdata.PcAck.size	=	0;
@@ -609,7 +609,7 @@ static void pc_send_data_process(void)
 		ampsys.ReSend.Pc	=	0;
 		return;
 	}
-	sendnum	=	api_usart_dma_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	sendnum	=	api_usart_send(ampCommPcPort,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 	if(sendnum)	//已将数据转移到缓存
 	{	
 		set_ack_wait_flag(PcPort);	//0--无需等待应答，1--需等待应答
@@ -644,7 +644,7 @@ static void cab_receive_data_process(void)
 	ampphydef* frame;
 	unsigned char 	rxd[maxFramesize];
 	//================================================数据接收
-	rxnum	=	api_rs485_dma_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_receive(&ampRS485Cb,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(0==rxnum)
 	{
 		return;
@@ -730,7 +730,7 @@ static void cab_send_data_process(void)
 	if(ampsys.commdata.CbAck.size)
 	{
 		Cache	=	&ampsys.commdata.CbAck;
-		sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_rs485_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			ampsys.commdata.CbAck.size	=	0;
@@ -767,7 +767,7 @@ static void cab_send_data_process(void)
 		return;
 	}	
 	//----------------------------------------------
-	sendnum	=	api_rs485_dma_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	sendnum	=	api_rs485_send(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 	if(sendnum)	//已将数据转移到缓存
 	{	
 		frame	=	(ampphydef*)Cache->data;		
@@ -816,7 +816,7 @@ static void lay_receive_data_process(void)
 	ampphydef* frame;
 	unsigned char 	rxd[maxFramesize];
 	//================================================数据接收
-	rxnum	=	api_rs485_dma_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
+	rxnum	=	api_rs485_receive(&ampRS485Ly,rxd);	//串口空闲模式读串口接收缓冲区，如果有数据，将数据拷贝到RevBuffer,并返回接收到的数据个数
 	if(0==rxnum)
 	{
 		return;
@@ -883,7 +883,7 @@ static void lay_send_data_process(void)
 	if(ampsys.commdata.LyAck.size)
 	{
 		Cache	=	&ampsys.commdata.CbAck;
-		sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		sendnum	=	api_rs485_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
 		{	
 			ampsys.commdata.LyAck.size	=	0;
@@ -920,7 +920,7 @@ static void lay_send_data_process(void)
 		return;
 	}	
 	//----------------------------------------------
-	sendnum	=	api_rs485_dma_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+	sendnum	=	api_rs485_send(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 	if(sendnum)	//已将数据转移到缓存
 	{	
 		frame	=	(ampphydef*)Cache->data;		
@@ -1575,7 +1575,7 @@ static void Communication_Configuration(void)
   ampRS485Ly.RS485_TxEn_Pin   = ampCommLayTxEnPin;
 	ampRS485Ly.RS485_RxEn_PORT	=	ampCommLayRxEnPort;
 	ampRS485Ly.RS485_RxEn_Pin		=	ampCommLayRxEnPin;
-  api_rs485_dma_configurationNR(&ampRS485Ly,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_configuration_NR(&ampRS485Ly,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	
   //-----------------------------副柜接口UART4
   ampRS485Cb.USARTx  					=	ampCommCbPort;
@@ -1584,7 +1584,7 @@ static void Communication_Configuration(void)
 	ampRS485Cb.RS485_RxEn_PORT	=	ampCommCbRxEnPort;
 	ampRS485Cb.RS485_RxEn_Pin		=	ampCommCbRxEnPin;
   //api_rs485_dma_configurationIT(&ampRS485Cb,19200,maxFramesize);	//RS485_DMA配置--中断
-	api_rs485_dma_configurationNR(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	api_rs485_configuration_NR(&ampRS485Cb,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 * 函数名			:	function

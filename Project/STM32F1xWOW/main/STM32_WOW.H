@@ -43,6 +43,15 @@
 	#include "IAP.H"
 #endif
 
+//*********************************SWDTEST*********************************//
+#ifdef GPIO_TEST
+	#include "GPIO_TEST.H"
+#endif
+
+//*********************************SWDTEST*********************************//
+#ifdef TIM_TEST
+	#include "TIM_TEST.H"
+#endif
 
 //*********************************SWDTEST*********************************//
 #ifdef SWDTEST

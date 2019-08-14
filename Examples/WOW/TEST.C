@@ -72,10 +72,10 @@ void TEST_Server(void)
 		SetPWM_Num(TIM3,1*(2500-1));		//设置计数值
 		systimecount=0;
 		runFlag	=	1;
-//		GPIO_Toggle	(GPIOB,	GPIO_Pin_1);		//将GPIO相应管脚输出翻转----V20170605
+//		API_GPIO_Toggle	(GPIOB,	GPIO_Pin_1);		//将GPIO相应管脚输出翻转----V20170605
 	}
 //	if(systimecount	==	0)
-//	GPIO_Toggle	(GPIOB,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
+//	API_GPIO_Toggle	(GPIOB,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
 }
 
 

@@ -254,7 +254,7 @@ static void BT459ATEST(void)
 	len	=	api_bt459a_get_frame_SetQuantity(0x03,50,frame);
 	len	=	api_bt459a_get_frame_SetQuantity(0x04,50,frame);
 	
-	//api_rs485_dma_send(&RS485B,frame,len);	//RS485-DMA发送程序
+	//api_rs485_send(&RS485B,frame,len);	//RS485-DMA发送程序
 }
 /*******************************************************************************
 *函数名			:	function
@@ -308,7 +308,7 @@ static void SHT20MTEST(void)
 		u2txbuffer[6]=0x20;
 		u2txbuffer[7]=0x0B;
 		
-		RxNum	=	api_rs485_dma_send(&RS485B,u2txbuffer,8);	//RS485-DMA发送程序
+		RxNum	=	api_rs485_send(&RS485B,u2txbuffer,8);	//RS485-DMA发送程序
 		if(RxNum)
 		{
 //			LCD_ShowHex(260,u1dsp,16,u1dspcolr,8,8,u2txbuffer);			
@@ -320,7 +320,7 @@ static void SHT20MTEST(void)
 	
 	
 	
-	RxNum = api_rs485_dma_receive(&RS485B,u2rxbuffer);
+	RxNum = api_rs485_receive(&RS485B,u2rxbuffer);
 	if(RxNum)
 	{
 		double t1	=	0.0;		//温度
@@ -332,7 +332,7 @@ static void SHT20MTEST(void)
 		t2	=	(double)temp/10.0;
 		
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    api_usart_send(USART1,u1txbuffer,RxNum);
 //    LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		
 		LCD_Printf(10,u1dsp,16,LCD565_BLACK,"SHT20M:温度%0.2f℃  湿度%0.2f%%",t1,t2);
@@ -444,22 +444,22 @@ void USART_TEST(void)
       txflg = 0;
       crc16 = CRC16_MODBUS(&OpenLed[1],10);
       memcpy(&OpenLed[11],&crc16,2);
-      api_usart_dma_send(USART3,OpenLed,sizeof(OpenLed));
+      api_usart_send(USART3,OpenLed,sizeof(OpenLed));
     }
     else  //关LED
     {
       txflg = 1;
       crc16 = CRC16_MODBUS(&ClosLed[1],10);
       memcpy(&ClosLed[11],&crc16,2);
-      api_usart_dma_send(USART3,ClosLed,sizeof(ClosLed));
+      api_usart_send(USART3,ClosLed,sizeof(ClosLed));
     }
   }
 
-  RxNum = api_usart_dma_receive(USART1,u1rxbuffer);
+  RxNum = api_usart_receive(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
-    api_usart_dma_send(USART3,u3txbuffer,RxNum);
+    api_usart_send(USART3,u3txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=16;
     if(u1dsp>=479)
@@ -475,11 +475,11 @@ void USART_TEST(void)
       u1dsp=32;
     }
   }
-  RxNum = api_usart_dma_receive(USART3,u3rxbuffer);
+  RxNum = api_usart_receive(USART3,u3rxbuffer);
   if(RxNum)
   {
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    api_usart_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(400,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -508,7 +508,7 @@ void USART_TEST(void)
 void USART_Server(void)
 {
   unsigned short RxNum  = 0;
-  RxNum = api_usart_dma_receive(USART1,u1rxbuffer);
+  RxNum = api_usart_receive(USART1,u1rxbuffer);
   if(RxNum)
   {
     memcpy(u3txbuffer,u1rxbuffer,RxNum);
@@ -517,8 +517,8 @@ void USART_Server(void)
     
     memcpy(&u3txbuffer[u3txbuffer[1]+2],&crc16mbs,2);
     
-    api_usart_dma_send(USART3,u3txbuffer,RxNum);
-		api_rs485_dma_send(&RS485B,u3txbuffer,RxNum);	//RS485-DMA发送程序
+    api_usart_send(USART3,u3txbuffer,RxNum);
+		api_rs485_send(&RS485B,u3txbuffer,RxNum);	//RS485-DMA发送程序
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u3txbuffer);
     u1dsp+=(RxNum/33+1)*16;
     if(LCD565_RED==u1dspcolr)
@@ -536,11 +536,11 @@ void USART_Server(void)
       u3dsp=32;
     }
   }
-  RxNum = api_usart_dma_receive(USART3,u3rxbuffer);
+  RxNum = api_usart_receive(USART3,u3rxbuffer);
   if(RxNum)
   {		
     memcpy(u1txbuffer,u3rxbuffer,RxNum);
-    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    api_usart_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u3dsp,16,u3dspcolr,RxNum,8,u1txbuffer);
     u3dsp+=16;
     if(u3dsp>=479)
@@ -557,11 +557,11 @@ void USART_Server(void)
       u3dsp=32;
     }
   }
-	RxNum = api_rs485_dma_receive(&RS485B,u2rxbuffer);
+	RxNum = api_rs485_receive(&RS485B,u2rxbuffer);
 	if(RxNum)
 	{
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
-    api_usart_dma_send(USART1,u1txbuffer,RxNum);
+    api_usart_send(USART1,u1txbuffer,RxNum);
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)

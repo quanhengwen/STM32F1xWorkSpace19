@@ -46,8 +46,9 @@ typedef struct _ampLight       //灯光标志
 {
   struct
 	{
-		unsigned char	LightStatus 	:1;	//灯状态:0-灭状态，1-亮状态
-		unsigned char	Level					:2;	//亮度等级,点亮根据亮度等级:0-不处理，1-最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度；2-中等亮度，开门时柜体背光亮度；3-最高亮度，关门时需要亮灯时的亮度
+		//unsigned char	LightStatus 	:1;	//灯状态:0-灭状态，1-亮状态
+		unsigned char	SetLevel			:2;	//设置亮度等级,点亮根据亮度等级:0-不处理，1-最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度；2-中等亮度，开门时柜体背光亮度；3-最高亮度，关门时需要亮灯时的亮度
+		unsigned char	WorkLevel			:2;	//当前亮度等级,点亮根据亮度等级:0-不处理，1-最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度；2-中等亮度，开门时柜体背光亮度；3-最高亮度，关门时需要亮灯时的亮度
 	}flag;	
 	unsigned long	Time;       	//点亮时间倒计时
 }ampLightDef;
@@ -79,7 +80,7 @@ typedef struct _ampCommLed       //通讯LED指示灯
 		unsigned char code;
 		struct
 		{
-			unsigned char pc_rx:1;
+			unsigned char pc_rx:1;		//0-输出低电平/亮灯，1-输出高电平/灭灯
 			unsigned char pc_tx:1;
 			
 			unsigned char cb_rx:1;
@@ -120,7 +121,9 @@ typedef struct _ampCommLed       //通讯LED指示灯
 		
 		unsigned short rf_rx;
 		unsigned short rf_tx;
-	}time;
+	}time;		//闪烁次数
+	unsigned char	 ClearFlag;		//0-正常显示，1-清除显示
+	unsigned short FlashTime;		//刷新时间
 }ampCommLedDef;
 //---------------------------------------------------------------------
 typedef struct _ampLock       //锁
@@ -132,10 +135,27 @@ typedef struct _ampLock       //锁
 		//unsigned char	reslock     :1;	//释放锁驱动请求：0-无请求，1-有请求
 		//unsigned char	reslockqust :1;	//释放锁请求，0-无请求，1-有请求，检测到锁状态为打开时，延时一段时间再关闭驱动
 		unsigned char	LockStatus	:1;	//锁状态：0-开状态，1-锁状态
+		unsigned char	LockUpdata	:1;	//锁更新：0-无更新，1-有状态更新
 //		unsigned char	unlockerr  	:1;	//开锁错误/失败:0-无，1-开锁失败
 	}flag;
 	unsigned short LockTime;        //锁计数器
 }ampLockDef;
+//---------------------------------------------------------------------
+typedef struct _ampMagneticLock       //锁
+{
+  struct
+	{
+		//unsigned char	unlock  		:1;	//开锁请求：0-无请求，1-有请求
+		//unsigned char	relslock		:1;	//执行开锁：0-无，1-正在执行  
+		//unsigned char	reslock     :1;	//释放锁驱动请求：0-无请求，1-有请求
+		//unsigned char	reslockqust :1;	//释放锁请求，0-无请求，1-有请求，检测到锁状态为打开时，延时一段时间再关闭驱动
+		unsigned char	LockStatus	:1;	//锁状态：0-开状态，1-锁状态
+		unsigned char	LockUpdata	:1;	//锁更新：0-无更新，1-有状态更新
+//		unsigned char	unlockerr  	:1;	//开锁错误/失败:0-无，1-开锁失败
+	}flag;
+	unsigned short LockTime;        //锁计数器
+}ampMagneticLockDef;
+
 //---------------------------------------------------------------------
 typedef struct _ampCommPort        		//通讯端口
 {
@@ -154,19 +174,20 @@ typedef struct _amp
 //	ampWaitAckdef		AckW;					//等待应答标志
 //  ampResenddef    ReSend;	
 //	ampCCdef				commdata;			//通讯数据
-	ampdatadef			sysdata;			//常用数据和标识
-	ampTimesdef			time;	
+	ampdatadef					sysdata;			//常用数据和标识
+	ampTimesdef					time;	
 	
-	ampCommLedDef		CommLed;		//通讯LED指示灯
+	ampCommLedDef				CommLed;			//通讯LED指示灯	
 	
-	ampLockDef			Lock;				//锁相关
+	ampLockDef					Lock;					//锁相关	
+	ampMagneticLockDef	MagneticLock;	//磁吸锁
 	
-	ampLightDef			BackLight;	//柜体背光
-	ampLightDef			LcdLight;		//LCD背光
+	ampLightDef					BackLight;		//柜体背光
+	ampLightDef					LcdLight;			//LCD背光
 	
-	ampCommPortDef	Pc;					//PC端口数据
-	ampCommPortDef	Cab;				//柜端口数据
-	ampCommPortDef	Lay;				//层接口数据
+	ampCommPortDef			Pc;						//PC端口数据
+	ampCommPortDef			Cab;					//柜端口数据
+	ampCommPortDef			Lay;					//层接口数据
 }ampdef;
 
 
@@ -177,6 +198,7 @@ typedef struct _amp
 void API_AMP01V14A1_Configuration(void);
 void API_AMP01V14A1_Server(void);
 static void status_server(void);
+static void SysLed_server(void);
 //--------------------------------static-cache_buffer
 static ampCachedef* get_cache_addr(ampPortDef port);
 static unsigned short set_cache_data(ampPortDef port,ampphydef* frame);
@@ -211,8 +233,9 @@ static void set_lock_status_frame(void);
 static void set_comm_time_out_frame(ampPortDef Port,ampphydef* frame);
 //--------------------------------static-Server
 static void SwitchID_Server(void);
-static void door_server(void);
-static void Led_Server(void);
+static void Lock_server(void);
+static void Magnetic_Lock_server(void);		//磁吸锁
+static void CommLed_Server(void);
 static void BackLight_Server(void);
 static void LcdLight_Server(void);
 static void Tim_Server(void);

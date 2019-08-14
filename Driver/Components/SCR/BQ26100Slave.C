@@ -1,6 +1,7 @@
 #include "BQ26100Slave.H"	
 
 #include "stm32f10x_exti.h"
+#include "stm32f10x_rcc.h"
 
 #include "STM32_TIM.H"
 #include "STM32_EXTI.H"

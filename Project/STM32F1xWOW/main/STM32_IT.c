@@ -511,7 +511,7 @@ void TIM1_CC_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM2_IRQHandler(void)
+__weak void TIM2_IRQHandler(void)
 {
 	
 #ifdef USE_STM3210B_EVAL
@@ -530,8 +530,7 @@ void TIM2_IRQHandler(void)
 #endif
 	
 	TIM_Server();
-	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-	
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);	
 }
 
 /*******************************************************************************
@@ -687,7 +686,7 @@ void SPI1_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_IRQHandler(void)
+__weak void USART3_IRQHandler(void)
 {
 	WOW_Server();
 }
@@ -835,7 +834,7 @@ void SPI3_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void UART4_IRQHandler(void)
+__weak void UART4_IRQHandler(void)
 {
 	WOW_Server();
 }
@@ -847,7 +846,7 @@ void UART4_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void UART5_IRQHandler(void)
+__weak void UART5_IRQHandler(void)
 {
 	WOW_Server();
 }

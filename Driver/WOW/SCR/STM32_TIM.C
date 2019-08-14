@@ -16,248 +16,213 @@
 
 #include "STM32_TIM.H"
 #include "STM32_WOW.H"
-//#include "STM32F10x_BitBand.H"
 
+#include "stm32f10x_nvic.h"
+#include "stm32f10x_gpio.h"
+#include "stm32f10x_rcc.h"
+
+//==============================================================================¶¨Ê±Æ÷20190813
 /*******************************************************************************
-*º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	function
+*º¯ÊýÃû			:	api_tim_configuration
+*¹¦ÄÜÃèÊö		:	ÅäÖÃ¶¨Ê±Ê±¼ä--µ¥Î»us
 *ÊäÈë				: 
 *·µ»ØÖµ			:	ÎÞ
 *ÐÞ¸ÄÊ±¼ä		:	ÎÞ
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void api_tim3_1us_configuration(void)
+void api_tim_configuration(TIM_TypeDef* TIMx,unsigned long microsecond)
 {
-	NVIC_InitTypeDef	NVIC_InitStructure;						//ÖÐ¶Ï½á¹¹Ìå
-	
-	//------------------Æô¶¯Ê±ÖÓ
-	RCC->APB1ENR |= RCC_APB1Periph_TIM3;		//±ãÄÜ¶¨Ê±Æ÷Ê±ÖÓ---APB2×î´óÊ±ÖÓ72MHz,APB2×î´ó36MHz
-	//------------------ÉèÖÃ·ÖÆµ
-	TIM3->PSC 		=	72;											//·ÖÆµ36£¬1MHZ--1us
-	//------------------×Ô¶¯ÖØ×°ÔØ³õÊ¼Öµ
-  TIM3->ARR = 50000;	//50ms	//×î´ó65535	
-	//------------------ÏòÉÏ¼ÆÊýÄ£Ê½:ÔÚÏòÉÏ¼ÆÊýÄ£Ê½ÖÐ£¬¼ÆÊýÆ÷´Ó0¼ÆÊýµ½×Ô¶¯¼ÓÔØÖµ(TIMx_ARR¼ÆÊýÆ÷µÄÄÚÈÝ)£¬È»ºóÖØÐÂ´Ó0¿ªÊ¼¼ÆÊý²¢ÇÒ²úÉúÒ»¸ö¼ÆÊýÆ÷Òç³öÊÂ¼þ¡£
-//	TIM3->CR1 &=	~0x0010;
-//	//------------------Ê±ÖÓ·ÖÆµÒò×Ó
-//	TIM3->CR1 |=	0x0200;
-//	//------------------½ûÖ¹¸üÐÂ
-//	TIM3->CR1 |=	~0x0002;	
-//	
-//	//------------------Æô¶¯Ê±ÖÓ
-//	TIM3->CR1 |= 0x0001;
-	
-	TIM3->CR1 = 0x008B;
-}
-/*******************************************************************************
-*º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	function
-*ÊäÈë				: 
-*·µ»ØÖµ			:	ÎÞ
-*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
-*ÐÞ¸ÄËµÃ÷		:	ÎÞ
-*×¢ÊÍ				:	wegam@sina.com
-*******************************************************************************/
-unsigned short api_tim3_get_count(void)
-{
-	//unsigned short count_time=TIM3->CNT;
-//	TIM3->CR1 &=	~0x0001;
-//	TIM3->CNT = 0;
-//	TIM3->CR1 |=	0x0003;
-	//TIM3->CR1 = 0x0000;
-	//count_time=TIM3->CNT;
-	//TIM3->CNT = 0;
-	//TIM3->CR1 = 0x0001;
-	return TIM3->CNT;
-}
-/*******************************************************************************
-*º¯ÊýÃû			:	function
-*¹¦ÄÜÃèÊö		:	function
-*ÊäÈë				: 
-*·µ»ØÖµ			:	ÎÞ
-*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
-*ÐÞ¸ÄËµÃ÷		:	ÎÞ
-*×¢ÊÍ				:	wegam@sina.com
-*******************************************************************************/
-void api_tim3_set_restart(void)
-{
-	TIM3->CR1 = 0x0000;
-	TIM3->CNT=0;
-	TIM3->CR1 = 0x008B;
+	//=============================´ò¿ªÊ±ÖÓ
+	tim_rcc_initialize(TIMx);
+	//=============================¸ù¾ÝÊ±¼äÅäÖÃ¶¨Ê±Æ÷
+	tim_time_initialize(TIMx,microsecond);
+	//=============================ÅäÖÃÖÐ¶Ï
+	tim_Interrupt_initialize(TIMx);
 }
 //------------------------------------------------------------------------------
 
+//==============================================================================PWMÊäÈë²¶»ñ20190813
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_pwm_capture_configuration(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
+    TIM_ICInitTypeDef TIM_ICInitStruct;
+    NVIC_InitTypeDef NVIC_InitStruct;
+    //¿ªÆôTIM2ºÍGPIOÊ±ÖÓ
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    //PA0³õÊ¼»¯
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;            //ÏÂÀ­ÊäÈë
+    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+    
+    //TIM2¶¨Ê±Æ÷³õÊ¼»¯
+    TIM_TimeBaseInitStruct.TIM_Period = 1;
+    TIM_TimeBaseInitStruct.TIM_Prescaler = 72-1;
+    TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;        
+    TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;        //ÏòÉÏ¼ÆÊý
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStruct);
+    
+    //TIM2_CH1ÊäÈë²¶»ñ³õÊ¼»¯
+    TIM_ICInitStruct.TIM_Channel = TIM_Channel_1;
+    TIM_ICInitStruct.TIM_ICFilter = 0x00;                            //²»ÂË²¨
+    TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_Rising;        //ÉÏÉýÑØ²¶»ñ
+    TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;                //ÊäÈëÆ÷²»·ÖÆµ
+    TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;    //Ó³Éäµ½IC1
+    TIM_ICInit(TIM2, &TIM_ICInitStruct);
+    
+    TIM_ICInitStruct.TIM_Channel = TIM_Channel_2;
+    TIM_ICInitStruct.TIM_ICFilter = 0x00;                            //²»ÂË²¨
+    TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_Rising;        //ÉÏÉýÑØ²¶»ñ
+    TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;                //ÊäÈëÆ÷²»·ÖÆµ
+    TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;    //Ó³Éäµ½IC2
+    TIM_ICInit(TIM2, &TIM_ICInitStruct);
+    
+    TIM_ICInitStruct.TIM_Channel = TIM_Channel_3;
+    TIM_ICInitStruct.TIM_ICFilter = 0x00;                            //²»ÂË²¨
+    TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_Rising;        //ÉÏÉýÑØ²¶»ñ
+    TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;                //ÊäÈëÆ÷²»·ÖÆµ
+    TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;    //Ó³Éäµ½IC3
+    TIM_ICInit(TIM2, &TIM_ICInitStruct);
+    
+    TIM_ICInitStruct.TIM_Channel = TIM_Channel_4;
+    TIM_ICInitStruct.TIM_ICFilter = 0x00;                            //²»ÂË²¨
+    TIM_ICInitStruct.TIM_ICPolarity = TIM_ICPolarity_Rising;        //ÉÏÉýÑØ²¶»ñ
+    TIM_ICInitStruct.TIM_ICPrescaler = TIM_ICPSC_DIV1;                //ÊäÈëÆ÷²»·ÖÆµ
+    TIM_ICInitStruct.TIM_ICSelection = TIM_ICSelection_DirectTI;    //Ó³Éäµ½IC4
+    TIM_ICInit(TIM2, &TIM_ICInitStruct);
+    
+    
+    //ÖÐ¶Ï·Ö×é³õÊ¼»¯
+    NVIC_InitStruct.NVIC_IRQChannel = TIM2_IRQChannel;
+    NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+    NVIC_Init(&NVIC_InitStruct);    
+    
+    TIM_ITConfig(TIM2, TIM_IT_CC1|TIM_IT_CC2|TIM_IT_CC3|TIM_IT_CC4, ENABLE);            //¸üÐÂÖÐ¶ÏºÍCC1IE²¶»ñÖÐ¶Ï
+    
+    TIM_Cmd(TIM2, ENABLE);
+}
 //------------------------------------------------------------------------------
 
 
-///* ¶¨Ê±Æ÷½á¹¹Ìå */
-///* TIM Time Base Init structure definition */
-//typedef struct
-//{
-//  u16 TIM_Prescaler;								//-------·ÖÆµÏµÊý,=======È¡Öµ0x0000~0xFFFF£¬ÓÃÀ´·ÖÆµTIM clock
-//  u16 TIM_CounterMode;							//-------¼ÆÊý·½Ê½========TIM_CounterMode_Up(ÏòÉÏ¼ÆÊýÄ£Ê½),TIM_CounterMode_Down(ÏòÏÂ¼ÆÊýÄ£Ê½),
-																			//-----------------------TIM_CounterMode_CenterAligned1(ÖÐÑë¶ÔÆëÄ£Ê½1¼ÆÊýÄ£Ê½),TIM_CounterMode_CenterAligned2(ÖÐÑë¶ÔÆëÄ£Ê½2¼ÆÊýÄ£Ê½),TIM_CounterMode_CenterAligned3(ÖÐÑë¶ÔÆëÄ£Ê½3¼ÆÊýÄ£Ê½)
-//  u16 TIM_Period;										//-------¼ÆÊýÖµ==========ÏÂÒ»¸ö¸üÐÂÊÂ¼þ×°Èë»î¶¯µÄ×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷ÖÜÆÚµÄÖµ,È¡Öµ0x0000~0xFFFF,¼ÆÊýTIM_Period+1¸ö½ÚÅÄºó²úÉúÒç³ö
-//  u16 TIM_ClockDivision;						//-------Éè¶¨Ê±¼ä·Ö¸îÖµ===Ä¬ÈÏÎª0,ÌØÊâ³¡ºÏÊ±TIM_ClockDivisionÓÃÀ´×öÒ»¶ÎÑÓÊ±,TIM_CKD_DIV1,TIM_CKD_DIV2,TIM_CKD_DIV3
-//  u8 TIM_RepetitionCounter;					//-------ÖØ¸´¼ÆÊý´ÎÊý=====ÖØ¸´¶àÉÙ´ÎÒç³öºó²Å´¥·¢Ò»´ÎÒç³öÖÐ¶Ï£¬
-//} TIM_TimeBaseInitTypeDef;
-
+//==============================================================================PWMÊä³ö20190813
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				:	TIMx							ËùÊ¹ÓÃµÄ¶¨Ê±Æ÷
+							PWM_OUTChanneln		PWMÊä³öÍ¨µÀºÅ
+							PWM_Frequency			Êä³öÆµÂÊ£¬×îÐ¡ÆµÂÊ0.02Hz
+							PWM_Ratio					Êä³öÕ¼¿Õ±È£¬·Ö±æÂÊ1/1000
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_pwm_oc_configuration(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln,double PWM_Frequency,u16 PWM_Ratio)
+{
+	//=============================´ò¿ªÊ±ÖÓ
+	tim_rcc_initialize(TIMx);
+	
+	//=============================ÅäÖÃGPIOÎª¸´ÓÃÍÆÍìÊä³öPB14
+	pwm_gpio_initialize(TIMx,PWM_OUTChanneln);
+	
+	//=============================ÉèÖÃ¶¨Ê±Ê±¼ä1000Hz-72MHz(72000000)
+	tim_frequency_initialize(TIMx,PWM_Frequency);		
+	
+	//=============================²¶»ñ/±È½Ï¼Ä´æÆ÷1(TIMx_CCR1)---Í¨µÀ1
+	pwm_oc_initialize(TIMx,PWM_OUTChanneln,PWM_Ratio);
+}
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				:	TIMx							ËùÊ¹ÓÃµÄ¶¨Ê±Æ÷
+							PWM_OUTChanneln		PWMÊä³öÍ¨µÀºÅ
+							PWM_Frequency			Êä³öÆµÂÊ£¬×îÐ¡ÆµÂÊ0.02Hz
+							PWM_Ratio					Êä³öÕ¼¿Õ±È£¬·Ö±æÂÊ1/1000
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+void api_pwm_oc_configurationN(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln,double PWM_Frequency,u16 PWM_Ratio)
+{
+	//=============================´ò¿ªÊ±ÖÓ
+	tim_rcc_initialize(TIMx);
+	
+	//=============================ÅäÖÃGPIOÎª¸´ÓÃÍÆÍìÊä³öPB14
+	pwm_gpio_initializeN(TIMx,PWM_OUTChanneln);
+	
+	//=============================ÉèÖÃ¶¨Ê±Ê±¼ä1000Hz-72MHz(72000000)
+	tim_frequency_initialize(TIMx,PWM_Frequency);		
+	
+	//=============================²¶»ñ/±È½Ï¼Ä´æÆ÷1(TIMx_CCR1)---Í¨µÀ1
+	pwm_oc_initializeN(TIMx,PWM_OUTChanneln,PWM_Ratio);
+}
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
-* º¯ÊýÃû		:	PWM_OUT	
-* ¹¦ÄÜÃèÊö	:		 
-* ÊäÈë		:	PWM_Frequency ÆµÂÊ£¬µ¥Î»Hz	
-* Êä³ö		:
-* ·µ»Ø 		:
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				:	TIMx							ËùÊ¹ÓÃµÄ¶¨Ê±Æ÷
+							PWM_OUTChanneln		PWMÊä³öÍ¨µÀºÅ
+							PWM_Frequency			Êä³öÆµÂÊ£¬×îÐ¡ÆµÂÊ0.02Hz
+							PWM_Ratio					Êä³öÕ¼¿Õ±È£¬·Ö±æÂÊ1/1000
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void TIM_ConfigurationFreq(TIM_TypeDef* TIMx,u32 Frequency)		//¶¨Ê±Æ÷ÆµÂÊÅäÖÃ·½Ê½£¬×îÐ¡ÆµÂÊ1Hz,×î´ó100KHz
+void api_pwm_oc_set_ratio(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln,u16 PWM_Ratio)
 {
-	//*1,½á¹¹Ìå¶¨Òå
-	//*2,±äÁ¿¶¨Òå
-	//*3,¹Ü½ÅÈ·ÈÏ
-	//*4,´ò¿ªÏàÓ¦µÄÊ±ÖÓ
-	//*5,¹Ü½ÅÅäÖÃ£¨³õÊ¼»¯£©
-	//*6,¶¨Ê±Æ÷ÅäÖÃ£¨³õÊ¼»¯£©
-	//*7,PWMÊä³öÅäÖÃ£¨³õÊ¼»¯£©
-	//*8,Õ¼¿Õ±ÈÅäÖÃ	
-		
-	//*1,½á¹¹Ìå¶¨Òå***********************************************************************
-	//1£©============================½á¹¹Ìå¶¨Òå
-//	GPIO_InitTypeDef GPIO_InitStructure;
-	TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;	//¶¨Ê±Æ÷½á¹¹Ìå¶¨Òå	
-	RCC_ClocksTypeDef RCC_ClocksStatus;							//Ê±ÖÓ×´Ì¬---Ê±ÖÓÖµ
-	NVIC_InitTypeDef	NVIC_InitStructure;						//ÖÐ¶Ï½á¹¹Ìå
-	
-	//1£©============================ÁÙÊ±±äÁ¿¶¨Òå
+	unsigned long TIMx_Ratio	=	0;
+	TIMx_Ratio	=	TIMx->ARR+1;
+	TIMx_Ratio	=	TIMx_Ratio*PWM_Ratio;
+	TIMx_Ratio	=	TIMx_Ratio/1000;
 
-//	u16 GPIO_Pin_n				=	PWM_Tim->PWM_BasicData.GPIO_Pin_n;
-//	double PWM_Frequency	=	2*(PWM_Tim->PWM_BasicData.PWM_Frequency);
-	
-	u8 TIM_IRQChannel=0;
-	u32	Tim_temp							=	2*Frequency;	//ÓÉÓÚ·­×ªÐèÒªË«±¶ÆµÂÊ
-	u32	TIMx_Frequency				=	0;			//	¶¨Ê±Æ÷Ê±ÖÓ
-	u16 TIMx_Prescaler				=	0	;			//	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ		È¡Öµ·¶Î§£º0x0000~0xFFFF
-  u16 TIMx_Period						=	0	;			//	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ	È¡Öµ·¶Î§£º0x0000~0xFFFF
-
-	//1£©============================´ò¿ª¶¨Ê±Æ÷Ê±ÖÓ
-	switch ((u32)TIMx)
+	switch(PWM_OUTChanneln)
 	{
-		case TIM1_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-			TIM_IRQChannel=TIM1_UP_IRQChannel;	
-			TIM_TimeBaseStructure.TIM_RepetitionCounter	=	0;
-			break;
-		
-		case TIM2_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-			TIM_IRQChannel=TIM2_IRQChannel;
-			break;
-		
-		case TIM3_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-			TIM_IRQChannel=TIM3_IRQChannel;
-			break;
-		
-		case TIM4_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-			TIM_IRQChannel=TIM4_IRQChannel;
-			break;
-		
-		case TIM5_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
-			TIM_IRQChannel=TIM5_IRQChannel;
-			break;
-		
-		case TIM6_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-			TIM_IRQChannel=TIM6_IRQChannel;
-			break;
-		
-		case TIM7_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-			TIM_IRQChannel=TIM7_IRQChannel;
-			break;
-		
-		case TIM8_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
-			TIM_IRQChannel=TIM8_UP_IRQChannel;
-			TIM_TimeBaseStructure.TIM_RepetitionCounter	=	0;
-			break;
-		
+		case PWM_OUTChannel1:			//PB13
+					TIMx->CCR1 	=	TIMx_Ratio;
+		break;
+		case PWM_OUTChannel2:			//PB14
+					TIMx->CCR2 	=	TIMx_Ratio;
+		break;
+		case PWM_OUTChannel3:			//PB15	
+					TIMx->CCR3 	=	TIMx_Ratio;
+		break;
+		case PWM_OUTChannel4:			//PB15	
+					TIMx->CCR4 	=	TIMx_Ratio;
+		break;
 		default:
-			break;		
+		break;
 	}
-	//1£©============================»ñÈ¡TIMxÊ±ÖÓÆµÂÊ
-	//1£©-----·ÖÆµÖµ¼°×Ô¶¯ÖØ×°ÔØÖµ¼ÆËã£¨PWM_Frequency ÆµÂÊ£¬µ¥Î»Hz£©
-	//--------1MHz 1us=1000ns,1KHz 10us=10000ns
-	RCC_GetClocksFreq(&RCC_ClocksStatus);	//»ñÈ¡Ê±ÖÓ²ÎÊý
-	TIMx_Frequency = RCC_ClocksStatus.SYSCLK_Frequency;
-	if ((((u32)TIMx)&APB2PERIPH_BASE) == APB2PERIPH_BASE)
-  {
-    TIMx_Frequency = RCC_ClocksStatus.PCLK2_Frequency;	//APB2
-  }
-  else
-  {
-    TIMx_Frequency = RCC_ClocksStatus.PCLK1_Frequency;	//APB1
-  }
-	//1£©============================¼ÆËã·ÖÆµÖµºÍÖØ×°ÔØÖµ
-//	TIMx_Frequency = 72000000;
-	//*6.2.4,¼ÆËã¶¨Ê±Æ÷²ÎÊý*********************************************************************
-	//Fsys==Fpwm*Count==Fpwm*(Prescaler*Period)	
-	//	TIMx_Prescaler				=	72-1		;		// 	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ
-	//	TIMx_Period						=	1000-1	;		// 	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ
-	//	Tim_num1							=	0				;		//	ÁÙÊ±±äÁ¿1
-	if(Tim_temp>100000)		//>100KHz
-	{
-		TIMx_Prescaler=0;
-		TIMx_Period=(u16)(TIMx_Frequency/Tim_temp-1);
-	}
-	else if(Tim_temp>1000)	//>1KHz
-	{
-		TIMx_Prescaler=10-1;
-		TIMx_Period=(u16)((TIMx_Frequency/Tim_temp)/10-1);
-	}
-	else if(Tim_temp>100)		//>100Hz
-	{
-		TIMx_Prescaler=100-1;
-		TIMx_Period=(u16)((TIMx_Frequency/Tim_temp)/100-1);
-	}
-	else if(Tim_temp>10)		//>10Hz
-	{
-		TIMx_Prescaler=1000-1;
-		TIMx_Period=(u16)((TIMx_Frequency/Tim_temp)/1000-1);
-	}
-	else if(Tim_temp<=10)		//<=10Hz
-	{
-		TIMx_Prescaler=2000-1;
-		TIMx_Period=(u16)((TIMx_Frequency/Tim_temp)/2000-1);
-	}
-	
-//	TIMx_Prescaler=0;
-//	TIMx_Period=(u16)(5-1);
-	
-	//6.3¶¨Ê±Æ÷³õÊ¼»¯*********************************************************************
-	TIM_TimeBaseStructure.TIM_Prescaler = TIMx_Prescaler; 					//Éè¶¨·ÖÆµÖµ
-	TIM_TimeBaseStructure.TIM_Period 		= TIMx_Period;        			//Éè¶¨×Ô¶¯ÖØ×°ÔØÖµ
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;  				//²»·Ö¸î
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  		//ÏòÉÏ¼ÆÊý
-	TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);		//³õÊ¼»¯	
-		
-	//*6,ÖÐ¶ÏÅäÖÃ============================================================================
-	NVIC_InitStructure.NVIC_IRQChannel = TIM_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	/* Clear TIMx update pending flag[Çå³ýTIMxÒç³öÖÐ¶Ï] */
-	TIM_ClearFlag(TIMx, TIM_FLAG_Update);
-
-	/* Enable TIM2 Update interrupt [TIMxÒç³öÖÐ¶ÏÔÊÐí]*/
-	TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE); 
-	
-	TIM_Cmd(TIMx, DISABLE); 									//Ê¹ÄÜTIM
 }
+//------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 /*******************************************************************************
@@ -269,309 +234,213 @@ void TIM_ConfigurationFreq(TIM_TypeDef* TIMx,u32 Frequency)		//¶¨Ê±Æ÷ÆµÂÊÅäÖÃ·½Ê
 *ÐÞ¸ÄËµÃ÷		:	ÎÞ
 *×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void TIM_SetFreq(TIM_TypeDef* TIMx,u32 Frequency)		//Éè¶¨ÆµÂÊ
+static void tim_rcc_initialize(TIM_TypeDef* TIMx)
 {
+	//=============================´ò¿ªÊ±ÖÓ
+	switch (*(u32*)&TIMx)
+	{
+		case TIM1_BASE:			
+			RCC->APB2ENR |= RCC_APB2Periph_TIM1;
+		break;
+		case TIM2_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM2;
+		break;
+		case TIM3_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM3;
+		break;
+		case TIM4_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM4;
+		break;
+		case TIM5_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM5;
+		break;
+		case TIM6_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM6;
+		break;
+		case TIM7_BASE:			
+			RCC->APB1ENR |= RCC_APB1Periph_TIM7;
+		break;
+		case TIM8_BASE:
+			RCC->APB2ENR |= RCC_APB2Periph_TIM8;
+		break;
+		default :break;
+	}
+	RCC->APB2ENR |= RCC_APB2Periph_AFIO;
+}
+//------------------------------------------------------------------------------
+
+
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static void tim_frequency_initialize(TIM_TypeDef* TIMx,double PWM_Frequency)
+{
+	unsigned long		TIMx_Frequency				=	0;		//	¶¨Ê±Æ÷Ê±ÖÓ
+	unsigned long 	TIMx_Count						=	0;		//	¼ÆÊý¸öÊý
+	unsigned short	TIMx_Prescaler				=	0	;		//	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ		È¡Öµ·¶Î§£º0x0000~0xFFFF
+  unsigned short	TIMx_Period						=	0	;		//	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ	È¡Öµ·¶Î§£º0x0000~0xFFFF
 	
-		
-	//*1,½á¹¹Ìå¶¨Òå***********************************************************************
-	//1£©============================½á¹¹Ìå¶¨Òå
-
-	RCC_ClocksTypeDef RCC_ClocksStatus;							//Ê±ÖÓ×´Ì¬---Ê±ÖÓÖµ
-
+	RCC_ClocksTypeDef RCC_ClocksStatus;		//Ê±ÖÓ×´Ì¬---Ê±ÖÓÖµ
 	
-	//1£©============================ÁÙÊ±±äÁ¿¶¨Òå
-
-
-	u32	PWM_Frequency				=	2*Frequency;	//ÓÉÓÚ·­×ªÐèÒªË«±¶ÆµÂÊ
-//	u32 RCC_APB2Periph_GPIOx	=	0x00;		//x=A/B/C/D/E/F/G	
-	u32	TIMx_Frequency				=	0;			//	¶¨Ê±Æ÷Ê±ÖÓ
-	u16 TIMx_Prescaler				=	0	;			//	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ		È¡Öµ·¶Î§£º0x0000~0xFFFF
-  u16 TIMx_Period						=	0	;			//	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ	È¡Öµ·¶Î§£º0x0000~0xFFFF
-
-//	TIMx->CR1 &= ((u16)0x03FE);		//CR1_CEN_Reset¹Ø±Õ¶¨Ê±Æ÷
-	
-	//1£©============================»ñÈ¡TIMxÊ±ÖÓÆµÂÊ
-	//1£©-----·ÖÆµÖµ¼°×Ô¶¯ÖØ×°ÔØÖµ¼ÆËã£¨PWM_Frequency ÆµÂÊ£¬µ¥Î»Hz£©
-	//--------1MHz 1us=1000ns,1KHz 10us=10000ns
-	RCC_GetClocksFreq(&RCC_ClocksStatus);	//»ñÈ¡Ê±ÖÓ²ÎÊý
+	if(PWM_Frequency<0)
+		return ;
+	TIMx->CR1	&=	0xFFFE;		//¹Ø¶¨Ê±Æ÷
+	//=============================»ñÈ¡¶¨Ê±Æ÷Ê±ÖÓ
+	RCC_GetClocksFreq(&RCC_ClocksStatus);	//»ñÈ¡Ê±ÖÓ²ÎÊý	
 	TIMx_Frequency = RCC_ClocksStatus.SYSCLK_Frequency;
-	if ((((u32)TIMx)&APB2PERIPH_BASE) == APB2PERIPH_BASE)
+	if (((*(u32*)&TIMx)&APB2PERIPH_BASE) == APB2PERIPH_BASE)
   {
     TIMx_Frequency = RCC_ClocksStatus.PCLK2_Frequency;	//APB2
   }
   else
   {
     TIMx_Frequency = RCC_ClocksStatus.PCLK1_Frequency;	//APB1
+		TIMx_Frequency = TIMx_Frequency*2;									//¶¨Ê±Æ÷µÄÊ±ÖÓÆµÂÊµÈÓÚ APB1 µÄÆµÂÊÁ½±¶
   }
-	//1£©============================¼ÆËã·ÖÆµÖµºÍÖØ×°ÔØÖµ
-//	TIMx_Frequency = 72000000;
-	//*6.2.4,¼ÆËã¶¨Ê±Æ÷²ÎÊý*********************************************************************
-	//Fsys==Fpwm*Count==Fpwm*(Prescaler*Period)	
-	//	TIMx_Prescaler				=	72-1		;		// 	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ
-	//	TIMx_Period						=	1000-1	;		// 	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ
-	//	Tim_num1							=	0				;		//	ÁÙÊ±±äÁ¿1
-	if(PWM_Frequency<=500)		//<=500Hz
+	//=============================¸ù¾ÝÆµÂÊ¼ÆËãÖÜÆÚ---µ¥Î»us
+	TIMx_Count	=	TIMx_Frequency/PWM_Frequency;
+	//-----------------------------0.02-0.1
+	if(PWM_Frequency<1)
+	{
+		TIMx_Prescaler=60000;
+	}
+	else if(PWM_Frequency<10)
 	{
 		TIMx_Prescaler=2000;
-		TIMx_Period=(u16)(TIMx_Frequency/TIMx_Prescaler/PWM_Frequency);
 	}
-	else if(PWM_Frequency<=1000)		//<=1KHz
+	else if(PWM_Frequency<20)
 	{
-		TIMx_Prescaler=10;
-		TIMx_Period=(u16)(TIMx_Frequency/TIMx_Prescaler/PWM_Frequency);
+		TIMx_Prescaler=200;
 	}
-	else if(PWM_Frequency<=5000)	//<=5KHz
+	else if(PWM_Frequency<40)
+	{
+		TIMx_Prescaler=60;
+	}
+	else if(PWM_Frequency<80)
+	{
+		TIMx_Prescaler=30;
+	}
+	else if(PWM_Frequency<100)
+	{
+		TIMx_Prescaler=20;
+	}
+	else if(PWM_Frequency<200)
+	{
+		TIMx_Prescaler=15;
+	}
+	else if(PWM_Frequency<400)
+	{
+		TIMx_Prescaler=6;
+	}
+	else if(PWM_Frequency<800)
+	{
+		TIMx_Prescaler=3;
+	}
+	else if(PWM_Frequency<2000)
 	{
 		TIMx_Prescaler=2;
-		TIMx_Period=(u16)(TIMx_Frequency/TIMx_Prescaler/PWM_Frequency);
 	}
-	else	//>5KHz
+	else
 	{
 		TIMx_Prescaler=1;
-		TIMx_Period=(u16)(TIMx_Frequency/TIMx_Prescaler/PWM_Frequency);
 	}
-//	else if(PWM_Frequency<100)		//>100kHz
-//	{
-//		TIMx_Prescaler=100-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/100-1);
-//	}
-//	else if(PWM_Frequency<10)		//>10Hz
-//	{
-//		TIMx_Prescaler=1000-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/1000-1);
-//	}
-//	else if(PWM_Frequency<=10)		//<=10Hz
-//	{
-//		TIMx_Prescaler=2000-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/2000-1);
-//	}
 	
-//	if(PWM_Frequency>100000)		//>100KHz
-//	{
-//		TIMx_Prescaler=0;
-//		TIMx_Period=(u16)(TIMx_Frequency/PWM_Frequency-1);
-//	}
-//	else if(PWM_Frequency>1000)	//>1KHz
-//	{
-//		TIMx_Prescaler=10-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/10-1);
-//	}
-//	else if(PWM_Frequency>100)		//>100Hz
-//	{
-//		TIMx_Prescaler=100-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/100-1);
-//	}
-//	else if(PWM_Frequency>10)		//>10Hz
-//	{
-//		TIMx_Prescaler=1000-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/1000-1);
-//	}
-//	else if(PWM_Frequency<=10)		//<=10Hz
-//	{
-//		TIMx_Prescaler=2000-1;
-//		TIMx_Period=(u16)((TIMx_Frequency/PWM_Frequency)/2000-1);
-//	}
+	TIMx_Period=TIMx_Count/TIMx_Prescaler;
 
-//		TIMx_Prescaler=0;
-//		TIMx_Period=(u16)(5-1);
+	//=============================Ô¤·ÖÆµÆ÷(TIMx_PSC)---·ÖÆµÖµ
+	TIMx->PSC		=	TIMx_Prescaler-1;
 
-	//6.3¶¨Ê±Æ÷³õÊ¼»¯*********************************************************************
+	//=============================×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷(TIMx_ARR)
+	TIMx->ARR		=	TIMx_Period-1;
 	
+	TIMx->DIER	=	0x0000;		//¹Ø±ÕÖÐ¶Ï
 	
-	
-  /* Set the Prescaler value */
-  TIMx->PSC = TIMx_Prescaler-1;
-	
-	
-	
-	/* Set the Autoreload value */
-  TIMx->ARR = TIMx_Period-1;
-	
-	/*   */
-//  TIMx->CNT = 0;										//Çå³ý¼ÆÊý
-
-	/* Set or reset the UG Bit */
-  TIMx->EGR = ((u16)0x0001);								//Á¢¼´ÉúÐ§·ÖÆµPrescaler
-	
-//	TIMx->CR1 |= ((u16)0x0001);							//CR1_CEN_Set¿ªÆô¶¨Ê±Æ÷
+	TIMx->CR1	|=	0x0001;		//Æô¶¯¶¨Ê±Æ÷
 }
-
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
-*º¯ÊýÃû		: TIM_Configuration
-*¹¦ÄÜÃèÊö	:¶¨Ê±Ê±¼äÉè¶¨
-*ÊäÈë			:TIMx--TIMx--¶¨Ê±Æ÷ºÅ
-						x¿ÉÒÔÎª1,2,3,4,5,6,7»òÕß8
-						Prescaler---·ÖÆµÏµÊý,(È¡Öµ0x0000~0xFFFF)ÓÃÀ´·ÖÆµTIM clock
-						Period	---¼ÆÊýÖµ,(È¡Öµ0x0000~0xFFFF),¼ÆÊýTIM_Period+1¸ö½ÚÅÄºó²úÉúÒç?
-						TIM_ClockDivision----Éè¶¨Ê±¼ä·Ö¸îÖµ,(Ä¬ÈÏÎª0,ÌØÊâ³¡ºÏÊ±TIM_ClockDivisionÓÃÀ´×öÒ»¶ÎÑÓÊ±)
-						TIM_CounterMode---¼ÆÊý·½Ê½
-						TIM_RepetitionCounter---ÖØ¸´¼ÆÊý´ÎÊý,(ÖØ¸´¶àÉÙ´ÎÒç³öºó²Å´¥·¢Ò»´ÎÒç³öÖÐ¶Ï)
-*Êä³ö			:	ÎÞ
-*·µ»ØÖµ		:	ÎÞ
-*Àý³Ì			:
+*º¯ÊýÃû			:	tim_time_initialize
+*¹¦ÄÜÃèÊö		:	ÅäÖÃ¶¨Ê±Ê±¼ä--µ¥Î»us
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
 *******************************************************************************/
-void TIM_Configuration(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)	//¶¨Ê±Ê±¼äÉè¶¨
-{
-	TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;	//¶¨Ê±Æ÷½á¹¹Ìå¶¨Òå
-	NVIC_InitTypeDef	NVIC_InitStructure;						//ÖÐ¶Ï½á¹¹Ìå
-	u8 TIM_IRQChannel=0;
-	//1)**********¶¨ÒåÏà¹Ø±äÁ¿	
-	switch (*(u32*)&TIMx)
+static void tim_time_initialize(TIM_TypeDef* TIMx,unsigned long microsecond)
+{	
+	unsigned short	TIMx_Prescaler				=	0;		//	¶¨Ê±Æ÷Ê±ÖÓ·ÖÆµÖµ		È¡Öµ·¶Î§£º0x0000~0xFFFF
+  unsigned short	TIMx_Period						=	0;		//	¶¨Ê±Æ÷×Ô¶¯ÖØ×°ÔØÖµ	È¡Öµ·¶Î§£º0x0000~0xFFFF
+	unsigned long		TIMx_Frequency				=	0;		//	¶¨Ê±Æ÷Ê±ÖÓ	
+	unsigned long		Pre										=	0;
+	unsigned long		TimCount							=	0;
+	RCC_ClocksTypeDef 										RCC_ClocksStatus;		//Ê±ÖÓ×´Ì¬---Ê±ÖÓÖµ
+	
+	TIMx->CR1	&=	0xFFFE;		//¹Ø¶¨Ê±Æ÷
+	//=============================»ñÈ¡¶¨Ê±Æ÷Ê±ÖÓ
+	RCC_GetClocksFreq(&RCC_ClocksStatus);	//»ñÈ¡Ê±ÖÓ²ÎÊý	
+	TIMx_Frequency = RCC_ClocksStatus.SYSCLK_Frequency;
+	if (((*(u32*)&TIMx)&APB2PERIPH_BASE) == APB2PERIPH_BASE)
+  {
+    TIMx_Frequency = RCC_ClocksStatus.PCLK2_Frequency;	//APB2
+  }
+  else
+  {
+    TIMx_Frequency = RCC_ClocksStatus.PCLK1_Frequency;	//APB1
+		TIMx_Frequency = TIMx_Frequency*2;									//¶¨Ê±Æ÷µÄÊ±ÖÓÆµÂÊµÈÓÚ APB1 µÄÆµÂÊÁ½±¶
+  }	
+	//=============================¸ù¾ÝÆµÂÊ¼ÆËãÖÜÆÚ---µ¥Î»us
+	Pre=TIMx_Frequency/1000000;
+	
+	TimCount	=	Pre*microsecond;
+	
+
+	if(TimCount/10000<0xFFFF)
 	{
-		case TIM1_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-			TIM_IRQChannel=TIM1_UP_IRQChannel;
-			break;
-		
-		case TIM2_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-			TIM_IRQChannel=TIM2_IRQChannel;
-			break;
-		
-		case TIM3_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-			TIM_IRQChannel=TIM3_IRQChannel;
-			break;
-		
-		case TIM4_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-			TIM_IRQChannel=TIM4_IRQChannel;
-			break;
-		
-		case TIM5_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
-			TIM_IRQChannel=TIM5_IRQChannel;
-			break;
-		
-		case TIM6_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-			TIM_IRQChannel=TIM6_IRQChannel;
-			break;
-		
-		case TIM7_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-			TIM_IRQChannel=TIM7_IRQChannel;
-			break;
-		
-		case TIM8_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
-			TIM_IRQChannel=TIM8_UP_IRQChannel;
-			break;
-		
-		default:
-			break;
-		
+		TIMx_Prescaler	=	TimCount/10000+1;
 	}
-	
-	TIMx_RCC_ENABLE(TIMx);													//´ò¿ªÏàÓ¦¶¨Ê±Æ÷Ê±ÖÓ
-	//1)**********¶¨ÒåÏà¹Ø±äÁ¿	
-	TIM_TimeBaseStructure.TIM_Prescaler = Prescaler-1; 		// Éè¶¨·ÖÆµÖµ
-	TIM_TimeBaseStructure.TIM_Period = Period-1;        	//Éè¶¨×Ô¶¯ÖØ×°ÔØÖµ
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;  //²»·Ö¸î
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //ÏòÉÏ¼ÆÊý
-	//	TIM_TimeBaseStructure.TIM_RepetitionCounter=0;	//????,???????????????????-??????????
-	TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);		//³õÊ¼»¯
-	//1)**********¶¨ÒåÏà¹Ø±äÁ¿	
-	TIM_ARRPreloadConfig(TIMx, ENABLE);
-	TIM_Cmd(TIMx, ENABLE); 
-	
-	//1)**********¶¨ÒåÏà¹Ø±äÁ¿	
-	NVIC_InitStructure.NVIC_IRQChannel = TIM_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-	
-	/* Clear TIMx update pending flag[Çå³ýTIMxÒç³öÖÐ¶Ï] */
-	TIM_ClearFlag(TIMx, TIM_FLAG_Update);
-
-	/* Enable TIM2 Update interrupt [TIMxÒç³öÖÐ¶ÏÔÊÐí]*/
-	TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE); 
-
-	/* TIM2 enable counter [Ê¹ÄÜTIMx¼ÆÊý]*/
-	TIM_Cmd(TIMx, ENABLE);	//Ê¹ÄÜTIMx¼ÆÊý
-}
-/*******************************************************************************
-*º¯ÊýÃû		:TIMx_RCC_ENABLE
-*¹¦ÄÜÃèÊö	:´ò¿ªÏàÓ¦¶¨Ê±Æ÷Ê±ÖÓ
-*ÊäÈë			:TIMx--¶¨Ê±Æ÷ºÅ
-						x¿ÉÒÔÎª1,2,3,4,5,6,7»òÕß8
-*Êä³ö			:ÎÞ
-*·µ»ØÖµ		:ÎÞ
-*Àý³Ì			:TIMx_RCC_ENABLE(TIM1);
-*******************************************************************************/
-void TIMx_RCC_ENABLE(TIM_TypeDef* TIMx)	//´ò¿ªÏàÓ¦¶¨Ê±Æ÷Ê±ÖÓ
-{
-	assert_param(IS_TIM_ALL_PERIPH(TIMx)); 
-	switch (*(u32*)&TIMx)
+	else if(TimCount/20000<0xFFFF)
 	{
-		case TIM1_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-			break;
-		
-		case TIM2_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-			break;
-		
-		case TIM3_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
-			break;
-		
-		case TIM4_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-			break;
-		
-		case TIM5_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
-			break;
-		
-		case TIM6_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
-			break;
-		
-		case TIM7_BASE:
-			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-			break;
-		
-		case TIM8_BASE:
-			RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
-			break;
-		
-		default:
-break;
-		
+		TIMx_Prescaler	=	TimCount/20000+1;
 	}
-}
-/*******************************************************************************
-*º¯ÊýÃû		: TIM_TIME_SET
-*¹¦ÄÜÃèÊö	:¶¨Ê±Ê±¼äÉè¶¨
-*ÊäÈë			:TIMx--TIMx--¶¨Ê±Æ÷ºÅ
-					 x¿ÉÒÔÎª1,2,3,4,5,6,7»òÕß8
-					Prescaler---·ÖÆµÏµÊý,(È¡Öµ0x0000~0xFFFF)ÓÃÀ´·ÖÆµTIM clock
-					 Period	---¼ÆÊýÖµ,(È¡Öµ0x0000~0xFFFF),¼ÆÊýTIM_Period+1¸ö½ÚÅÄºó²úÉúÒç³ö
-					TIM_ClockDivision----Éè¶¨Ê±¼ä·Ö¸îÖµ,(Ä¬ÈÏÎª0,ÌØÊâ³¡ºÏÊ±TIM_ClockDivisionÓÃÀ´×öÒ»¶ÎÑÓÊ±)
-					TIM_CounterMode---¼ÆÊý·½Ê½
-					TIM_RepetitionCounter---ÖØ¸´¼ÆÊý´ÎÊý,(ÖØ¸´¶àÉÙ´ÎÒç³öºó²Å´¥·¢Ò»´ÎÒç³öÖÐ¶Ï)
-*Êä³ö			:ÎÞ
-*·µ»ØÖµ		:ÎÞ
-*Àý³Ì			:
-*******************************************************************************/
-void TIM_TIME_SET(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)	//¶¨Ê±Ê±¼äÉè¶¨
-{
-	TIM_TimeBaseInitTypeDef	TIM_TimeBaseStructure;	//¶¨Ê±Æ÷½á¹¹Ìå¶¨Òå
+	else if(TimCount/30000<0xFFFF)
+	{
+		TIMx_Prescaler	=	TimCount/30000+1;			
+	}
+	else if(TimCount/40000<0xFFFF)
+	{
+		TIMx_Prescaler	=	TimCount/40000+1;			
+	}
+	else if(TimCount/50000<0xFFFF)
+	{
+		TIMx_Prescaler	=	TimCount/50000+1;			
+	}
+	else if(TimCount/60000<0xFFFF)
+	{
+		TIMx_Prescaler	=	TimCount/60000+1;			
+	}
+	TIMx_Period			=	TimCount/TIMx_Prescaler;
 
-	TIM_TimeBaseStructure.TIM_Prescaler = Prescaler-1; 		// Éè¶¨·ÖÆµÖµ
-	TIM_TimeBaseStructure.TIM_Period = Period-1;        	//Éè¶¨×Ô¶¯ÖØ×°ÔØÖµ
-	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;  //²»·Ö¸î
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;  //ÏòÉÏ¼ÆÊý
-	//	TIM_TimeBaseStructure.TIM_RepetitionCounter=0;	//????,???????????????????-??????????
-	TIM_TimeBaseInit(TIMx, &TIM_TimeBaseStructure);		//³õÊ¼»¯
-//	TIM_PrescalerConfig(TIM2,Prescaler,TIM_PSCReloadMode_Update);
-	TIM_ARRPreloadConfig(TIMx, ENABLE);
-//	TIM_Cmd(TIM2, ENABLE);
-//	TIM_SetCompare1(TIM2,4000);
+
+	//=============================Ô¤·ÖÆµÆ÷(TIMx_PSC)---·ÖÆµÖµ
+	TIMx->PSC		=	TIMx_Prescaler-1;
+	
+	//=============================×Ô¶¯ÖØ×°ÔØ¼Ä´æÆ÷(TIMx_ARR)
+	TIMx->ARR		=	TIMx_Period-1;
+	
+	TIMx->DIER	=	0x0000;		//¹Ø±ÕÖÐ¶Ï
+	
+	TIMx->CR1	|=	0x0001;		//Æô¶¯¶¨Ê±Æ÷
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *º¯ÊýÃû		:TIM_Interrupt
 *¹¦ÄÜÃèÊö	:ADS1230¹Ü½Å³õÊ¼»¯
@@ -580,13 +449,13 @@ void TIM_TIME_SET(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)	//¶¨Ê±Ê±¼äÉè¶¨
 *·µ»ØÖµ		:ÎÞ
 *Àý³Ì			£º
 *******************************************************************************/
-void TIM_Interrupt(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)
+static void tim_Interrupt_initialize(TIM_TypeDef* TIMx)
 {
 	NVIC_InitTypeDef	NVIC_InitStructure;
 	u8 TIM_IRQChannel=0;
 	assert_param(IS_TIM_ALL_PERIPH(TIMx)); 
 	
-	TIM_Configuration(TIMx,Prescaler,Period);
+	TIM_Cmd(TIMx, DISABLE);	//Ê¹ÄÜTIMx¼ÆÊý	
 	
 	switch (*(u32*)&TIMx)
 	{
@@ -623,14 +492,13 @@ void TIM_Interrupt(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)
 			break;
 		
 		default:
-			break;
-		
+			break;		
 	}
 	
-	NVIC_InitStructure.NVIC_IRQChannel = TIM_IRQChannel;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannel 										= TIM_IRQChannel;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority 	= 0;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority 				= 0;
+	NVIC_InitStructure.NVIC_IRQChannelCmd 								= ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	
 	/* Clear TIMx update pending flag[Çå³ýTIMxÒç³öÖÐ¶Ï] */
@@ -640,9 +508,365 @@ void TIM_Interrupt(TIM_TypeDef* TIMx,u16 Prescaler,u16 Period)
 	TIM_ITConfig(TIMx, TIM_IT_Update, ENABLE); 
 
 	/* TIM2 enable counter [Ê¹ÄÜTIMx¼ÆÊý]*/
-	TIM_Cmd(TIMx, ENABLE);	//Ê¹ÄÜTIMx¼ÆÊý
-		
+	TIM_Cmd(TIMx, ENABLE);	//Ê¹ÄÜTIMx¼ÆÊý		
 }
+//------------------------------------------------------------------------------
+
+
+
+
+/*******************************************************************************
+*º¯ÊýÃû			:	API_PWM_GPIO_Initialize
+*¹¦ÄÜÃèÊö		:	function
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static void pwm_gpio_initialize(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln)
+{
+	switch (*(u32*)&TIMx)
+	{
+		case TIM1_BASE:
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA8
+						GPIOA->CRH&=0xFFFFFFF0;
+						GPIOA->CRH|=0x0000000B;
+				break;
+				case PWM_OUTChannel2:			//PA9
+						GPIOA->CRH&=0xFFFFFF0F;
+						GPIOA->CRH|=0x000000B0;
+				break;
+				case PWM_OUTChannel3:			//PA10	
+						GPIOA->CRH&=0xFFFFF0FF;
+						GPIOA->CRH|=0x00000B00;
+				break;
+				case PWM_OUTChannel4:			//PA11	
+						GPIOA->CRH&=0xFFFF0FFF;
+						GPIOA->CRH|=0x0000B000;
+				break;
+				default:
+				break;
+			}
+		break;
+			
+		case TIM2_BASE:
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA0
+						GPIOA->CRL&=0xFFFFFFF0;
+						GPIOA->CRL|=0x0000000B;
+				break;
+				case PWM_OUTChannel2:			//PA1
+						GPIOA->CRL&=0xFFFFFF0F;
+						GPIOA->CRL|=0x000000B0;
+				break;
+				case PWM_OUTChannel3:			//PA2	
+						GPIOA->CRL&=0xFFFFF0FF;
+						GPIOA->CRL|=0x00000B00;
+				break;
+				case PWM_OUTChannel4:			//PA3	
+						GPIOA->CRL&=0xFFFF0FFF;
+						GPIOA->CRL|=0x0000B000;
+				break;
+				default:
+				break;
+			}
+		break;
+			
+		case TIM3_BASE:			
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA6
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+						GPIOA->CRL&=0xF0FFFFFF;
+						GPIOA->CRL|=0x0B000000;
+				break;
+				case PWM_OUTChannel2:			//PA7
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+						GPIOA->CRL&=0x0FFFFFFF;
+						GPIOA->CRL|=0xB0000000;
+				break;
+				case PWM_OUTChannel3:			//PB0
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+						GPIOB->CRL&=0xFFFFFFF0;
+						GPIOB->CRL|=0x0000000B;
+				break;
+				case PWM_OUTChannel4:			//PB1
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+						GPIOB->CRL&=0xFFFFFF0F;
+						GPIOB->CRL|=0x000000B0;
+				break;
+				default:
+				break;
+			}
+		break;
+			
+		case TIM4_BASE:
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PB6
+						GPIOB->CRL&=0xF0FFFFFF;
+						GPIOB->CRL|=0x0B000000;
+				break;
+				case PWM_OUTChannel2:			//PB7
+						GPIOB->CRL&=0x0FFFFFFF;
+						GPIOB->CRL|=0xB0000000;
+				break;
+				case PWM_OUTChannel3:			//PB8
+						GPIOB->CRH&=0xFFFFFFF0;
+						GPIOB->CRH|=0x0000000B;
+				break;
+				case PWM_OUTChannel4:			//PB9
+						GPIOB->CRH&=0xFFFFFF0F;
+						GPIOB->CRH|=0x000000B0;
+				break;
+				default:
+				break;
+			}
+		break;
+			
+		case TIM5_BASE:			
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA0
+						GPIOA->CRL&=0xFFFFFFF0;
+						GPIOA->CRL|=0x0000000B;
+				break;
+				case PWM_OUTChannel2:			//PA1
+						GPIOA->CRL&=0xFFFFFF0F;
+						GPIOA->CRL|=0x000000B0;
+				break;
+				case PWM_OUTChannel3:			//PA2	
+						GPIOA->CRL&=0xFFFFF0FF;
+						GPIOA->CRL|=0x00000B00;
+				break;
+				case PWM_OUTChannel4:			//PA3	
+						GPIOA->CRL&=0xFFFF0FFF;
+						GPIOA->CRL|=0x0000B000;
+				break;
+				default:
+				break;
+			}
+			
+			case TIM6_BASE:				
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA0
+						GPIOA->CRL&=0xFFFFFFF0;
+						GPIOA->CRL|=0x0000000B;
+				break;
+				case PWM_OUTChannel2:			//PA1
+						GPIOA->CRL&=0xFFFFFF0F;
+						GPIOA->CRL|=0x000000B0;
+				break;
+				case PWM_OUTChannel3:			//PA2	
+						GPIOA->CRL&=0xFFFFF0FF;
+						GPIOA->CRL|=0x00000B00;
+				break;
+				case PWM_OUTChannel4:			//PA3	
+						GPIOA->CRL&=0xFFFF0FFF;
+						GPIOA->CRL|=0x0000B000;
+				break;
+				default:
+				break;
+			}
+		
+		default :break;
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*º¯ÊýÃû			:	API_PWM_GPIO_InitializeN
+*¹¦ÄÜÃèÊö		:	»¥²¹Êä³ö
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static void pwm_gpio_initializeN(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln)
+{
+	switch (*(u32*)&TIMx)
+	{
+		case TIM1_BASE:
+			RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PB13
+						GPIOB->CRH&=0xFF0FFFFF;
+						GPIOB->CRH|=0x00B00000;
+				break;
+				case PWM_OUTChannel2:			//PB14
+						GPIOB->CRH&=0xF0FFFFFF;
+						GPIOB->CRH|=0x0B000000;
+				break;
+				case PWM_OUTChannel3:			//PB15	
+						GPIOB->CRH&=0x0FFFFFFF;
+						GPIOB->CRH|=0xB0000000;
+				break;
+				default:
+				break;
+			}
+		break;
+		case TIM8_BASE:
+			switch(PWM_OUTChanneln)
+			{
+				case PWM_OUTChannel1:			//PA7
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
+						GPIOA->CRL&=0x0FFFFFFF;
+						GPIOA->CRL|=0xB0000000;
+				break;
+				case PWM_OUTChannel2:			//PB0
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+						GPIOB->CRL&=0xFFFFFFF0;
+						GPIOB->CRL|=0x0000000B;
+				break;
+				case PWM_OUTChannel3:			//PB1
+						RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
+						GPIOB->CRL&=0xFFFFFF0F;
+						GPIOB->CRL|=0x000000B0;
+				break;
+				default:
+				break;
+			}
+		break;
+		default :break;
+	}
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	PWM_OC_InitializeN
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static void pwm_oc_initialize(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln,u16 PWM_Ratio)
+{
+	unsigned long TIMx_Ratio	=	0;
+	TIMx_Ratio	=	TIMx->ARR+1;
+	TIMx_Ratio	=	TIMx_Ratio*PWM_Ratio;
+	TIMx_Ratio	=	TIMx_Ratio/1000;
+
+	switch(PWM_OUTChanneln)
+	{
+		case PWM_OUTChannel1:
+					TIMx->CCR1 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xFCFF;	
+					TIMx->CR2	|=	0x0300;
+					TIMx->CCMR1 &= 0xFF00;
+					TIMx->CCMR1 |= 0x006C;
+					//TIMx->CCER	&=	0xFFFC;
+					TIMx->CCER	&=	~(0x0003<<0);
+					TIMx->CCER	|=	(TIM_OutputState_Enable|TIM_OCPolarity_High)<<0;					
+		break;
+		case PWM_OUTChannel2:
+					TIMx->CCR2 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xF3FF;	
+					TIMx->CR2	|=	0x0C00;
+					TIMx->CCMR1 &= 0x00FF;
+					TIMx->CCMR1 |= 0x6C00;
+					TIMx->CCER	&=	~(0x0003<<4);
+					TIMx->CCER	|=	(TIM_OutputState_Enable|TIM_OCPolarity_High)<<4;
+		break;
+		case PWM_OUTChannel3:
+					TIMx->CCR3 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xCFFF;	
+					TIMx->CR2	|=	0x3000;
+					TIMx->CCMR2 &= 0xFF00;
+					TIMx->CCMR2 |= 0x006C;
+					TIMx->CCER	&=	~(0x0003<<8);
+					TIMx->CCER	|=	(TIM_OutputState_Enable|TIM_OCPolarity_High)<<8;
+		break;
+		case PWM_OUTChannel4:
+					TIMx->CCR4 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xBFFF;	
+					TIMx->CR2	|=	0x4000;
+					TIMx->CCMR2 &= 0x00FF;
+					TIMx->CCMR2 |= 0x6C00;
+					TIMx->CCER	&=	~(0x0003<<12);
+					TIMx->CCER	|=	(TIM_OutputState_Enable|TIM_OCPolarity_High)<<12;
+		break;
+		default:
+		break;
+	}
+	TIMx->BDTR |= 0x8000;
+	TIMx->EGR		=	TIM_PSCReloadMode_Immediate;
+}
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*º¯ÊýÃû			:	function
+*¹¦ÄÜÃèÊö		:	PWM_OC_InitializeN
+*ÊäÈë				: 
+*·µ»ØÖµ			:	ÎÞ
+*ÐÞ¸ÄÊ±¼ä		:	ÎÞ
+*ÐÞ¸ÄËµÃ÷		:	ÎÞ
+*×¢ÊÍ				:	wegam@sina.com
+*******************************************************************************/
+static void pwm_oc_initializeN(TIM_TypeDef* TIMx,PWM_OUTChannelTypeDef PWM_OUTChanneln,u16 PWM_Ratio)
+{
+	unsigned long TIMx_Ratio	=	0;
+	TIMx_Ratio	=	TIMx->ARR+1;
+	TIMx_Ratio	=	TIMx_Ratio*PWM_Ratio;
+	TIMx_Ratio	=	TIMx_Ratio/1000;
+
+	switch(PWM_OUTChanneln)
+	{
+		case PWM_OUTChannel1:			//PB13
+					TIMx->CCR1 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xFCFF;	
+					TIMx->CR2	|=	0x0300;
+					TIMx->CCMR1 &= 0xFF00;
+					TIMx->CCMR1 |= 0x006C;
+					TIMx->CCER	&=	~(0x000C<<0);
+					TIMx->CCER	|=	(TIM_OutputNState_Enable|TIM_OCNPolarity_High)<<0;					
+		break;
+		case PWM_OUTChannel2:			//PB14
+					TIMx->CCR2 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xF3FF;	
+					TIMx->CR2	|=	0x0C00;
+					TIMx->CCMR1 &= 0x00FF;
+					TIMx->CCMR1 |= 0x6C00;
+					TIMx->CCER	&=	~(0x000C<<4);
+					TIMx->CCER	|=	(TIM_OutputNState_Enable|TIM_OCNPolarity_High)<<4;
+		break;
+		case PWM_OUTChannel3:			//PB15	
+					TIMx->CCR3 	=	TIMx_Ratio;
+					TIMx->CR2	&=	0xCFFF;	
+					TIMx->CR2	|=	0x3000;
+					TIMx->CCMR2 &= 0xFF00;
+					TIMx->CCMR2 |= 0x006C;
+					TIMx->CCER	&=	~(0x000C<<8);
+					TIMx->CCER	|=	(TIM_OutputNState_Enable|TIM_OCNPolarity_High)<<8;
+		break;
+		default:
+		break;
+	}
+	TIMx->BDTR |= 0x8000;
+	TIMx->EGR		=	TIM_PSCReloadMode_Immediate;
+
+}
+//------------------------------------------------------------------------------
+
+
+
+
+
+
+
 /*******************************************************************************
 *º¯ÊýÃû		:TIM_Server
 *¹¦ÄÜÃèÊö	:ADS1230¹Ü½Å³õÊ¼»¯
@@ -672,9 +896,20 @@ void TIM_Server(void)
 //	TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
 //	TIM_ClearITPendingBit(TIM8, TIM_IT_Update);
 }
+//------------------------------------------------------------------------------
 
-
-
-
+//==============================================================================ÖÐ¶Ï·þÎñ³ÌÐò20190813
+/*******************************************************************************
+* Function Name  : TIM2_IRQHandler
+* Description    : This function handles TIM2 global interrupt request.
+* Input          : None
+* Output         : None
+* Return         : None
+*******************************************************************************/
+void TIM2_IRQHandler(void)
+{
+	WOW_Server();
+	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);	
+}
 
 

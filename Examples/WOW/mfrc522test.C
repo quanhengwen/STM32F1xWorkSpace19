@@ -112,10 +112,10 @@ static void sys_led_run(void)
 	if(time++>500)
 	{
 		time = 0;
-//		GPIO_Toggle(GPIOC,GPIO_Pin_13);
+//		API_GPIO_Toggle(GPIOC,GPIO_Pin_13);
 	}
 	GPIO_ResetBits(mfrc522sysledport,mfrc522sysledpin);
-	//GPIO_Toggle(mfrc522sysledport,mfrc522sysledpin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
+	//API_GPIO_Toggle(mfrc522sysledport,mfrc522sysledpin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 }
 /*******************************************************************************
 *函数名			:	function
@@ -147,7 +147,7 @@ void MFRC522_LOOP(void)
 		//寻卡成功
 		if(mfrc522_PcdAnticoll(mfrc522_UID)==MI_OK)
 		{ 
-			GPIO_Toggle(GPIOC,GPIO_Pin_13);
+			API_GPIO_Toggle(GPIOC,GPIO_Pin_13);
 		}
 	}
 	
@@ -156,7 +156,7 @@ void MFRC522_LOOP(void)
 //		//寻卡成功
 //		if(PcdAnticoll(mfrc522_UID)==MI_OK)
 //		{ 
-//			GPIO_Toggle(GPIOC,GPIO_Pin_13);
+//			API_GPIO_Toggle(GPIOC,GPIO_Pin_13);
 //		}
 //	}
 		

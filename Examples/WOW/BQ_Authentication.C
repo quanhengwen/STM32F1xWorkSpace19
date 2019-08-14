@@ -131,9 +131,9 @@ void BQ_Authentication_Server(void)
 //	}
 	
 	//------------离线测试校验：测试模式--定时发送待验证信息
-	//BQ_Authentication_Test_Model_WorkAsSMT();
+	BQ_Authentication_Test_Model_WorkAsSMT();
 	//------------在线测试校验:定时连接SMT，让SMT发送待验证消息
-	BQ_Authentication_Test_Model_OnLine();
+	//BQ_Authentication_Test_Model_OnLine();
 	//------------在线应用模式：校验不通过自动重启
 	//BQ_Authentication_Auto_Reset_OnLine();
 	//------------正常运行模式：认证失败自动重启
@@ -215,6 +215,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 		if(time==2)
 		{
 			//-------------------获取待认证消息
+			//bq_test_serial=399;
 			address = api_bq26100slave_get_sample_message_address(bq_test_serial);
 			if(address)
 			{
@@ -229,7 +230,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 				//-----------------计算校验和
 				Message[22]=CheckSum(Message,22);				
 				//-----------------将待认证消息发给飞达
-				api_usart_dma_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证
+				api_usart_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证
 			}
 			else
 			{
@@ -240,7 +241,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 		//---------------------向飞达发送返回摘要的命令
 		else if(time==160)
 		{
-			api_usart_dma_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
+			api_usart_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
 		}
 		//---------------------序号循环自增
 		else if(time>200)
@@ -253,7 +254,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 		
 		
 		//---------------------获取飞达返回的数据
-		rxlen	=	api_usart_dma_receive(ComPortOut,rxbuff);	
+		rxlen	=	api_usart_receive(ComPortOut,rxbuff);	
 		if(rxlen)
 		{			
 			//-------------------返回消息摘要:完整消息长度25字节
@@ -271,7 +272,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 					//---------------对比数据：不一致
 					if(0!=memcmp(Message,address,20))
 					{
-						//while(1);
+						SysLedOff;
 					}
 					//---------------对比一致
 					else
@@ -460,7 +461,7 @@ static void BQ_Authentication_Auto_Reset_OnLine(void)
 		//---------------------截取飞达返回的数据：如梦飞达有上报摘要，表示已完成一次认证
 		//---------------------检查样品摘要，如果样品摘要全为0x00，表示没有找到对应的摘要，需要重新认证
 		//---------------------将串口截取的摘要与样品摘要对比，如果不一致，表示SDQ读取时序异常，需要重新认证
-		rxlen	=	api_usart_dma_receive(ComPortOut,rxbuff);	
+		rxlen	=	api_usart_receive(ComPortOut,rxbuff);	
 		if(rxlen)
 		{			
 			//-------------------返回消息摘要:完整消息长度25字节
@@ -508,7 +509,7 @@ static void BQ_Authentication_Auto_Reset_OnLine(void)
 				//-----------------计算校验和
 				Message[22]=CheckSum(Message,22);				
 				//-----------------将待认证消息发给飞达
-				api_usart_dma_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证				
+				api_usart_send(ComPortOut,Message,23);		//模拟主机将消息发送给FD验证				
 			}
 			else
 			{
@@ -520,7 +521,7 @@ static void BQ_Authentication_Auto_Reset_OnLine(void)
 		//---------------------向飞达发送返回摘要的命令
 		else if(time==5)
 		{
-			api_usart_dma_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
+			api_usart_send(ComPortOut,GetDigest,3);		//让FD返回校验消息
 		}
 		//---------------------序号循环自增
 		else if(time>100)

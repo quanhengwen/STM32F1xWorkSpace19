@@ -13,8 +13,8 @@
 * INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
 *******************************************************************************/
 
-
 #include "STM32_GPIO.H"
+
 
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_rcc.h"
@@ -22,9 +22,11 @@
 #include "stm32f10x_conf.h"
 #include "stm32f10x_map.h"
 
+
+
 //#include "STM32F10x_BitBand.H"
 //#include "stm32f10x_gpio.h"
-//#include "STM32F10x_BitBand.H"
+
 
 
 /*******************************************************************************
@@ -129,83 +131,7 @@ void GPIO_DeInitAll(void)
 	//4）关闭AFIO
 	GPIO_AFIODeInit();												//AFIO关闭	
 }
-/*******************************************************************************
-* 函数名		:	GPIO_Configuration
-* 功能描述	:	GPIO配置 
-* 输入		:	GPIOx：GPIOA~GPIOG
-						GPIO_Pin_x:GPIO_Pin_0~GPIO_Pin_15;GPIO_Pin_All
-* 输出		:
-* 返回 		:
-*******************************************************************************/
-void GPIO_Configuration(GPIO_TypeDef* GPIOx,					//GPIO端口
-												u16 GPIO_Pin_x,								//GPIO引脚
-												GPIOMode_TypeDef GPIO_Mode,		//工作模式
-												GPIOSpeed_TypeDef GPIO_Speed	//工作速度
-												)			//GPIO配置	
-{	
-	switch(GPIO_Mode)
-	{
-		//输入模式
-		case GPIO_Mode_AIN:					GPIO_Configuration_INA(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为模拟输入模式----V20170605
-					break;
-		case GPIO_Mode_IN_FLOATING:	GPIO_Configuration_INF(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为模拟输入模式----V20170605
-					break;
-		case GPIO_Mode_IPD:					GPIO_Configuration_IPD(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为模拟输入模式----V20170605
-					break;
-		case GPIO_Mode_IPU:					GPIO_Configuration_IPU(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为模拟输入模式----V20170605
-					break;
-		//输出模式
-		case GPIO_Mode_Out_OD:	
-					switch(GPIO_Speed)
-					{
-						case GPIO_Speed_10MHz:	GPIO_Configuration_OOD10	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_2MHz: 	GPIO_Configuration_OOD2		(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_50MHz: 	GPIO_Configuration_OOD50	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						default : break;
-					}
-					break;
-		case GPIO_Mode_Out_PP:
-					switch(GPIO_Speed)
-					{
-						case GPIO_Speed_10MHz: 	GPIO_Configuration_OPP10	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_2MHz: 	GPIO_Configuration_OPP2		(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_50MHz: 	GPIO_Configuration_OPP50	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						default : break;
-					}
-					break;
-		case GPIO_Mode_AF_OD:
-					switch(GPIO_Speed)
-					{
-						case GPIO_Speed_10MHz: 	GPIO_Configuration_AOD10	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_2MHz: 	GPIO_Configuration_AOD2		(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_50MHz: 	GPIO_Configuration_AOD50	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						default : break;
-					}
-					break;
-		case GPIO_Mode_AF_PP:
-					switch(GPIO_Speed)
-					{
-						case GPIO_Speed_10MHz: 	GPIO_Configuration_APP10	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_2MHz: 	GPIO_Configuration_APP2		(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						case GPIO_Speed_50MHz: 	GPIO_Configuration_APP50	(GPIOx,GPIO_Pin_x);			//将GPIO相应管脚配置为OD(开漏)输出模式，最大速度2MHz----V20170605
-									break;
-						default : break;
-					}
-					break;		
-		default :	break;
-	}
-}
+
 /*******************************************************************************
 * 函数名		:	GPIO_InitStructure_INA
 * 功能描述	:	将GPIO相应管脚配置为模拟输入模式----V20170605
@@ -660,6 +586,11 @@ void GPIO_Configuration_APP50(
 	//3）初始化GPIO
 	GPIO_Init(GPIOx,&GPIO_InitStructure);			//GPIOA	
 }
+
+
+
+
+
 /*******************************************************************************
 * 函数名		:	GPIO_Configuration_APP50
 * 功能描述	:	将GPIO相应管脚配置为APP(复用推挽)输出模式，最大速度50MHz----V20170605
@@ -667,25 +598,11 @@ void GPIO_Configuration_APP50(
 * 输出		:
 * 返回 		:
 *******************************************************************************/
-void GPIO_Toggle(
-									GPIO_TypeDef* GPIOx,							//GPIO端口,x=A/B/C/D/E/F/G
-									u16 GPIO_Pin_n										//GPIO管脚号n=0~15/All
-									)
+void api_gpio_toggle(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
-	//1）GPIO管脚输出低，返回Bit_RESET
-	if ((GPIOx->ODR & GPIO_Pin_n) != (u32)Bit_RESET)
-  {
-    GPIOx->BRR = GPIO_Pin_n;
-  }
-  else
-  {
-		GPIOx->BSRR = GPIO_Pin_n;
-  }
+	GPIOx->ODR = GPIOx->ODR^GPIO_Pin_n;
 }
 //------------------------------------------------------------------------------
-
-
-
 
 
 /*******************************************************************************
@@ -697,21 +614,21 @@ void GPIO_Toggle(
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_Clock_Eable(GPIO_TypeDef* GPIOx)
+void api_gpio_set_rcc_enable(GPIO_TypeDef* GPIOx)
 {
 	switch (*(u32*)&GPIOx)
 	{
 		//********************GPIOA时钟使能********************	
 		case GPIOA_BASE:
 				RCC->APB2ENR |= RCC_APB2Periph_GPIOA;
-				AFIO->MAPR	&=		0xF8FFFFFF;	//关闭JTAG,SW功能开启
-				AFIO->MAPR	|=		0xFAFFFFFF;	//关闭JTAG,SW功能开启
+				AFIO->MAPR	&=		0xFAFFFFFF;	//关闭JTAG,SW功能开启
+				AFIO->MAPR	|=		0x02000000;	//关闭JTAG,SW功能开启
 			break;
 		//********************GPIOB时钟使能********************
 		case GPIOB_BASE:			
 				RCC->APB2ENR |= RCC_APB2Periph_GPIOB;
-				AFIO->MAPR	&=		0xF8FFFFFF;	//关闭JTAG,SW功能开启
-				AFIO->MAPR	|=		0xFAFFFFFF;	//关闭JTAG,SW功能开启			
+				AFIO->MAPR	&=		0xFAFFFFFF;	//关闭JTAG,SW功能开启
+				AFIO->MAPR	|=		0x02000000;	//关闭JTAG,SW功能开启			
 			break;
 		//********************GPIOC时钟使能********************
 		case GPIOC_BASE:
@@ -756,94 +673,94 @@ void API_GPIO_SET_Clock_Eable(GPIO_TypeDef* GPIOx)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_OPP50_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x00000003;
 }
-void API_GPIO_SET_OPP50_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x00000030;
 }
-void API_GPIO_SET_OPP50_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000300;
 }
-void API_GPIO_SET_OPP50_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x00003000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x00030000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00300000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x03000000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0x30000000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x00000003;
 }
-void API_GPIO_SET_OPP50_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x00000030;
 }
-void API_GPIO_SET_OPP50_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000300;
 }
-void API_GPIO_SET_OPP50_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x00003000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x00030000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00300000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x03000000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0x30000000;
 }
-void API_GPIO_SET_OPP50_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OPP50_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0x33333333;
 	GPIOx->CRH&=0x00000000;
 	GPIOx->CRH|=0x33333333;
 }
-void API_GPIO_SET_OPP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_OPP50_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -908,94 +825,94 @@ void API_GPIO_SET_OPP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_OOD50_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x00000007;
 }
-void API_GPIO_SET_OOD50_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x00000070;
 }
-void API_GPIO_SET_OOD50_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000700;
 }
-void API_GPIO_SET_OOD50_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x00007000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x00070000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00700000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x07000000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0x70000000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x00000007;
 }
-void API_GPIO_SET_OOD50_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x00000070;
 }
-void API_GPIO_SET_OOD50_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000700;
 }
-void API_GPIO_SET_OOD50_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x00007000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x00070000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00700000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x07000000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0x70000000;
 }
-void API_GPIO_SET_OOD50_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_OOD50_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0x77777777;
 	GPIOx->CRH&=0x00000000;
 	GPIOx->CRH|=0x77777777;
 }
-void API_GPIO_SET_OOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_OOD50_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1060,94 +977,94 @@ void API_GPIO_SET_OOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_APP50_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x0000000B;
 }
-void API_GPIO_SET_APP50_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x000000B0;
 }
-void API_GPIO_SET_APP50_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000B00;
 }
-void API_GPIO_SET_APP50_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x0000B000;
 }
-void API_GPIO_SET_APP50_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x000B0000;
 }
-void API_GPIO_SET_APP50_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00B00000;
 }
-void API_GPIO_SET_APP50_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x0B000000;
 }
-void API_GPIO_SET_APP50_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0xB0000000;
 }
-void API_GPIO_SET_APP50_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x0000000B;
 }
-void API_GPIO_SET_APP50_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x000000B0;
 }
-void API_GPIO_SET_APP50_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000B00;
 }
-void API_GPIO_SET_APP50_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x0000B000;
 }
-void API_GPIO_SET_APP50_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x000B0000;
 }
-void API_GPIO_SET_APP50_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00B00000;
 }
-void API_GPIO_SET_APP50_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x0B000000;
 }
-void API_GPIO_SET_APP50_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0xB0000000;
 }
-void API_GPIO_SET_APP50_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_APP50_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0xBBBBBBBB;
 	GPIOx->CRH&=0x00000000;
 	GPIOx->CRH|=0xBBBBBBBB;
 }
-void API_GPIO_SET_APP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_APP50_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1212,76 +1129,76 @@ void API_GPIO_SET_APP50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_AOD50_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x0000000F;
 }
-void API_GPIO_SET_AOD50_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x000000F0;
 }
-void API_GPIO_SET_AOD50_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x00000F00;
 }
-void API_GPIO_SET_AOD50_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x0000F000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x000F0000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x00F00000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0x0F000000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0xF0000000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x0000000F;
 }
-void API_GPIO_SET_AOD50_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x000000F0;
 }
-void API_GPIO_SET_AOD50_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x00000F00;
 }
-void API_GPIO_SET_AOD50_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x0000F000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x000F0000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x00F00000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0x0F000000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH|=0xF0000000;
 }
-void API_GPIO_SET_AOD50_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_AOD50_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL|=0xFFFFFFFF;
 	GPIOx->CRH|=0xFFFFFFFF;
 }
-void API_GPIO_SET_AOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_AOD50_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1352,76 +1269,76 @@ void API_GPIO_SET_AOD50_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_INA_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 }
-void API_GPIO_SET_INA_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 }
-void API_GPIO_SET_INA_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 }
-void API_GPIO_SET_INA_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 }
-void API_GPIO_SET_INA_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 }
-void API_GPIO_SET_INA_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 }
-void API_GPIO_SET_INA_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 }
-void API_GPIO_SET_INA_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 }
-void API_GPIO_SET_INA_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 }
-void API_GPIO_SET_INA_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INA_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRH&=0x00000000;
 }
-void API_GPIO_SET_INA_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_INA_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1486,94 +1403,94 @@ void API_GPIO_SET_INA_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_INF_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x00000004;
 }
-void API_GPIO_SET_INF_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x00000040;
 }
-void API_GPIO_SET_INF_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000400;
 }
-void API_GPIO_SET_INF_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x00004000;
 }
-void API_GPIO_SET_INF_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x00040000;
 }
-void API_GPIO_SET_INF_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00400000;
 }
-void API_GPIO_SET_INF_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x04000000;
 }
-void API_GPIO_SET_INF_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0x40000000;
 }
-void API_GPIO_SET_INF_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x00000004;
 }
-void API_GPIO_SET_INF_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x00000040;
 }
-void API_GPIO_SET_INF_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000400;
 }
-void API_GPIO_SET_INF_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x00004000;
 }
-void API_GPIO_SET_INF_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x00040000;
 }
-void API_GPIO_SET_INF_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00400000;
 }
-void API_GPIO_SET_INF_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x04000000;
 }
-void API_GPIO_SET_INF_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0x40000000;
 }
-void API_GPIO_SET_INF_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_INF_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0x44444444;
 	GPIOx->CRH&=0x00000000;
 	GPIOx->CRH|=0x44444444;
 }
-void API_GPIO_SET_INF_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_INF_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1646,103 +1563,103 @@ void API_GPIO_SET_INF_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_IPU_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x00000008;
 	GPIOx->BSRR=GPIO_Pin_0;
 }
-void API_GPIO_SET_IPU_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x00000080;
 	GPIOx->BSRR=GPIO_Pin_1;
 }
-void API_GPIO_SET_IPU_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000800;
 	GPIOx->BSRR=GPIO_Pin_2;
 }
-void API_GPIO_SET_IPU_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x00008000;
 	GPIOx->BSRR=GPIO_Pin_3;
 }
-void API_GPIO_SET_IPU_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x00080000;
 	GPIOx->BSRR=GPIO_Pin_4;
 }
-void API_GPIO_SET_IPU_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00800000;
 	GPIOx->BSRR=GPIO_Pin_5;
 }
-void API_GPIO_SET_IPU_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x08000000;
 	GPIOx->BSRR=GPIO_Pin_6;
 }
-void API_GPIO_SET_IPU_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0x80000000;
 	GPIOx->BSRR=GPIO_Pin_7;
 }
-void API_GPIO_SET_IPU_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x00000008;
 	GPIOx->BSRR=GPIO_Pin_8;
 }
-void API_GPIO_SET_IPU_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x00000080;
 	GPIOx->BSRR=GPIO_Pin_9;
 }
-void API_GPIO_SET_IPU_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000800;
 	GPIOx->BSRR=GPIO_Pin_10;
 }
-void API_GPIO_SET_IPU_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x00008000;
 	GPIOx->BSRR=GPIO_Pin_11;
 }
-void API_GPIO_SET_IPU_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x00080000;
 	GPIOx->BSRR=GPIO_Pin_12;
 }
-void API_GPIO_SET_IPU_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00800000;
 	GPIOx->BSRR=GPIO_Pin_13;
 }
-void API_GPIO_SET_IPU_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x08000000;
 	GPIOx->BSRR=GPIO_Pin_14;
 }
-void API_GPIO_SET_IPU_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0x80000000;
 	GPIOx->BSRR=GPIO_Pin_15;
 }
-void API_GPIO_SET_IPU_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPU_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0x88888888;
@@ -1750,7 +1667,7 @@ void API_GPIO_SET_IPU_REG_Pin_All(GPIO_TypeDef* GPIOx)
 	GPIOx->CRH|=0x88888888;
 	GPIOx->BSRR=GPIO_Pin_All;
 }
-void API_GPIO_SET_IPU_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_IPU_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;
@@ -1826,103 +1743,103 @@ void API_GPIO_SET_IPU_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void API_GPIO_SET_IPD_REG_Pin_0(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_0(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFFF0;
 	GPIOx->CRL|=0x00000008;
 	GPIOx->BRR=GPIO_Pin_0;
 }
-void API_GPIO_SET_IPD_REG_Pin_1(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_1(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFFF0F;
 	GPIOx->CRL|=0x00000080;
 	GPIOx->BRR=GPIO_Pin_1;
 }
-void API_GPIO_SET_IPD_REG_Pin_2(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_2(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFFF0FF;
 	GPIOx->CRL|=0x00000800;
 	GPIOx->BRR=GPIO_Pin_2;
 }
-void API_GPIO_SET_IPD_REG_Pin_3(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_3(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFFF0FFF;
 	GPIOx->CRL|=0x00008000;
 	GPIOx->BRR=GPIO_Pin_3;
 }
-void API_GPIO_SET_IPD_REG_Pin_4(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_4(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFFF0FFFF;
 	GPIOx->CRL|=0x00080000;
 	GPIOx->BRR=GPIO_Pin_4;
 }
-void API_GPIO_SET_IPD_REG_Pin_5(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_5(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xFF0FFFFF;
 	GPIOx->CRL|=0x00800000;
 	GPIOx->BRR=GPIO_Pin_5;
 }
-void API_GPIO_SET_IPD_REG_Pin_6(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_6(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0xF0FFFFFF;
 	GPIOx->CRL|=0x08000000;
 	GPIOx->BRR=GPIO_Pin_6;
 }
-void API_GPIO_SET_IPD_REG_Pin_7(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_7(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x0FFFFFFF;
 	GPIOx->CRL|=0x80000000;
 	GPIOx->BRR=GPIO_Pin_7;
 }
-void API_GPIO_SET_IPD_REG_Pin_8(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_8(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFFF0;
 	GPIOx->CRH|=0x00000008;
 	GPIOx->BRR=GPIO_Pin_8;
 }
-void API_GPIO_SET_IPD_REG_Pin_9(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_9(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFFF0F;
 	GPIOx->CRH|=0x00000080;
 	GPIOx->BRR=GPIO_Pin_9;
 }
-void API_GPIO_SET_IPD_REG_Pin_10(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_10(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFFF0FF;
 	GPIOx->CRH|=0x00000800;
 	GPIOx->BRR=GPIO_Pin_10;
 }
-void API_GPIO_SET_IPD_REG_Pin_11(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_11(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFFF0FFF;
 	GPIOx->CRH|=0x00008000;
 	GPIOx->BRR=GPIO_Pin_11;
 }
-void API_GPIO_SET_IPD_REG_Pin_12(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_12(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFFF0FFFF;
 	GPIOx->CRH|=0x00080000;
 	GPIOx->BRR=GPIO_Pin_12;
 }
-void API_GPIO_SET_IPD_REG_Pin_13(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_13(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xFF0FFFFF;
 	GPIOx->CRH|=0x00800000;
 	GPIOx->BRR=GPIO_Pin_13;
 }
-void API_GPIO_SET_IPD_REG_Pin_14(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_14(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0xF0FFFFFF;
 	GPIOx->CRH|=0x08000000;
 	GPIOx->BRR=GPIO_Pin_14;
 }
-void API_GPIO_SET_IPD_REG_Pin_15(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_15(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRH&=0x0FFFFFFF;
 	GPIOx->CRH|=0x80000000;
 	GPIOx->BRR=GPIO_Pin_15;
 }
-void API_GPIO_SET_IPD_REG_Pin_All(GPIO_TypeDef* GPIOx)
+void api_gpio_set_IPD_reg_pin_All(GPIO_TypeDef* GPIOx)
 {
 	GPIOx->CRL&=0x00000000;
 	GPIOx->CRL|=0x88888888;
@@ -1930,7 +1847,7 @@ void API_GPIO_SET_IPD_REG_Pin_All(GPIO_TypeDef* GPIOx)
 	GPIOx->CRH|=0x88888888;
 	GPIOx->BRR=GPIO_Pin_All;
 }
-void API_GPIO_SET_IPD_REG_Pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
+void api_gpio_set_IPD_reg_pin_xx(GPIO_TypeDef* GPIOx,u16 GPIO_Pin_n)
 {
 	unsigned char loop=0;
 	unsigned long cmp=GPIO_Pin_0;

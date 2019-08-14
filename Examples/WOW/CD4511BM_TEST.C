@@ -59,7 +59,7 @@ void CD4511BM_TEST_Server(void)
 	}
 	if(data>999)
 	{
-		GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
 		data=0;
 	}
 	SEG_DISPALY(Time%3,data);

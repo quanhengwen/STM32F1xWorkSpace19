@@ -108,7 +108,7 @@ void PwrTest_Configuration(void)
 		{
 			
 			SysTick_DeleymS(500);
-			GPIO_Toggle	(GPIOA,	GPIO_Pin_8);		//将GPIO相应管脚输出翻转----V20170605
+			API_GPIO_Toggle	(GPIOA,	GPIO_Pin_8);		//将GPIO相应管脚输出翻转----V20170605
 		}
 		SYSTIME	=0;
 //    /* Wait till RTC Second event occurs */
@@ -157,13 +157,9 @@ void PwrTest_Server(void)
 //			LedFlag=1;
 //		}
 		DeleyuS(1000);
-		GPIO_Toggle	(GPIOB,	GPIO_Pin_14);		//将GPIO相应管脚输出翻转----V20170605
-		GPIO_Toggle	(GPIOB,	GPIO_Pin_15);		//将GPIO相应管脚输出翻转----V20170605
-//		RCC_Configuration_HSE();			//配置系统时钟--使用外部高速晶振
-//			SysTick->CTRL	= SysTick_CTRL_CLKSOURCE_Msk |SysTick_CTRL_TICKINT_Msk	|	SysTick_CTRL_ENABLE_Msk;	
-//		SysTick_ITConfig(ENABLE);
-//		GPIO_Toggle	(GPIOB,	GPIO_Pin_12|GPIO_Pin_15);		//将GPIO相应管脚输出翻转----V20170605
-//		GPIO_Toggle	(GPIOB,	GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOB,	GPIO_Pin_14);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOB,	GPIO_Pin_15);		//将GPIO相应管脚输出翻转----V20170605
+
 	}
 	SYSTIME++;
 	if(SYSTIME>=5000)
@@ -189,9 +185,7 @@ void PwrTest_Server(void)
 
 	if(SYSTIME%500==0)
 	{
-//		GPIO_Toggle	(GPIOA,	GPIO_Pin_8);		//将GPIO相应管脚输出翻转----V20170605
-//		if(LedFlag)
-//		GPIO_Toggle	(GPIOB,	GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);		//将GPIO相应管脚输出翻转----V20170605
+
 	}
 }
 

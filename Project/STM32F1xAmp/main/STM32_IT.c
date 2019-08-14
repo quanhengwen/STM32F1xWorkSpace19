@@ -21,7 +21,7 @@
 #include "STM32_SYSTICK.H"			//系统嘀嗒时钟处理
 #include "STM32_DMA.H"					//DMA中断处理函数
 #include "STM32_SPI.H"
-#include "STM32_USART.H"
+//#include "STM32_USART.H"
 #include "STM32_EXTI.H"
 #include "STM32_TIM.H"
 
@@ -511,7 +511,7 @@ void TIM1_CC_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void TIM2_IRQHandler(void)
+__weak void TIM2_IRQHandler(void)
 {
 	
 #ifdef USE_STM3210B_EVAL
@@ -664,8 +664,7 @@ void SPI2_IRQHandler(void)
 *******************************************************************************/
 __weak void USART1_IRQHandler(void)
 {
-	#include "STM32_USART.H"
-	USART_RxServer(USART1);		//串口接收服务程序
+//	USART_RxServer(USART1);		//串口接收服务程序
 //	WOW_Server();
 }
 
@@ -679,7 +678,7 @@ __weak void USART1_IRQHandler(void)
 __weak void USART2_IRQHandler(void)
 {
 //	USART_RX_Server();
-	WOW_Server();
+//	WOW_Server();
 }
 
 /*******************************************************************************
@@ -689,9 +688,9 @@ __weak void USART2_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void USART3_IRQHandler(void)
+__weak void USART3_IRQHandler(void)
 {
-	WOW_Server();
+//	WOW_Server();
 }
 
 /*******************************************************************************
@@ -837,9 +836,9 @@ void SPI3_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void UART4_IRQHandler(void)
+__weak void UART4_IRQHandler(void)
 {
-	WOW_Server();
+	//WOW_Server();
 }
 
 /*******************************************************************************
@@ -849,9 +848,9 @@ void UART4_IRQHandler(void)
 * Output         : None
 * Return         : None
 *******************************************************************************/
-void UART5_IRQHandler(void)
+__weak void UART5_IRQHandler(void)
 {
-	WOW_Server();
+	//WOW_Server();
 }
 
 /*******************************************************************************

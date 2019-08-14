@@ -59,7 +59,7 @@ void STM32F103C8T6_Configuration(void)
 //	PD003VG_USART_Conf();
 	
 //	RS485_Bus_TXEN;		//rs485总线接收使能
-//	api_usart_dma_send(USART3,(u32*)txBuffer_PD,BufferSize);			//自定义printf串口DMA发送程序
+//	api_usart_send(USART3,(u32*)txBuffer_PD,BufferSize);			//自定义printf串口DMA发送程序
 
 }
 /*******************************************************************************
@@ -79,10 +79,10 @@ void STM32F103C8T6_Server(void)
 	if(SYSTime	==	0)
 	{
 		//激光输出
-		GPIO_Toggle	(GPIOA,	GPIO_Pin_7);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOA,	GPIO_Pin_7);		//将GPIO相应管脚输出翻转----V20170605
 		
 		//运行灯
-		GPIO_Toggle	(GPIOC,	GPIO_Pin_13);		//将GPIO相应管脚输出翻转----V20170605
+		API_GPIO_Toggle	(GPIOC,	GPIO_Pin_13);		//将GPIO相应管脚输出翻转----V20170605
 	}
 
 }

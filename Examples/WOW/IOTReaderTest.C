@@ -96,9 +96,9 @@ void IOTReaderTest_Server(void)
 //    }
     //TxdLen  = IOT5302WSetBaudrate(TxdBuffer);    //设置读卡器波特率
     TxdLen  = IOT5302WGetSNR(TxdBuffer);    //寻卡模式，获取UID
-    RxdLen=api_rs485_dma_send(&RS485RD,TxdBuffer,TxdLen);
+    RxdLen=api_rs485_send(&RS485RD,TxdBuffer,TxdLen);
   }
-	RxdLen=api_rs485_dma_receive(&RS485RD,RxdBuffer);
+	RxdLen=api_rs485_receive(&RS485RD,RxdBuffer);
 }
 /*******************************************************************************
 *函数名			:	function

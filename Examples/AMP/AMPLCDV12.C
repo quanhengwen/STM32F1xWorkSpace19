@@ -12,7 +12,7 @@
 #include "STM32_GPIO.H"
 #include "STM32_SYSTICK.H"
 #include "STM32_WDG.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_FLASH.H"
 
 #include "LCD.H"
@@ -1237,7 +1237,7 @@ void HW_Configuration(void)
 	
 	sAmpLcd.Comm.RS485Port	=	sRS485Port;
 	
-  api_rs485_dma_configurationNR(&sAmpLcd.Comm.RS485Port,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+  api_rs485_configuration_NR(&sAmpLcd.Comm.RS485Port,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_11);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
 //  GPIO_Configuration_OPP50	(sRS485Port.RS485_CTL_PORT,sRS485Port.RS485_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
@@ -1294,7 +1294,7 @@ void SendData(void)
   unsigned  short   sendedlen = sAmpLcd.Comm.TxLen;
 	if(sendedlen)
 	{
-		sendedlen	=	api_rs485_dma_send(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Txd,sendedlen);	//RS485-DMA发送程序
+		sendedlen	=	api_rs485_send(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Txd,sendedlen);	//RS485-DMA发送程序
 		if(sAmpLcd.Comm.TxLen	==	sendedlen)
 		{
 			sAmpLcd.Comm.TxLen	=	0;
@@ -1329,7 +1329,7 @@ void ReceiveData(void)
   unsigned short RxNum  = 0;
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = api_rs485_dma_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
+  RxNum = api_rs485_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
   if(RxNum)
   {	
     ProcessData(sAmpLcd.Comm.Rxd,RxNum);              //柜消息处理

@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xWOW' 
- * Target:  'BQ26100_TEST' 
+ * Target:  'PWM_TEST' 
  */
 
 #ifndef RTE_COMPONENTS_H

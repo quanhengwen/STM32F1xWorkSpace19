@@ -53,8 +53,7 @@ void SPI_TEST_Configuration(void)
 *******************************************************************************/
 void SPI_TEST_Server(void)
 {
-  GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
-//  GPIO_Toggle	(GPIOB,	GPIO_Pin_12);		//将GPIO相应管脚输出翻转----V20170605
+  API_GPIO_Toggle	(GPIOA,	GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
 	SPI_Test();
 }
 /*******************************************************************************

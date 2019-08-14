@@ -7,7 +7,7 @@
 //#include "LCD.H"
 #include "STM32_GPIO.H"
 #include "STM32_SYSTICK.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 
 #include "GT32L32M0180.H"
 
