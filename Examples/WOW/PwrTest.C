@@ -19,7 +19,7 @@
 #include "STM32_WDG.H"
 #include "STM32_EXTI.H"
 #include "STM32_GPIO.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SYS.H"
 #include "STM32_SYSTICK.H"
 #include "STM32_CAN.H"

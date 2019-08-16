@@ -15,7 +15,7 @@
 #include	"stdlib.h"		//malloc动态申请内存空间
 
 
-#define	BufferSize 128		//DMA1缓冲大小
+#define	BufferSize 512		//DMA1缓冲大小
 
 unsigned char rxd[BufferSize]={0};
 unsigned char txd[BufferSize]={0};

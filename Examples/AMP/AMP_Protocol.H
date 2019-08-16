@@ -14,7 +14,9 @@
 #define gDatasize       		maxmsgsize	//串口最大数据包容量
 #define arrysize        		10       		//每个发送端口待发送缓存排序个数
 #define MaxSlave        		30        	//最大从机数量(柜、层、位)
-#define ampReSendTime  			100 	     	//重发间隔时间单位ms
+//#define ampReSendTime  			100 	     		//重发间隔时间单位ms--19200
+//#define ampReSendTime  			15 	     		//重发间隔时间单位ms--115200
+#define ampReSendTime  			5 	     		//重发间隔时间单位ms--256000
 #define SendNopTime     		10  	     	//发送等待时间单位ms---应答等待时间
 #define ampMaxResendCount  	5         	//最大发送次数
 #define ampUnlockOuttime   	2000      	//开锁倒计时超时时间
@@ -57,19 +59,20 @@ typedef enum _amp_comm_sts
 //-----------------------------------------------------通讯协议类
 typedef enum _ampecmd
 {
-  ampCmdNone      = (unsigned char)0x00,    	//不支持的命令/空命令
-  ampCmdAck       = (unsigned char)0x01,    	//应答类型，只带一个数据，不带地址，数据表示状态
-  ampCmdLed       = (unsigned char)0x02,    	//LED/LCD控制，带三个数据，带地址，0-表示关，1-表示开
-  ampCmdLock      = (unsigned char)0x03,    	//开锁命令，只带一个数据，带地址，0-表示读锁状态，1表示开锁
-  ampCmdCard      = (unsigned char)0x04,    	//读卡器，带地址，第一个数据为0表示读卡，为1表示写卡，后面跟随卡数据
-  ampCmdPwr       = (unsigned char)0x05,    	//层板供电控制
-  ampCmdSta       = (unsigned char)0x06,    	//状态：主要为上报状态
-  ampCmdGetOnline = (unsigned char)0x07,    	//检查在线设备，接收到后应答表示在线
-  ampCmdBKligth   = (unsigned char)0x08,    	//背光灯控制
-	ampCmdLcdData  	= (unsigned char)0x09,    	//LCD内容显示数据传输命令--物品名称及规格及显示参数
-	ampCmdLcdConf  	= (unsigned char)0x0A,			//LCD配置命令，修改背景色命令,字体色,字体大小
-	ampCmdLcdPwr  	= (unsigned char)0x0B,			//LCD电源供电控制指令
-	ampCmdTimeSync	=	(unsigned char)0x0C,			//LCD显示同步时间
+  ampCmdNone      	= (unsigned char)0x00,    	//不支持的命令/空命令
+  ampCmdAck       	= (unsigned char)0x01,    	//应答类型，只带一个数据，不带地址，数据表示状态
+  ampCmdLed       	= (unsigned char)0x02,    	//LED/LCD控制，带三个数据，带地址，0-表示关，1-表示开
+  ampCmdLock      	= (unsigned char)0x03,    	//开锁命令，只带一个数据，带地址，0-表示读锁状态，1表示开锁
+  ampCmdCard      	= (unsigned char)0x04,    	//读卡器，带地址，第一个数据为0表示读卡，为1表示写卡，后面跟随卡数据
+  ampCmdPwr       	= (unsigned char)0x05,    	//层板供电控制
+  ampCmdSta       	= (unsigned char)0x06,    	//状态：主要为上报状态
+  ampCmdGetOnline 	= (unsigned char)0x07,    	//检查在线设备，接收到后应答表示在线
+  ampCmdBKligth   	= (unsigned char)0x08,    	//背光灯控制
+	ampCmdLcdData  		= (unsigned char)0x09,    	//LCD内容显示数据传输命令--物品名称及规格及显示参数
+	ampCmdLcdConf  		= (unsigned char)0x0A,			//LCD配置命令，修改背景色命令,字体色,字体大小
+	ampCmdLcdPwr  		= (unsigned char)0x0B,			//LCD电源供电控制指令
+	ampCmdTimeSync		=	(unsigned char)0x0C,			//LCD显示同步时间
+	ampCmdCheckSleve	=	(unsigned char)0x3F,			//主机查询从机数据命令
 }ampecmddef;
 typedef enum _ampedir
 {
@@ -81,7 +84,7 @@ typedef union _ampcmdv2
 	unsigned char cmd;
 	struct
 	{
-		unsigned char cmd:6;
+		unsigned char cmd	:6;
 		unsigned char rv	:1;		//备用
 		unsigned char dir	:1;		//方向：0向下级发或者应答，1向上级发或者应答
 	}cmd_bit;	

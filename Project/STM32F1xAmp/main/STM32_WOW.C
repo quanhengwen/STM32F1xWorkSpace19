@@ -344,6 +344,16 @@ void WOW_Configuration(void)
 	API_AMP01V14A1_Configuration();
 #endif
 
+//*********************************AMP01V14A2*********************************//
+#ifdef AMP01V14A2
+	API_AMP01V14A2_Configuration();
+#endif
+
+//*********************************NE01V0A1*********************************//
+#ifdef NE01V0A1
+	API_NE01V0A1_Configuration();
+#endif
+
 
 
 }
@@ -674,6 +684,15 @@ void WOW_Server(void)
 	API_AMP01V14A1_Server();
 #endif
 
+//*********************************AMP01V14A2*********************************//
+#ifdef AMP01V14A2
+	API_AMP01V14A2_Server();
+#endif
+
+//*********************************NE01V0A1*********************************//
+#ifdef NE01V0A1
+	API_NE01V0A1_Server();
+#endif
 
 
 //IWDG_Feed();								//∂¿¡¢ø¥√≈π∑Œππ∑

@@ -7,7 +7,6 @@
 #include "STM32_DMA.H"
 #include "STM32_TIM.H"
 //#include "STM32_WDG.H"
-#include "STM32_PWM.H"
 #include "STM32_SPI.H"
 
 //#include "usb_core.h"			//USB总线数据处理的核心文件

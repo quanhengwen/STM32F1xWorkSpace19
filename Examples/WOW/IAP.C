@@ -30,7 +30,7 @@ SPI_FLASH使用功能测试
 
 
 #include "IAP.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SYS.H"
 #include "STM32_USART.H"
 #include "STM32_SYSTICK.H"

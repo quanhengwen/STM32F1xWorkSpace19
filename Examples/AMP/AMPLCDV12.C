@@ -130,7 +130,7 @@ static void SYSLED(void)
 	if(time++>100)
 	{
 		time=	0;
-		GPIO_Toggle	(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
+		api_gpio_toggle(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
 	}
 	
 }

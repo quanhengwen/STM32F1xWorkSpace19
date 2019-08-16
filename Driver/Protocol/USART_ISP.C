@@ -55,7 +55,7 @@ Page：
 *******************************************************************************/
 void Usart_ISP_Cof(ISP_Conf_TypeDef *ISP_Conf)
 {
-	api_usart_dma_configuration_even(ISP_Conf->USARTx,115200,ISP_BufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_even(ISP_Conf->USARTx,115200,ISP_BufferSize);	//USART_DMA配置--查询方式，不开中断
 	GPIO_Configuration_OPP50	(ISP_Conf->RESET_CTL_PORT,ISP_Conf->RESET_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_Configuration_OPP50	(ISP_Conf->BOOT0_CTL_PORT,ISP_Conf->BOOT0_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	Usart_ISP_Reset(ISP_Conf);																																								//重置编程器---恢复所有参数为默认值
@@ -1139,7 +1139,7 @@ void Usart_ISP_Reset(ISP_Conf_TypeDef *ISP_Conf)	//重置编程器---恢复所有参数为默
 *******************************************************************************/
 void BSP_Configuration(BSP_Conf_TypeDef *BSP_Conf)		//配置函数
 {
-	api_usart_dma_configuration_even(BSP_Conf->BSP_Port.USARTx,115200,ISP_BufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_even(BSP_Conf->BSP_Port.USARTx,115200,ISP_BufferSize);	//USART_DMA配置--查询方式，不开中断
 	GPIO_Configuration_OPP50	(BSP_Conf->BSP_Port.RESET_CTL_PORT,BSP_Conf->BSP_Port.RESET_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_Configuration_OPP50	(BSP_Conf->BSP_Port.BOOT0_CTL_PORT,BSP_Conf->BSP_Port.BOOT0_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	BSP_Reset(BSP_Conf);																																								//重置编程器---恢复所有参数为默认值

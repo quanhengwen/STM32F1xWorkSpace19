@@ -3,7 +3,7 @@
 
 #include "stm32f10x_type.h"
 //#include "STM32_SPI.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 
 #include "SPI_FLASH.H"
 

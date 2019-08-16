@@ -47,7 +47,7 @@ void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W)
 *******************************************************************************/
 void api_iot5302w_server(void)
 {
-	static unsigned short time=0;
+	//static unsigned short time=0;
 	//先处理数据，再执行初始化，更改初始化参数后发现数据验证已通过
   //==================================检查参数
   if(0==IOT5302W.Conf.IOT5302WPort.USARTx)  //参数错误--未配置串口
@@ -157,7 +157,7 @@ unsigned short api_get_iot5302w_uid(unsigned char* Buffer)
 *******************************************************************************/
 static void iot5302w_initialize(void)
 {  
-	unsigned char TxdLen  = 0;
+	//unsigned char TxdLen  = 0;
 	//---------------------读卡器已初始化，则退出
   if(0!=IOT5302W.Data.Initialized)  //初始化成功
   {

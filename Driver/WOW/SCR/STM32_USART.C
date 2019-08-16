@@ -67,10 +67,12 @@
 
 /* Private function prototypes -----------------------------------------------*/
 
-unsigned long u2txcount=0;
-unsigned long u2rxcount=0;
+//unsigned long u2txcount=0;
+//unsigned long u2rxcount=0;
 
 usart_def	usart;
+
+
 
 //==============================================================================API-receive
 /*******************************************************************************
@@ -82,10 +84,10 @@ usart_def	usart;
 unsigned short api_usart_receive(USART_TypeDef* USARTx,u8 *RevBuffer)
 {
 	unsigned short len=0;
-	if(get_usart_rx_idle(USARTx))
+	if(usart_received==get_usart_rx_status(USARTx))
 	{		
 		len	= get_usart_rx_dma_buffer(USARTx,RevBuffer);
-		del_usart_rx_idle(USARTx);
+		set_usart_rx_status(USARTx,usart_idle);
 	}
 	return len;
 }
@@ -98,23 +100,11 @@ unsigned short api_usart_receive(USART_TypeDef* USARTx,u8 *RevBuffer)
 *******************************************************************************/
 unsigned short api_rs485_receive(RS485Def *pRS485,u8 *RevBuffer)	//¥Æø⁄ø’œ–ƒ£ Ω∂¡¥Æø⁄Ω” ’ª∫≥Â«¯£¨»Áπ˚”– ˝æ›£¨Ω´ ˝æ›øΩ±¥µΩRevBuffer,≤¢∑µªÿΩ” ’µΩµƒ ˝æ›∏ˆ ˝£¨»ª∫Û÷ÿ–¬Ω´Ω” ’ª∫≥Â«¯µÿ÷∑÷∏œÚRxdBuffer£¨
 {
-	USART_TypeDef* USARTx	=	pRS485->USARTx;
-//	if(get_usart_tx_idle(USARTx))
-//	{
-//		set_rs485_tx(pRS485,DISABLE);
-//		set_rs485_rx(pRS485,ENABLE);
-//				
-//	}
-	if(get_usart_rx_idle(USARTx))
-	{
-		unsigned short len=0;
-		len	= get_usart_rx_dma_buffer(USARTx,RevBuffer);
-		return len;
-	}
-	return 0;
+	unsigned short len=0;
+	len	= api_usart_receive(pRS485->USARTx,RevBuffer);	
+	return len;
 }
 //-----------------------------------------------------------------------------
-
 
 //==============================================================================API-send
 /*******************************************************************************
@@ -126,14 +116,15 @@ unsigned short api_rs485_receive(RS485Def *pRS485,u8 *RevBuffer)	//¥Æø⁄ø’œ–ƒ£ Ω∂
 unsigned short api_usart_send(USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize)		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
 {
 	unsigned short SendLen=0;
-	if(0==get_usart_tx_idle(USARTx))		//¥Æø⁄◊¥Ã¨ºÏ≤È
+	if(usart_idle==get_usart_tx_status(USARTx))		//¥Æø⁄◊¥Ã¨ºÏ≤È
 	{
 		SendLen	=	set_usart_tx_dma_buffer(USARTx,tx_buffer,BufferSize);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
 		if(SendLen)
 		{
-			set_usart_tx_idle(USARTx);
+			set_usart_tx_status(USARTx,usart_busy);
 		}
-	}	
+	}
+	return SendLen;
 }
 //-----------------------------------------------------------------------------
 
@@ -146,17 +137,34 @@ unsigned short api_usart_send(USART_TypeDef* USARTx,u8 *tx_buffer,u16 BufferSize
 unsigned short api_rs485_send(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize)		//RS485-DMA∑¢ÀÕ≥Ã–Ú
 {
 	//-------------Ω” ’ø’œ–∫Õ∑¢ÀÕø’œ–
-  unsigned short sendedlen  =0;
-	if(get_usart_tx_idle(pRS485->USARTx)&&get_usart_rx_idle(pRS485->USARTx))
+  unsigned short SendLen  =0;
+	if((usart_idle==get_usart_tx_status(pRS485->USARTx))&&(usart_idle==get_usart_rx_status(pRS485->USARTx)))
 	{
-		set_rs485_tx(pRS485,ENABLE);
-		set_rs485_rx(pRS485,DISABLE);
-		sendedlen = set_usart_tx_dma_buffer(pRS485->USARTx,(u8*)tx_buffer,BufferSize);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
+		set_rs485_ctl_tx(pRS485,ENABLE);
+		SendLen = set_usart_tx_dma_buffer(pRS485->USARTx,(u8*)tx_buffer,BufferSize);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
+		if(SendLen)
+		{
+			set_usart_tx_status(pRS485->USARTx,usart_busy);
+		}
 	}
-	return sendedlen;
+	return SendLen;
 }
 //-----------------------------------------------------------------------------
-
+/*******************************************************************************
+*∫Ø ˝√˚			:	api_rs485_send_force
+*π¶ƒ‹√Ë ˆ		:	RS485-«ø÷∆∑¢ÀÕ≥Ã–Ú--≤ª◊ˆ◊‹œﬂ√¶≈–∂œ
+* ‰»Î				: 
+*∑µªÿ÷µ			:	»Áπ˚ ˝æ›“—æ≠¥´»ÎµΩDMA£¨∑µªÿBuffer¥Û–°£¨∑Ò‘Ú∑µªÿ0£®∑¢ÀÕ∆˜√¶£©
+*******************************************************************************/
+unsigned short api_rs485_send_force(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize)		//RS485-«ø÷∆∑¢ÀÕ≥Ã–Ú
+{
+	//-------------Ω” ’ø’œ–∫Õ∑¢ÀÕø’œ–
+	set_rs485_ctl_tx(pRS485,ENABLE);
+	set_usart_tx_dma_buffer(pRS485->USARTx,(u8*)tx_buffer,BufferSize);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
+	set_usart_tx_status(pRS485->USARTx,usart_busy);
+	return BufferSize;
+}
+//-----------------------------------------------------------------------------
 
 //==============================================================================API-printf
 /*******************************************************************************
@@ -190,7 +198,7 @@ unsigned short api_usart_printf(USART_TypeDef* USARTx,const char *format,...)
 	//7)**********Ω· ¯ø…±‰≤Œ ˝µƒªÒ»°
 	va_end(args); 
 	//8)**********Ω´µ»∑¢ÀÕª∫≥Â«¯¥Û–°£® ˝æ›∏ˆ ˝£©º∞ª∫≥Â«¯µÿ÷∑∑¢∏¯DMAø™∆Ù∑¢ÀÕ	
-	if(0==get_usart_tx_idle(USARTx))		//¥Æø⁄∑¢ÀÕ «∑Òø’œ–
+	if(usart_idle==get_usart_tx_status(USARTx))		//¥Æø⁄∑¢ÀÕ «∑Òø’œ–
 		return 0;
 	return set_usart_tx_dma_buffer(USARTx,(u8*)format_buffer,str_len);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
 }
@@ -221,17 +229,12 @@ unsigned short api_rs485_printf(RS485Def *pRS485,const char *format,...)
 	//7)**********Ω· ¯ø…±‰≤Œ ˝µƒªÒ»°
 	va_end(args); 
 	//8)**********Ω´µ»∑¢ÀÕª∫≥Â«¯¥Û–°£® ˝æ›∏ˆ ˝£©º∞ª∫≥Â«¯µÿ÷∑∑¢∏¯DMAø™∆Ù∑¢ÀÕ
-	//8)**********DMA∑¢ÀÕÕÍ≥…∫Û◊¢“‚”¶∏√ Õ∑≈ª∫≥Â«¯£∫free(USART_BUFFER);
-	if(get_usart_rx_idle(pRS485->USARTx))
-	{
-		set_rs485_tx(pRS485,ENABLE);
-		set_rs485_rx(pRS485,DISABLE);
-		return set_usart_tx_dma_buffer(pRS485->USARTx,(u8*)format_buffer,str_len);		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
-	}
-	else
-		return 0;
+	//8)**********DMA∑¢ÀÕÕÍ≥…∫Û◊¢“‚”¶∏√ Õ∑≈ª∫≥Â«¯
+		return api_rs485_send(pRS485,(u8*)format_buffer,str_len);
 }
 //-----------------------------------------------------------------------------
+
+
 
 
 
@@ -337,8 +340,7 @@ void api_rs485_configuration_NR(RS485Def *pRS485,u32 USART_BaudRate,unsigned sho
 	if(pRS485->RS485_RxEn_PORT)
 		GPIO_Configuration_OPP50	(pRS485->RS485_RxEn_PORT,pRS485->RS485_RxEn_Pin);			//Ω´GPIOœ‡”¶π‹Ω≈≈‰÷√Œ™APP(∏¥”√Õ∆ÕÏ) ‰≥ˆƒ£ Ω£¨◊Ó¥ÛÀŸ∂»50MHz----V20170605	
 	
-	set_rs485_tx(pRS485,DISABLE);
-	set_rs485_rx(pRS485,ENABLE);
+	set_rs485_ctl_tx(pRS485,DISABLE);
 	api_usart_configuration_NR(pRS485->USARTx,USART_BaudRate,BufferSize);	//USART≈‰÷√
 }
 //-----------------------------------------------------------------------------
@@ -361,12 +363,73 @@ void api_rs485_configuration_NRRemap(RS485Def *pRS485,u32 USART_BaudRate,unsigne
 	if(pRS485->RS485_RxEn_PORT)
 		GPIO_Configuration_OPP50	(pRS485->RS485_CTL_PORT,pRS485->RS485_RxEn_Pin);			//Ω´GPIOœ‡”¶π‹Ω≈≈‰÷√Œ™APP(∏¥”√Õ∆ÕÏ) ‰≥ˆƒ£ Ω£¨◊Ó¥ÛÀŸ∂»50MHz----V20170605	
 	
-	set_rs485_tx(pRS485,DISABLE);
-	set_rs485_rx(pRS485,ENABLE);
+	set_rs485_ctl_tx(pRS485,DISABLE);
 	
 	api_usart_configuration_NRRemap(pRS485->USARTx,USART_BaudRate,BufferSize);	//USART_DMA≈‰÷√--ÕÍ»´”≥…‰£¨≤ªø™÷–∂œ
 }
 //-----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+//======================================
+//==============================================================================static--RS485 ’∑¢øÿ÷∆
+/*******************************************************************************
+*∫Ø ˝√˚			:	function
+*π¶ƒ‹√Ë ˆ		:	function
+* ‰»Î				: 
+*∑µªÿ÷µ			:	Œﬁ
+*–ﬁ∏ƒ ±º‰		:	Œﬁ
+*–ﬁ∏ƒÀµ√˜		:	Œﬁ
+*◊¢ Õ				:	wegam@sina.com
+*******************************************************************************/
+static void set_rs485_ctl_tx(RS485Def *pRS485,FunctionalState NewState)
+{
+	//----------------txenΩ≈∏ﬂŒ™∑¢ÀÕ
+	//----------------rxenΩ≈µÕŒ™Ω” ’
+	
+	if (NewState != DISABLE)
+	{	
+		if(pRS485->RS485_CTL_PORT)
+		{
+			pRS485->RS485_CTL_PORT->BSRR		= pRS485->RS485_CTL_Pin;
+		}
+		if(pRS485->RS485_TxEn_PORT)
+		{
+			pRS485->RS485_TxEn_PORT->BSRR		= pRS485->RS485_TxEn_Pin;
+		}		
+		if(pRS485->RS485_RxEn_PORT)		//πÿ±’∂¡
+		{
+			pRS485->RS485_RxEn_PORT->BSRR		= pRS485->RS485_RxEn_Pin;
+		}		
+	}
+	else
+	{	
+		if(pRS485->RS485_RxEn_PORT)			//ø™∆Ù∂¡
+		{
+			pRS485->RS485_RxEn_PORT->BRR		= pRS485->RS485_RxEn_Pin;
+		}
+		if(pRS485->RS485_CTL_PORT)
+		{
+			pRS485->RS485_CTL_PORT->BRR		= pRS485->RS485_CTL_Pin;
+		}		
+		if(pRS485->RS485_TxEn_PORT)
+		{
+			pRS485->RS485_TxEn_PORT->BRR		= pRS485->RS485_TxEn_Pin;
+		}		
+				
+	}
+}
+//-----------------------------------------------------------------------------
+
+
+
+
 
 
 
@@ -414,7 +477,7 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 		return 0;
 //	if(0==get_usart_rx_idle(USARTx))
 //		return 0;
-//	del_usart_rx_idle(USARTx);
+
 //	if(USART_GetFlagStatus(USARTx,USART_FLAG_IDLE))
 //	{	
 		uart_rxd	=	get_usart_rx_data_addr(USARTx);
@@ -437,12 +500,19 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 		USARTx->SR = (u16)~USART_FLAG_IDLE;									//USART_ClearFlag(USARTx,USART_FLAG_IDLE);
 		
 		set_rx_retry_count(USARTx,0);
-		set_usart_rx_capacity_backup(USARTx,dma_size);			//ª∫¥Ê»›¡ø
+		set_usart_rx_free_buffer_size(USARTx,dma_size);			//ª∫¥Ê»›¡ø
 		return length;			//∑µªÿΩ” ’µΩµƒ ˝æ›∏ˆ ˝
 //	}
 
 }
 //-----------------------------------------------------------------------------
+
+
+
+
+
+
+
 
 
 //==============================================================================static
@@ -452,7 +522,7 @@ static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,u8 *RevBuffe
 * ‰»Î				: 
 *∑µªÿ÷µ			:	»Áπ˚ ˝æ›“—æ≠¥´»ÎµΩDMA£¨∑µªÿBuffer¥Û–°£¨∑Ò‘Ú∑µªÿ0£®∑¢ÀÕ∆˜√¶£©
 *******************************************************************************/
-static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type)
+static void set_usart_type(USART_TypeDef* USARTx,unsigned char type)
 {
 	//¥Æø⁄¿‡–Õ0---USART,1-RS485
 	switch(*(u32*)&USARTx)
@@ -550,6 +620,10 @@ static RS485Def* get_rs485_addr(USART_TypeDef* USARTx)		//¥Æø⁄DMA∑¢ÀÕ≥Ã–Ú
 	return pRS485;
 }
 //-----------------------------------------------------------------------------
+
+
+
+
 
 
 /*******************************************************************************
@@ -685,19 +759,19 @@ static unsigned short get_usart_dma_buffer_size(USART_TypeDef* USARTx)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-static void set_usart_rx_capacity_backup(USART_TypeDef* USARTx,unsigned short size)
+static void set_usart_rx_free_buffer_size(USART_TypeDef* USARTx,unsigned short size)
 {
 	switch(*(u32*)&USARTx)
 	{
-		case 	USART1_BASE:usart.ch_usart1.dma_size_free	=	size;
+		case 	USART1_BASE:usart.ch_usart1.dma_size_freeRx	=	size;
 					break;
-		case 	USART2_BASE:usart.ch_usart2.dma_size_free	=	size;
+		case 	USART2_BASE:usart.ch_usart2.dma_size_freeRx	=	size;
 					break;
-		case 	USART3_BASE:usart.ch_usart3.dma_size_free	=	size;
+		case 	USART3_BASE:usart.ch_usart3.dma_size_freeRx	=	size;
 					break;
-		case 	UART4_BASE:	usart.ch_uart4.dma_size_free	=	size;
+		case 	UART4_BASE:	usart.ch_uart4.dma_size_freeRx	=	size;
 					break;
-		case 	UART5_BASE:	usart.ch_uart5.dma_size_free	=	size;
+		case 	UART5_BASE:	usart.ch_uart5.dma_size_freeRx	=	size;
 					break;
 		default :break;
 	}
@@ -712,20 +786,76 @@ static void set_usart_rx_capacity_backup(USART_TypeDef* USARTx,unsigned short si
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-static unsigned short get_usart_rx_capacity_backup(USART_TypeDef* USARTx)
+static void set_usart_tx_free_buffer_size(USART_TypeDef* USARTx,unsigned short size)
+{
+	switch(*(u32*)&USARTx)
+	{
+		case 	USART1_BASE:usart.ch_usart1.dma_size_freeTx	=	size;
+					break;
+		case 	USART2_BASE:usart.ch_usart2.dma_size_freeTx	=	size;
+					break;
+		case 	USART3_BASE:usart.ch_usart3.dma_size_freeTx	=	size;
+					break;
+		case 	UART4_BASE:	usart.ch_uart4.dma_size_freeTx	=	size;
+					break;
+		case 	UART5_BASE:	usart.ch_uart5.dma_size_freeTx	=	size;
+					break;
+		default :break;
+	}
+}
+//-----------------------------------------------------------------------------
+/*******************************************************************************
+*∫Ø ˝√˚			:	function
+*π¶ƒ‹√Ë ˆ		:	function
+* ‰»Î				: 
+*∑µªÿ÷µ			:	Œﬁ
+*–ﬁ∏ƒ ±º‰		:	Œﬁ
+*–ﬁ∏ƒÀµ√˜		:	Œﬁ
+*◊¢ Õ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short get_usart_rx_free_buffer_size(USART_TypeDef* USARTx)
 {
 	unsigned short size=0;
 	switch(*(u32*)&USARTx)
 	{
-		case 	USART1_BASE:size	=	usart.ch_usart1.dma_size_free;
+		case 	USART1_BASE:size	=	usart.ch_usart1.dma_size_freeRx;
 					break;
-		case 	USART2_BASE:size	=	usart.ch_usart2.dma_size_free;
+		case 	USART2_BASE:size	=	usart.ch_usart2.dma_size_freeRx;
 					break;
-		case 	USART3_BASE:size	=	usart.ch_usart3.dma_size_free;
+		case 	USART3_BASE:size	=	usart.ch_usart3.dma_size_freeRx;
 					break;
-		case 	UART4_BASE:	size	=	usart.ch_uart4.dma_size_free;
+		case 	UART4_BASE:	size	=	usart.ch_uart4.dma_size_freeRx;
 					break;
-		case 	UART5_BASE:	size	=	usart.ch_uart5.dma_size_free;
+		case 	UART5_BASE:	size	=	usart.ch_uart5.dma_size_freeRx;
+					break;
+		default :break;
+	}
+	return size;
+}
+//-----------------------------------------------------------------------------
+/*******************************************************************************
+*∫Ø ˝√˚			:	function
+*π¶ƒ‹√Ë ˆ		:	function
+* ‰»Î				: 
+*∑µªÿ÷µ			:	Œﬁ
+*–ﬁ∏ƒ ±º‰		:	Œﬁ
+*–ﬁ∏ƒÀµ√˜		:	Œﬁ
+*◊¢ Õ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short get_usart_tx_free_buffer_size(USART_TypeDef* USARTx)
+{
+	unsigned short size=0;
+	switch(*(u32*)&USARTx)
+	{
+		case 	USART1_BASE:size	=	usart.ch_usart1.dma_size_freeTx;
+					break;
+		case 	USART2_BASE:size	=	usart.ch_usart2.dma_size_freeTx;
+					break;
+		case 	USART3_BASE:size	=	usart.ch_usart3.dma_size_freeTx;
+					break;
+		case 	UART4_BASE:	size	=	usart.ch_uart4.dma_size_freeTx;
+					break;
+		case 	UART5_BASE:	size	=	usart.ch_uart5.dma_size_freeTx;
 					break;
 		default :break;
 	}
@@ -734,62 +864,6 @@ static unsigned short get_usart_rx_capacity_backup(USART_TypeDef* USARTx)
 //-----------------------------------------------------------------------------
 
 
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	Œﬁ
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static void set_tx_retry_count(USART_TypeDef* USARTx,unsigned short count)
-{
-	switch(*(u32*)&USARTx)
-	{
-		case 	USART1_BASE:	usart.ch_usart1.tx_retry	=	count;
-					break;
-		case 	USART2_BASE:	usart.ch_usart2.tx_retry	=	count;
-					break;
-		case 	USART3_BASE:	usart.ch_usart3.tx_retry	=	count;
-					break;
-		case 	UART4_BASE:		usart.ch_uart4.tx_retry	=	count;
-					break;
-		case 	UART5_BASE:		usart.ch_uart5.tx_retry	=	count;
-					break;
-		default :break;
-	}
-}
-//-----------------------------------------------------------------------------
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	Œﬁ
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static unsigned short get_tx_retry_count(USART_TypeDef* USARTx)
-{
-	unsigned char count = 0;
-	switch(*(u32*)&USARTx)
-	{
-		case 	USART1_BASE:	count	=	usart.ch_usart1.tx_retry;
-					break;
-		case 	USART2_BASE:	count	=	usart.ch_usart2.tx_retry;
-					break;
-		case 	USART3_BASE:	count	=	usart.ch_usart3.tx_retry;
-					break;
-		case 	UART4_BASE:		count	=	usart.ch_uart4.tx_retry;
-					break;
-		case 	UART5_BASE:		count	=	usart.ch_uart5.tx_retry;
-					break;
-		default :break;
-	}
-	return count;
-}
-//-----------------------------------------------------------------------------
 /*******************************************************************************
 *∫Ø ˝√˚			:	function
 *π¶ƒ‹√Ë ˆ		:	function
@@ -826,6 +900,33 @@ static void set_rx_retry_count(USART_TypeDef* USARTx,unsigned short count)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
+static void set_tx_retry_count(USART_TypeDef* USARTx,unsigned short count)
+{
+	switch(*(u32*)&USARTx)
+	{
+		case 	USART1_BASE:	usart.ch_usart1.tx_retry	=	count;
+					break;
+		case 	USART2_BASE:	usart.ch_usart2.tx_retry	=	count;
+					break;
+		case 	USART3_BASE:	usart.ch_usart3.tx_retry	=	count;
+					break;
+		case 	UART4_BASE:		usart.ch_uart4.tx_retry	=	count;
+					break;
+		case 	UART5_BASE:		usart.ch_uart5.tx_retry	=	count;
+					break;
+		default :break;
+	}
+}
+//-----------------------------------------------------------------------------
+/*******************************************************************************
+*∫Ø ˝√˚			:	function
+*π¶ƒ‹√Ë ˆ		:	function
+* ‰»Î				: 
+*∑µªÿ÷µ			:	Œﬁ
+*–ﬁ∏ƒ ±º‰		:	Œﬁ
+*–ﬁ∏ƒÀµ√˜		:	Œﬁ
+*◊¢ Õ				:	wegam@sina.com
+*******************************************************************************/
 static unsigned short get_rx_retry_count(USART_TypeDef* USARTx)
 {
 	unsigned char count = 0;
@@ -846,6 +947,37 @@ static unsigned short get_rx_retry_count(USART_TypeDef* USARTx)
 	return count;
 }
 //------------------------------------------------------------------------------
+/*******************************************************************************
+*∫Ø ˝√˚			:	function
+*π¶ƒ‹√Ë ˆ		:	function
+* ‰»Î				: 
+*∑µªÿ÷µ			:	Œﬁ
+*–ﬁ∏ƒ ±º‰		:	Œﬁ
+*–ﬁ∏ƒÀµ√˜		:	Œﬁ
+*◊¢ Õ				:	wegam@sina.com
+*******************************************************************************/
+static unsigned short get_tx_retry_count(USART_TypeDef* USARTx)
+{
+	unsigned char count = 0;
+	switch(*(u32*)&USARTx)
+	{
+		case 	USART1_BASE:	count	=	usart.ch_usart1.tx_retry;
+					break;
+		case 	USART2_BASE:	count	=	usart.ch_usart2.tx_retry;
+					break;
+		case 	USART3_BASE:	count	=	usart.ch_usart3.tx_retry;
+					break;
+		case 	UART4_BASE:		count	=	usart.ch_uart4.tx_retry;
+					break;
+		case 	UART5_BASE:		count	=	usart.ch_uart5.tx_retry;
+					break;
+		default :break;
+	}
+	return count;
+}
+//-----------------------------------------------------------------------------
+
+
 //==============================================================================static-status
 /*******************************************************************************
 *∫Ø ˝√˚			:	function
@@ -856,20 +988,20 @@ static unsigned short get_rx_retry_count(USART_TypeDef* USARTx)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-static void set_usart_rx_idle(USART_TypeDef* USARTx)
+static void set_usart_rx_status(USART_TypeDef* USARTx,unsigned char status)
 {	
 	//Ω” ’ø’œ–±Í÷æ	:0---ø’œ–,1---Ω” ’ÕÍ≥…£¨2---’˝‘⁄Ω” ’
 	switch(*(u32*)&USARTx)
 	{
-		case 	USART1_BASE:usart.ch_usart1.flag.rx_idle	=	1;
+		case 	USART1_BASE:usart.ch_usart1.flag.rx_idle	=	status;
 					break;
-		case 	USART2_BASE:usart.ch_usart2.flag.rx_idle	=	1;
+		case 	USART2_BASE:usart.ch_usart2.flag.rx_idle	=	status;
 					break;
-		case 	USART3_BASE:usart.ch_usart3.flag.rx_idle	=	1;
+		case 	USART3_BASE:usart.ch_usart3.flag.rx_idle	=	status;
 					break;
-		case 	UART4_BASE:	usart.ch_uart4.flag.rx_idle	=	1;
+		case 	UART4_BASE:	usart.ch_uart4.flag.rx_idle	=	status;
 					break;
-		case 	UART5_BASE:	usart.ch_uart5.flag.rx_idle	=	1;
+		case 	UART5_BASE:	usart.ch_uart5.flag.rx_idle	=	status;
 					break;
 		default :break;
 	}
@@ -884,25 +1016,26 @@ static void set_usart_rx_idle(USART_TypeDef* USARTx)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-static void set_usart_tx_idle(USART_TypeDef* USARTx)
+static void set_usart_tx_status(USART_TypeDef* USARTx,unsigned char status)
 {
 	//ø’œ–±Í÷æ0---ø’œ–,1---√¶£¨‘⁄∑¢ÀÕ÷–
 	switch(*(u32*)&USARTx)
 	{
-		case 	USART1_BASE:usart.ch_usart1.flag.tx_idle	=	1;
+		case 	USART1_BASE:usart.ch_usart1.flag.tx_idle	=	status;
 					break;
-		case 	USART2_BASE:usart.ch_usart2.flag.tx_idle	=	1;
+		case 	USART2_BASE:usart.ch_usart2.flag.tx_idle	=	status;
 					break;
-		case 	USART3_BASE:usart.ch_usart3.flag.tx_idle	=	1;
+		case 	USART3_BASE:usart.ch_usart3.flag.tx_idle	=	status;
 					break;
-		case 	UART4_BASE:	usart.ch_uart4.flag.tx_idle	=	1;
+		case 	UART4_BASE:	usart.ch_uart4.flag.tx_idle	=	status;
 					break;
-		case 	UART5_BASE:	usart.ch_uart5.flag.tx_idle	=	1;
+		case 	UART5_BASE:	usart.ch_uart5.flag.tx_idle	=	status;
 					break;
 		default :break;
 	}
 }
 //-----------------------------------------------------------------------------
+
 /*******************************************************************************
 *∫Ø ˝√˚			:	function
 *π¶ƒ‹√Ë ˆ		:	function
@@ -912,72 +1045,14 @@ static void set_usart_tx_idle(USART_TypeDef* USARTx)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-static void del_usart_rx_idle(USART_TypeDef* USARTx)
+static unsigned char get_usart_rx_status(USART_TypeDef* USARTx)
 {	
-	//Ω” ’ø’œ–±Í÷æ	:0---ø’œ–,1---Ω” ’ÕÍ≥…£¨2---’˝‘⁄Ω” ’
-	switch(*(u32*)&USARTx)
-	{
-		case 	USART1_BASE:usart.ch_usart1.flag.rx_idle	=	0;
-					break;
-		case 	USART2_BASE:usart.ch_usart2.flag.rx_idle	=	0;
-					break;
-		case 	USART3_BASE:usart.ch_usart3.flag.rx_idle	=	0;
-					break;
-		case 	UART4_BASE:	usart.ch_uart4.flag.rx_idle	=	0;
-					break;
-		case 	UART5_BASE:	usart.ch_uart5.flag.rx_idle	=	0;
-					break;
-		default :break;
-	}
-}
-//-----------------------------------------------------------------------------
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	0--∑«ø’œ–£¨1--ø’œ–
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static void del_usart_tx_idle(USART_TypeDef* USARTx)
-{
-	//ø’œ–±Í÷æ0---ø’œ–,1---√¶£¨‘⁄∑¢ÀÕ÷–
-	unsigned char idle=0;
-	
-	switch(*(u32*)&USARTx)
-	{
-		case 	USART1_BASE:	usart.ch_usart1.flag.tx_idle	=	0;
-					break;
-		case 	USART2_BASE:	usart.ch_usart2.flag.tx_idle	=	0;
-					break;
-		case 	USART3_BASE:	usart.ch_usart3.flag.tx_idle	=	0;
-					break;
-		case 	UART4_BASE:		usart.ch_uart4.flag.tx_idle	=	0;
-					break;
-		case 	UART5_BASE:		usart.ch_uart5.flag.tx_idle	=	0;
-					break;
-		default :break;
-	}
-}
-//-----------------------------------------------------------------------------
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	0--∑«ø’œ–£¨1--ø’œ–
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
-{	
-	//ø’œ–±Í÷æ0---ø’œ–,1---”– ˝æ›
+	//Ω” ’ø’œ–±Í÷æ	:usart_idle---ø’œ–,usart_received---Ω” ’ÕÍ≥…£¨usart_busy---’˝‘⁄Ω” ’
 	//-----------------Ω” ’ø’œ–ºÏ≤‚£∫IDLEø’œ–±Í÷æ,DMAª∫¥Ê¬˙£¨DMAª∫¥ÊŒ¥’º”√£¨DMAª∫¥Ê’º”√∫Û√ª±‰ªØ£¨DMAŒ¥ø™∆Ù
 	unsigned char 	rx_idle=0;
-	unsigned short	capacity	=	0;			// £”‡ª∫¥Ê¥Û–°	
-	unsigned short	dma_conf_size							=	get_usart_dma_buffer_size(USARTx);	
-	DMA_Channel_TypeDef*	DMAy_Channelx				=	get_usart_rx_dma_channel(USARTx);	
+	unsigned short	free_buffer_size			=	0;		// £”‡ª∫¥Ê¥Û–°	
+	unsigned short	dma_conf_size					=	get_usart_dma_buffer_size(USARTx);	
+	DMA_Channel_TypeDef*	DMAy_Channelx		=	get_usart_rx_dma_channel(USARTx);	
 	
 	switch(*(u32*)&USARTx)	//ø’œ–±Í÷æ0---ø’œ–,1---”– ˝æ›
 	{
@@ -993,26 +1068,26 @@ static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
 					break;
 		default :break;
 	}
-	if(0==rx_idle)
+	if(usart_idle==rx_idle)
 	{
 		//-----------------≤È—Øª∫¥Ê
-		capacity	=	DMAy_Channelx->CNDTR;		      //ªÒ»°DMAΩ” ’ª∫¥Ê £”‡ø’º‰
-		if(capacity==0)
+		free_buffer_size	=	DMAy_Channelx->CNDTR;		      //ªÒ»°DMAΩ” ’ª∫¥Ê £”‡ø’º‰
+		if(free_buffer_size==0)
 		{
-			rx_idle=1;
+			rx_idle=usart_busy;
 		}
 		//-----------------DMAª∫¥ÊŒ¥’º”√
-		else if(capacity==dma_conf_size)
+		else if(free_buffer_size==dma_conf_size)
 		{
-			rx_idle=1;
+			rx_idle=usart_idle;
 		}
 		//-----------------DMAª∫¥Ê’º”√∫Û√ª±‰ªØ
-		else if(capacity<dma_conf_size)	//ª∫¥Ê“— π”√£∫ºÏ≤È «∑Òªπ‘⁄ π”√
+		else if(free_buffer_size<dma_conf_size)	//ª∫¥Ê“— π”√£∫ºÏ≤È «∑Òªπ‘⁄ π”√
 		{	
-			unsigned short	dma_conf_capacity_backup	=	get_usart_rx_capacity_backup(USARTx);			// £”‡ª∫¥Ê¥Û–°
+			unsigned short	dma_conf_capacity_backup	=	get_usart_rx_free_buffer_size(USARTx);			// £”‡ª∫¥Ê¥Û–°
 			unsigned short	rxdelay		=	get_rx_retry_count(USARTx);
 			//---------------ª∫¥ÊŒﬁ±‰ªØ
-			if(capacity	==	dma_conf_capacity_backup)
+			if(free_buffer_size	==	dma_conf_capacity_backup)
 			{
 				if(rxdelay<=2)
 				{
@@ -1021,14 +1096,14 @@ static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
 				}
 				else
 				{
-					rx_idle=1;
+					rx_idle=usart_idle;
 				}
 			}
 			else	// ˝¡ø”–±‰ªØ
 			{
 				set_rx_retry_count(USARTx,0);
-				set_usart_rx_capacity_backup(USARTx,capacity);
-				rx_idle=0;
+				set_usart_rx_free_buffer_size(USARTx,free_buffer_size);
+				rx_idle=usart_idle;
 			}
 		}
 	}
@@ -1044,12 +1119,12 @@ static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx)
 *–ﬁ∏ƒÀµ√˜		:	Œﬁ
 *◊¢ Õ				:	wegam@sina.com
 *******************************************************************************/
-unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
+static unsigned char get_usart_tx_status(USART_TypeDef* USARTx)
 {
 	//===================ø’œ–±Í÷æ0---ø’œ–,1---√¶£¨‘⁄∑¢ÀÕ÷–
 	//-----------------∑¢ÀÕø’œ–ºÏ≤‚£∫TC∑¢ÀÕÕÍ≥…±Í÷æ,TXEª∫¥Êø’,£¨DMAª∫¥Êø’£¨DMAŒ¥ø™∆Ù
 	unsigned char 	tx_idle=0;
-	unsigned short	txdelay		=	get_tx_retry_count(USARTx);
+	unsigned short	tx_retry	=	get_tx_retry_count(USARTx);
 
 	DMA_Channel_TypeDef*	DMAy_Channelx	=	get_usart_tx_dma_channel(USARTx);	
 	
@@ -1068,29 +1143,84 @@ unsigned char get_usart_tx_idle(USART_TypeDef* USARTx)
 		default :break;
 	}
 	//=========================
-	if(0!=tx_idle)
+	if(usart_idle!=tx_idle)
 	{
-		//-----------------------ºÏ≤ÈDMA”–Œﬁø™∆Ù
-		if(0	==	(DMAy_Channelx->CCR&0x00000001))	//dmaŒ¥ø™
+		//-----------------------¥Æø⁄Œ¥ø™∆Ù
+		if(0==(USARTx->CR1&0x2000))
 		{
-			tx_idle =0;				//∑¢ÀÕø’œ–
+			tx_idle =usart_idle;
 		}
-		//-----------------------ºÏ≤ÈDMAª∫¥Ê «∑ÒŒ™ø’
-		else if((0==DMAy_Channelx->CNDTR)&&(USART_GetFlagStatus(USARTx,USART_FLAG_TXE)))
-		{	
-			if(txdelay<2)
+		//-----------------------ºÏ≤È «∑Ò”–DMA÷ß≥÷
+		else if(0!=DMAy_Channelx)
+		{
+			//---------------------ºÏ≤ÈDMA”–Œﬁø™∆Ù--Œ¥ø™∆Ù
+			if(0	==	(DMAy_Channelx->CCR&0x00000001))	//dmaŒ¥ø™
 			{
-				txdelay+=1;
-				set_tx_retry_count(USARTx,txdelay);
-				tx_idle =1;				//∑¢ÀÕø’œ–
+				tx_idle =usart_idle;
 			}
+			//---------------------ºÏ≤ÈDMA”–Œﬁø™∆Ù--“—ø™∆Ù
 			else
 			{
-				DMA_Cmd(DMAy_Channelx,DISABLE);
-				USART_ClearFlag(USARTx,USART_FLAG_TXE);
-				set_tx_retry_count(USARTx,0);
-				tx_idle =0;				//∑¢ÀÕø’œ–
+				//-------------------DMAª∫¥ÊŒ™ø’
+				if(0==DMAy_Channelx->CNDTR)
+				{
+					//-----------------ºÏ≤È¥Æø⁄ «∑Ò∑¢ÀÕÕÍ≥…
+					if(USART_GetFlagStatus(USARTx,USART_FLAG_TC))
+					{
+						tx_idle =usart_idle;
+					}
+					else
+					{
+						if(tx_retry<2)
+						{
+							tx_retry+=1;
+							set_tx_retry_count(USARTx,tx_retry);
+							tx_idle =usart_busy;
+						}
+						else
+						{
+							DMA_Cmd(DMAy_Channelx,DISABLE);
+							USART_ClearFlag(USARTx,USART_FLAG_TXE);
+							set_tx_retry_count(USARTx,0);
+							tx_idle =usart_idle;
+						}
+					}
+				}
+				//-------------------DMAª∫¥Ê∑«ø’
+				else
+				{
+					unsigned short	free_buffer_size			=	0;		// £”‡ª∫¥Ê¥Û–°
+					unsigned short	bac_buffer_size				=	0;		// £”‡ª∫¥Ê¥Û–°
+					free_buffer_size	=	DMAy_Channelx->CNDTR;			//ªÒ»°DMAΩ” ’ª∫¥Ê £”‡ø’º‰
+					bac_buffer_size		=	get_usart_tx_free_buffer_size(USARTx);
+					if(free_buffer_size==bac_buffer_size)
+					{
+						if(tx_retry<2)
+						{
+							tx_retry+=1;
+							set_tx_retry_count(USARTx,tx_retry);
+							tx_idle =usart_busy;
+						}
+						else
+						{
+							DMA_Cmd(DMAy_Channelx,DISABLE);
+							USART_ClearFlag(USARTx,USART_FLAG_TXE);
+							set_tx_retry_count(USARTx,0);
+							tx_idle =usart_idle;
+						}
+					}
+					else
+					{
+						set_tx_retry_count(USARTx,0);
+						set_usart_tx_free_buffer_size(USARTx,free_buffer_size);
+						tx_idle =usart_busy;
+					}					
+				}
 			}
+		}
+		//-----------------------ŒﬁDMA÷ß≥÷
+		else
+		{
 		}
 	}
 	return tx_idle;
@@ -1175,80 +1305,7 @@ void USART_Process(void)		//¥Æø⁄∑˛ŒÒ≥Ã–Ú
 
 
 
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	Œﬁ
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static void set_rs485_tx(RS485Def *pRS485,FunctionalState NewState)
-{
-	//----------------txenΩ≈∏ﬂŒ™∑¢ÀÕ
-	//----------------rxenΩ≈µÕŒ™Ω” ’
-	if(pRS485->RS485_TxEn_PORT)
-	{
-		if (NewState != DISABLE)
-		{
-			pRS485->RS485_TxEn_PORT->BSRR		= pRS485->RS485_TxEn_Pin;
-		}
-		else
-		{
-			pRS485->RS485_TxEn_PORT->BRR 		= pRS485->RS485_TxEn_Pin;
-		}
-	}
-	if(pRS485->RS485_CTL_PORT)
-	{
-		if (NewState != DISABLE)
-		{
-			pRS485->RS485_CTL_PORT->BSRR		= pRS485->RS485_CTL_Pin;
-		}
-		else
-		{
-			pRS485->RS485_CTL_PORT->BRR 		= pRS485->RS485_CTL_Pin;
-		}
-	}  
-}
-//-----------------------------------------------------------------------------
-/*******************************************************************************
-*∫Ø ˝√˚			:	function
-*π¶ƒ‹√Ë ˆ		:	function
-* ‰»Î				: 
-*∑µªÿ÷µ			:	Œﬁ
-*–ﬁ∏ƒ ±º‰		:	Œﬁ
-*–ﬁ∏ƒÀµ√˜		:	Œﬁ
-*◊¢ Õ				:	wegam@sina.com
-*******************************************************************************/
-static void set_rs485_rx(RS485Def *pRS485,FunctionalState NewState)
-{
-	//----------------txenΩ≈∏ﬂŒ™∑¢ÀÕ
-	//----------------rxenΩ≈µÕŒ™Ω” ’
-	if(pRS485->RS485_RxEn_PORT)
-	{
-		if (NewState != DISABLE)
-		{
-			pRS485->RS485_RxEn_PORT->BRR 		= pRS485->RS485_RxEn_Pin;			
-		}
-		else
-		{
-			pRS485->RS485_RxEn_PORT->BSRR		= pRS485->RS485_RxEn_Pin;
-		}
-	}
-	if(pRS485->RS485_CTL_PORT)
-	{
-		if (NewState != DISABLE)
-		{
-			pRS485->RS485_CTL_PORT->BRR 		= pRS485->RS485_CTL_Pin;			
-		}
-		else
-		{
-			pRS485->RS485_CTL_PORT->BSRR		= pRS485->RS485_CTL_Pin;
-		}
-	}   
-}
-//-----------------------------------------------------------------------------
+
 
 
 
@@ -1836,20 +1893,18 @@ void USART1_IRQHandler(void)
 			RS485Def*	pRS485	=	get_rs485_addr(USART1);
 			if(0!=pRS485)
 			{
-				set_rs485_tx(pRS485,DISABLE);
-				set_rs485_rx(pRS485,ENABLE);
+				set_rs485_ctl_tx(pRS485,DISABLE);
 			}				
 		}
-		del_usart_tx_idle(USART1);
+		set_usart_tx_status(USART1,usart_idle);
 		USART_ClearITPendingBit(USART1,USART_IT_TC);
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	if(USART_GetITStatus(USART1,USART_IT_IDLE))
 	{		
-		set_usart_rx_idle(USART1);
+		set_usart_rx_status(USART1,usart_received);
 		USART1->SR;
 		USART1->DR;
-		//USART_ClearITPendingBit(USART1,USART_IT_IDLE);
 	}	
 }
 //-----------------------------------------------------------------------------
@@ -1870,27 +1925,25 @@ void USART2_IRQHandler(void)
 			RS485Def*	pRS485	=	get_rs485_addr(USART2);
 			if(0!=pRS485)
 			{
-				set_rs485_tx(pRS485,DISABLE);
-				set_rs485_rx(pRS485,ENABLE);
+				set_rs485_ctl_tx(pRS485,DISABLE);
 			}				
 		}
 		//u2txcount++;
-		del_usart_tx_idle(USART2);
+		set_usart_tx_status(USART2,usart_idle);
 		USART_ClearITPendingBit(USART2,USART_IT_TC);
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	else if(USART_GetITStatus(USART2,USART_IT_IDLE))
 	{	
 		//u2rxcount++;		
-		set_usart_rx_idle(USART2);
+		set_usart_rx_status(USART2,usart_received);
 		USART2->SR;
 		USART2->DR;
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	else if(USART_GetITStatus(USART2,USART_IT_RXNE))
 	{	
-		u2rxcount++;		
-		set_usart_rx_idle(USART2);
+		set_usart_rx_status(USART2,usart_received);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -1911,17 +1964,16 @@ void USART3_IRQHandler(void)
 			RS485Def*	pRS485	=	get_rs485_addr(USART3);
 			if(0!=pRS485)
 			{
-				set_rs485_tx(pRS485,DISABLE);
-				set_rs485_rx(pRS485,ENABLE);
+				set_rs485_ctl_tx(pRS485,DISABLE);
 			}				
 		}
-		del_usart_tx_idle(USART3);
+		set_usart_tx_status(USART3,usart_idle);
 		USART_ClearITPendingBit(USART3,USART_IT_TC);
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	else if(USART_GetITStatus(USART3,USART_IT_IDLE))
 	{		
-		set_usart_rx_idle(USART3);
+		set_usart_rx_status(USART3,usart_received);
 		USART3->SR;
 		USART3->DR;
 	}
@@ -1944,17 +1996,16 @@ void UART4_IRQHandler(void)
 			RS485Def*	pRS485	=	get_rs485_addr(UART4);
 			if(0!=pRS485)
 			{
-				set_rs485_tx(pRS485,DISABLE);
-				set_rs485_rx(pRS485,ENABLE);
+				set_rs485_ctl_tx(pRS485,DISABLE);
 			}				
 		}
-		del_usart_tx_idle(UART4);
+		set_usart_tx_status(UART4,usart_idle);
 		USART_ClearITPendingBit(UART4,USART_IT_TC);
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	else if(USART_GetITStatus(UART4,USART_IT_IDLE))
 	{		
-		set_usart_rx_idle(UART4);
+		set_usart_rx_status(UART4,usart_received);
 		UART4->SR;
 		UART4->DR;
 	}
@@ -1977,17 +2028,16 @@ void UART5_IRQHandler(void)
 			RS485Def*	pRS485	=	get_rs485_addr(UART5);
 			if(0!=pRS485)
 			{
-				set_rs485_tx(pRS485,DISABLE);
-				set_rs485_rx(pRS485,ENABLE);
+				set_rs485_ctl_tx(pRS485,DISABLE);
 			}				
 		}
-		del_usart_tx_idle(UART5);
+		set_usart_tx_status(UART5,usart_idle);
 		USART_ClearITPendingBit(UART5,USART_IT_TC);
 	}
 	//--------------------------------------------------------Ω” ’ø’œ–÷–∂œ
 	else if(USART_GetITStatus(UART5,USART_IT_IDLE))
 	{		
-		set_usart_rx_idle(UART5);
+		set_usart_rx_status(UART5,usart_received);
 		UART5->SR;
 		UART5->DR;
 	}

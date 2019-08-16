@@ -5,7 +5,7 @@
 #include "TM1616.H"
 #include "CS5530.H"
 
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_GPIO.H"
 #include "STM32_SYS.H"
 #include "STM32_WDG.H"

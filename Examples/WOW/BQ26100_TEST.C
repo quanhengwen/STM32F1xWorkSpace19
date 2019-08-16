@@ -6,7 +6,7 @@
 
 #include "STM32_SYS.H"
 #include "STM32_GPIO.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SPI.H"
 #include "STM32_SYSTICK.H"
 #include "STM32F10x_BitBand.H"

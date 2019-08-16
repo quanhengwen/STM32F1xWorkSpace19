@@ -16,7 +16,7 @@ SPI_FLASH使用功能测试
 
 
 #include "A3987_TEST.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SYS.H"
 #include "STM32_A3987.H"
 

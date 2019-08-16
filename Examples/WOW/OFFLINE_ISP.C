@@ -24,7 +24,7 @@ Page£º
 #include "USART_ISP.H"
 #include "STM32_TOOLS.H"
 
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_SYS.H"
 #include "STM32_GPIO.H"
 #include "STM32_SYSTICK.H"

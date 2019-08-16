@@ -1494,7 +1494,7 @@ void mfrc522_test(void)
 //			//Ñ°¿¨³É¹¦
 //			if(mfrc522_PcdAnticoll(mfrc522_UID)==MI_OK)
 //			{ 
-////				GPIO_Toggle(GPIOC,GPIO_Pin_13);
+////				api_gpio_toggle(GPIOC,GPIO_Pin_13);
 //			}
 //		}
 	

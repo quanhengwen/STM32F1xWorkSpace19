@@ -44,6 +44,14 @@ typedef struct
 	unsigned short 	RS485_RxEn_Pin;				//GPIO_Pin_x
 }RS485Def;
 //------------------------------------------------------
+typedef enum
+{
+	usart_idle=0,			//空闲
+	usart_busy=1,			//忙
+	usart_received=2,	//接收完成
+	usart_sended=2,		//发送完成
+}usart_status_def;
+//------------------------------------------------------
 typedef struct
 {
 	unsigned char tx_idle	:1;		//发送空闲标志	:0---空闲,1---忙，在发送中
@@ -54,7 +62,8 @@ typedef struct
 typedef struct
 {
 	unsigned short	dma_size_set;		//配置DMA容量
-	unsigned short	dma_size_free;	//剩余DMA容量
+	unsigned short	dma_size_freeTx;	//剩余DMA容量
+	unsigned short	dma_size_freeRx;	//剩余DMA容量
 	unsigned char		Rxd[uart_dma_buffer_size];
 	unsigned char		Txd[uart_dma_buffer_size];
 	unsigned char		tx_retry;				//发送重试计数
@@ -82,6 +91,7 @@ unsigned short api_rs485_receive(RS485Def *pRS485,unsigned char *RevBuffer);
 //==============================================================================API-send
 unsigned short api_usart_send(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);
 unsigned short api_rs485_send(RS485Def *pRS485,unsigned char *tx_buffer,unsigned short BufferSize);
+unsigned short api_rs485_send_force(RS485Def *pRS485,u8 *tx_buffer,u16 BufferSize);		//RS485-强制发送程序
 
 //==============================================================================API-printf
 unsigned short api_usart_printf(USART_TypeDef* USARTx,const char *format,...);
@@ -104,18 +114,22 @@ void api_rs485_configuration_NRRemap(RS485Def *pRS485,u32 USART_BaudRate,unsigne
 
 
 
-
+//==============================================================================
+static void set_rs485_ctl_tx(RS485Def *pRS485,FunctionalState NewState);
 
 
 
 
 
 //==============================================================================static2
-static unsigned char set_usart_type(USART_TypeDef* USARTx,unsigned char type);		//设置串口类型：0---USART,1-RS485
+static void set_usart_type(USART_TypeDef* USARTx,unsigned char type);		//设置串口类型：0---USART,1-RS485
 static unsigned char get_usart_type(USART_TypeDef* USARTx);
 
 static void set_rs485_addr(RS485Def *pRS485);
 static RS485Def* get_rs485_addr(USART_TypeDef* USARTx);
+
+
+
 
 static unsigned short set_usart_tx_dma_buffer(USART_TypeDef* USARTx,unsigned char *tx_buffer,unsigned short BufferSize);
 static unsigned short get_usart_rx_dma_buffer(USART_TypeDef* USARTx,unsigned char *RevBuffer);
@@ -125,32 +139,28 @@ static unsigned char* get_usart_tx_data_addr(USART_TypeDef* USARTx);
 
 
 
-static void set_usart_rx_capacity_backup(USART_TypeDef* USARTx,unsigned short size);
-static unsigned short get_usart_rx_capacity_backup(USART_TypeDef* USARTx);
+static void set_usart_rx_free_buffer_size(USART_TypeDef* USARTx,unsigned short size);
+static void set_usart_tx_free_buffer_size(USART_TypeDef* USARTx,unsigned short size);
+static unsigned short get_usart_rx_free_buffer_size(USART_TypeDef* USARTx);
+static unsigned short get_usart_tx_free_buffer_size(USART_TypeDef* USARTx);
 
-static void set_tx_retry_count(USART_TypeDef* USARTx,unsigned short count);
-static unsigned short get_tx_retry_count(USART_TypeDef* USARTx);
 static void set_rx_retry_count(USART_TypeDef* USARTx,unsigned short count);
+static void set_tx_retry_count(USART_TypeDef* USARTx,unsigned short count);
 static unsigned short get_rx_retry_count(USART_TypeDef* USARTx);
+static unsigned short get_tx_retry_count(USART_TypeDef* USARTx);
+
 
 //==============================================================================static-status
-static void set_usart_rx_idle(USART_TypeDef* USARTx);
-static void set_usart_tx_idle(USART_TypeDef* USARTx);
-
-static unsigned char get_usart_rx_idle(USART_TypeDef* USARTx);
-unsigned char get_usart_tx_idle(USART_TypeDef* USARTx);
-
-static void del_usart_rx_idle(USART_TypeDef* USARTx);
-static void del_usart_tx_idle(USART_TypeDef* USARTx);
+static void set_usart_rx_status(USART_TypeDef* USARTx,unsigned char status);
+static void set_usart_tx_status(USART_TypeDef* USARTx,unsigned char status);
+static unsigned char get_usart_rx_status(USART_TypeDef* USARTx);
+static unsigned char get_usart_tx_status(USART_TypeDef* USARTx);
 
 
 
 
 
 
-//==============================================================================
-static void set_rs485_tx(RS485Def *pRS485,FunctionalState NewState);
-static void set_rs485_rx(RS485Def *pRS485,FunctionalState NewState);
 
 
 

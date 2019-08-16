@@ -7,7 +7,7 @@
 
 #include "STM32_SYS.H"
 #include "STM32_SYSTICK.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 #include "STM32_GPIO.H"
 #include "STM32_USART.H"
 
@@ -131,13 +131,13 @@ void BQ_Authentication_Server(void)
 //	}
 	
 	//------------离线测试校验：测试模式--定时发送待验证信息
-	BQ_Authentication_Test_Model_WorkAsSMT();
+	//BQ_Authentication_Test_Model_WorkAsSMT();
 	//------------在线测试校验:定时连接SMT，让SMT发送待验证消息
 	//BQ_Authentication_Test_Model_OnLine();
 	//------------在线应用模式：校验不通过自动重启
 	//BQ_Authentication_Auto_Reset_OnLine();
-	//------------正常运行模式：认证失败自动重启
-	//BQ_Authentication_Running_Model_OnLine();	//正常运行模式：认证失败自动重启
+	//------------正常运行模式：
+	//BQ_Authentication_Running_Model_OnLine();	//正常运行模式
 	
 }
 //------------------------------------------------------------------------------
@@ -205,7 +205,7 @@ static void BQ_Authentication_Test_Model_WorkAsSMT(void)
 	else if(usart_cof_flag==0)
 	{
 		usart_cof_flag	=	1;
-		api_usart_dma_configurationNR(ComPortOut,625000,128);
+		api_usart_configuration_NR(ComPortOut,625000,128);
 	}
 	//=======================认证消息，对比摘要，及认证消息循环
 	else
@@ -439,7 +439,7 @@ static void BQ_Authentication_Auto_Reset_OnLine(void)
 	{
 		usart_cof_flag	=	1;
 		//---------------------配置串口
-		api_usart_dma_configurationNR(ComPortOut,625000,128);
+		api_usart_configuration_NR(ComPortOut,625000,128);
 		//---------------------关闭发送--USART3-TX
 		GPIO_Configuration_INF(GPIOB,	GPIO_Pin_10);			//将GPIO相应管脚配置为浮空输入模式----V20170605
 	}

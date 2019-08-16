@@ -267,7 +267,7 @@ void AMPCAB_SYSLED(void)
 {
   if(0==AMPPro.Time.SYSLEDTime)
   {    
-    GPIO_Toggle	(SYSLEDPort,SYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
+    api_gpio_toggle(SYSLEDPort,SYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
     if(CabAddr)   //已拨码，频率1Hz
     {
       AMPPro.Time.SYSLEDTime=500;
@@ -296,7 +296,7 @@ void AMPCAB_BackLight(void)
     if(BLtime++>200)
     {
       BLtime=0;
-      GPIO_Toggle	(BackLightPort,BackLightPin);		//将GPIO相应管脚输出翻转----V20170605
+      api_gpio_toggle(BackLightPort,BackLightPin);		//将GPIO相应管脚输出翻转----V20170605
     }
     return;
   }
