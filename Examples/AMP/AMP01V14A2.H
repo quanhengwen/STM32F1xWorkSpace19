@@ -8,16 +8,12 @@
 #define	ampAckSize    	10       		//每个发送端口待发送缓存排序个数
 #define	ampArrySize    	20       		//每个发送端口待发送缓存排序个数
 
-#define	ampledtime	40	//2000ms
+#define	ampledtime			10			//ms
 
 //	起始符		长度		命令	地址1			地址2			地址3			数据0~N		BCC16校验	结束符
 //	START		Length	CMD		Address1	Address2	Address3			
 
-//typedef struct _ampdata       //拨码数据：
-//{
-//  unsigned char Cab_Addr;         	//柜地址
-//  unsigned char MB_Flag;          	//主板标志://0--副柜，1--主柜
-//}ampdatadef;
+
 typedef struct _ampAck       //拨码数据：
 {
   unsigned char head;     	//0x7E
@@ -45,7 +41,6 @@ typedef struct _ampLight       //灯光标志
 {
   struct
 	{
-		//unsigned char	LightStatus 	:1;	//灯状态:0-灭状态，1-亮状态
 		unsigned char	SetLevel			:2;	//设置亮度等级,点亮根据亮度等级:0-不处理，1-最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度；2-中等亮度，开门时柜体背光亮度；3-最高亮度，关门时需要亮灯时的亮度
 		unsigned char	WorkLevel			:2;	//当前亮度等级,点亮根据亮度等级:0-不处理，1-最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度；2-中等亮度，开门时柜体背光亮度；3-最高亮度，关门时需要亮灯时的亮度
 	}flag;	
@@ -54,24 +49,19 @@ typedef struct _ampLight       //灯光标志
 //---------------------------------------------------------------------
 typedef struct _ampTims       //拨码数据：
 {
-//  unsigned short runningtime;     //运行计数器
   unsigned short swicthidtime;    //运行计数器
-  unsigned short SYSLEDTime;      //LED运行计数器
-  //unsigned short LockTime;        //锁计数器
-  //unsigned short PcSendTime;      //运行计数器
-  //unsigned short CabSendTime;     //运行计数器
-	//unsigned short LaySendTime;     //运行计数器
   unsigned short CardSendTime;    //运行计数器
-	unsigned short LayPowerOnTime;    //层控制接口上电时间
-//	unsigned short BackLightTime;  	//运行计数器
+	unsigned short LayPowerOnTime; 	//层控制接口上电时间
 }ampTimesdef;
 //---------------------------------------------------------------------
 typedef struct _ampdata       					//拨码数据：
 {
   unsigned char Cab_Addr;         	//柜地址 6位拨码 345678
   unsigned char MB_Flag;          	//主板标志:	//0--副柜，1--主柜
+	unsigned char PowerOn_Flag;       //上电标志:0--刚上电未完成，1--上电完成
 	unsigned char Display_Flag;       //透明屏标志://0--普通/无屏，1--主柜透明屏
 	unsigned char LayPowerOnFlag;   	//层板供电://0--未供电，1--已供电
+	unsigned char SysLedFastFlag;   	//系统运行指示灯快速闪烁标志://0--无通讯数据1秒闪烁，1--有通讯数据，0.2秒闪烁
 }ampdatadef;
 //---------------------------------------------------------------------
 typedef struct _ampCommLed       				//通讯LED指示灯
@@ -81,47 +71,47 @@ typedef struct _ampCommLed       				//通讯LED指示灯
 		unsigned char code;
 		struct
 		{
-			unsigned char pc_rx:1;		//0-输出低电平/亮灯，1-输出高电平/灭灯
-			unsigned char pc_tx:1;
+			unsigned char pc_tx:1;		//0-输出低电平/亮灯，1-输出高电平/灭灯
+			unsigned char pc_rx:1;
 			
-			unsigned char cb_rx:1;
 			unsigned char cb_tx:1;
+			unsigned char cb_rx:1;
 			
-			unsigned char ly_rx:1;
 			unsigned char ly_tx:1;
+			unsigned char ly_rx:1;
 			
-			unsigned char rf_rx:1;
 			unsigned char rf_tx:1;
-		}flag;
+			unsigned char rf_rx:1;
+		}seg;
 	}displaycode;
 	unsigned char display;
   struct
 	{
-		unsigned char pc_rx:1;
 		unsigned char pc_tx:1;
+		unsigned char pc_rx:1;
 		
-		unsigned char cb_rx:1;
 		unsigned char cb_tx:1;
+		unsigned char cb_rx:1;
 		
-		unsigned char ly_rx:1;
 		unsigned char ly_tx:1;
+		unsigned char ly_rx:1;
 		
-		unsigned char rf_rx:1;
 		unsigned char rf_tx:1;
+		unsigned char rf_rx:1;
 	}flag;
 	struct
 	{
-		unsigned short pc_rx;
 		unsigned short pc_tx;
+		unsigned short pc_rx;
 		
-		unsigned short cb_rx;
 		unsigned short cb_tx;
+		unsigned short cb_rx;
 		
-		unsigned short ly_rx;
 		unsigned short ly_tx;
+		unsigned short ly_rx;
 		
-		unsigned short rf_rx;
 		unsigned short rf_tx;
+		unsigned short rf_rx;
 	}time;		//闪烁次数
 	unsigned char	 ClearFlag;		//0-正常显示，1-清除显示
 	unsigned short FlashTime;		//刷新时间
@@ -131,13 +121,8 @@ typedef struct _ampLock       					//锁
 {
   struct
 	{
-		//unsigned char	unlock  		:1;	//开锁请求：0-无请求，1-有请求
-		//unsigned char	relslock		:1;	//执行开锁：0-无，1-正在执行  
-		//unsigned char	reslock     :1;	//释放锁驱动请求：0-无请求，1-有请求
-		//unsigned char	reslockqust :1;	//释放锁请求，0-无请求，1-有请求，检测到锁状态为打开时，延时一段时间再关闭驱动
 		unsigned char	LockStatus	:1;	//锁状态：0-开状态，1-锁状态
 		unsigned char	LockUpdata	:1;	//锁更新：0-无更新，1-有状态更新
-//		unsigned char	unlockerr  	:1;	//开锁错误/失败:0-无，1-开锁失败
 	}flag;
 	unsigned short LockTime;        //锁计数器
 }ampLockDef;
@@ -146,13 +131,8 @@ typedef struct _ampMagneticLock       	//磁吸锁
 {
   struct
 	{
-		//unsigned char	unlock  		:1;	//开锁请求：0-无请求，1-有请求
-		//unsigned char	relslock		:1;	//执行开锁：0-无，1-正在执行  
-		//unsigned char	reslock     :1;	//释放锁驱动请求：0-无请求，1-有请求
-		//unsigned char	reslockqust :1;	//释放锁请求，0-无请求，1-有请求，检测到锁状态为打开时，延时一段时间再关闭驱动
 		unsigned char	LockStatus	:1;	//锁状态：0-开状态，1-锁状态
 		unsigned char	LockUpdata	:1;	//锁更新：0-无更新，1-有状态更新
-//		unsigned char	unlockerr  	:1;	//开锁错误/失败:0-无，1-开锁失败
 	}flag;
 	unsigned short LockTime;        //锁计数器
 }ampMagneticLockDef;
@@ -169,14 +149,18 @@ typedef struct _ampCommPort        			//通讯端口
   ampCachedef			Buffer[ampArrySize];	//缓存
 }ampCommPortDef;
 //---------------------------------------------------------------------
+typedef struct
+{
+	float temperature;		//温度--已转换
+	float humidity;  			//湿度--已转换
+	unsigned short SegTemperature;	//温度--未转换
+	unsigned short SegHumidity;  	//湿度--未转换
+	unsigned short Time;        //锁计数器
+}ampSHT20Def;
+//---------------------------------------------------------------------
 //=====================================================================
 typedef struct _amp
 {
-//	ampReqdef				request;
-//	ampStadef     	status;    		//状态码
-//	ampWaitAckdef		AckW;					//等待应答标志
-//  ampResenddef    ReSend;	
-//	ampCCdef				commdata;			//通讯数据
 	ampdatadef					sysdata;			//常用数据和标识
 	ampTimesdef					time;	
 	
@@ -187,12 +171,13 @@ typedef struct _amp
 	
 	ampLightDef					BackLight;		//柜体背光
 	ampLightDef					LcdLight;			//LCD背光
+	ampSHT20Def					SHT20;				//温湿度传感器
 	
 	ampCommPortDef			Pc;						//PC端口数据
 	ampCommPortDef			Cab;					//柜端口数据
 	ampCommPortDef			Lay;					//层接口数据
 }ampdef;
-
+//---------------------------------------------------------------------
 
 
 
@@ -228,8 +213,7 @@ static void lay_send_data_process(void);
 static void cmd_process(ampphydef* frame);
 //--------------------------------static-hardware_control
 static void set_door(unsigned char flag);
-//static void set_backlight(unsigned char flag);
-//static void set_lcdlight(unsigned char flag);
+static void set_backlight(unsigned char flag);
 static void set_layer_power(unsigned char flag);
 //--------------------------------static-set_frame
 static void set_ackup_frame(ampPortDef Port);
@@ -244,6 +228,7 @@ static void CommLed_Server(void);
 static void BackLight_Server(void);
 static void LcdLight_Server(void);
 static void Tim_Server(void);
+static void sht20_server(void);
 //--------------------------------static-configuration
 static void Hardware_Configuration(void);
 static void Communication_Configuration(void);
@@ -252,6 +237,7 @@ static void BackLight_Configuration(void);
 static void LayPower_Configuration(void);
 static void Lock_Configuration(void);
 static void Led_Configuration(void);
+static void sht20_configuration(void);
 //--------------------------------static-test
 static void test_cabinet_address_none_process(void);		//未拨码柜接口发LCD测试程序
 static void set_time_sync_frame(void);		//未拨码柜接口发LCD测试程序

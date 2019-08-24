@@ -27,12 +27,12 @@
 #define ampCommBusPort     					USART1
 #define ampCommBusCtlPort 					GPIOA
 #define ampCommBusCtlPin  					GPIO_Pin_8
-#define ampCommBusBaudRate        	1152000
+#define ampCommBusBaudRate        	115200
 //------------------通讯接口--与LCD连接
 #define ampCommLayPort     					USART2
 #define ampCommLayCtlPort 					GPIOA
 #define ampCommLayCtlPin  					GPIO_Pin_1
-#define ampCommLayBaudRate        	1152000
+#define ampCommLayBaudRate        	115200
 
 /* Private variables ---------------------------------------------------------*/
 

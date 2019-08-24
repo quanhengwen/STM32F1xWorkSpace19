@@ -39,7 +39,7 @@ void SPI_TEST_Configuration(void)
   SPI_Configuration();
   GPIO_Configuration_OPP50	(GPIOB,	GPIO_Pin_12);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
   GPIO_Configuration_OPP50	(GPIOA,	GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-//  PWM_OUT(TIM2,PWM_OUTChannel1,2000,500);						//PWM设定-20161127版本
+//  api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,2000,500);						//PWM设定-20161127版本
   memset(testtxbuffer,0xAA,testlen);
   SysTick_Configuration(10);
 }

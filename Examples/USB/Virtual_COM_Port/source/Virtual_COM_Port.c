@@ -41,7 +41,7 @@
 #include "STM32_USART.H"
 
 #include "STM32_SYSTICK.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 
 #include "BQ26100.H"
 
@@ -300,7 +300,7 @@ void USART_Config_Default(void)
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;//流控
 	USART_Init(ComPort, &USART_InitStructure);											//初始化串口
 	
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断	
+	api_usart_configuration_ST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断	
 }
 
 /*******************************************************************************
@@ -377,8 +377,7 @@ char USART_Config(void)
   USART_Init(ComPort, &USART_InitStructure);																				//初始化串口
   USART_Cmd(ComPort, ENABLE);																												//使能串口
 	
-	//api_usart_dma_configurationNR(ComPort,linecoding.bitrate,usart_buffer_size);
-	api_usart_dma_configurationST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断
+	api_usart_configuration_ST(ComPort,&USART_InitStructure,USB_BUFFER_SIZE);	//USART_DMA配置--结构体形式，不开中断
 	
   return (1);
 }
@@ -392,7 +391,7 @@ char USART_Config(void)
 void USB_To_USART_Send_Data(u8* data_buffer, u8 Nb_bytes)
 {
 	Usart_tx_flg=1;
-	api_usart_dma_send(ComPort,data_buffer,(u16)Nb_bytes);		//自定义printf串口DMA发送程序
+	api_usart_send(ComPort,data_buffer,(u16)Nb_bytes);		//自定义printf串口DMA发送程序
 }
 /*******************************************************************************
 *函数名			:	function
@@ -412,7 +411,7 @@ void usb_to_uart_server(void)
   {
 		return;
 	}
-	if(0==get_usart_tx_idle(ComPort))		//串口状态检查
+	if(0!=get_usart_tx_status(ComPort))		//串口状态检查
 	{
 		return ;
 	}
@@ -429,7 +428,7 @@ void usb_to_uart_server(void)
 	if(len)
 	{
 		sendnum+=len;
-		sendednum+=api_usart_dma_send(ComPort,buffer,(u16)len);		//自定义printf串口DMA发送程序
+		sendednum+=api_usart_send(ComPort,buffer,(u16)len);		//自定义printf串口DMA发送程序
 	}
 }
 
@@ -441,7 +440,7 @@ void usb_to_uart_server(void)
 *******************************************************************************/
 void USART_To_USB_Send_Data(void)
 {	
-	u16	num	=	api_usart_dma_receive(ComPort,buffer_in);
+	u16	num	=	api_usart_receive(ComPort,buffer_in);
 	if(num)
 	{
 		api_usb_in_set_data(buffer_in,num);
@@ -456,7 +455,7 @@ void USART_To_USB_Send_Data(void)
 void usb_virtual_com_AsynchXfer (void)
 {
 //	unsigned short count_in	=	0;
-//	count_in=api_usart_dma_receive(ComPort,buffer_rx);
+//	count_in=api_usart_receive(ComPort,buffer_rx);
 //	if(count_in)
 //	{
 //		UserToPMABufferCopy(buffer_rx, ENDP1_TXADDR, count_in);

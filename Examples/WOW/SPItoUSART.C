@@ -37,7 +37,7 @@ void SPItoUSART_Configuration(void)
 	
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);
 
 //	GPIO_Configuration(GPIOB,GPIO_Pin_4,GPIO_Mode_Out_PP,GPIO_Speed_50MHz);			//GPIO配置
 	

@@ -69,7 +69,7 @@ void MX25L4006E_Initialize(MX25L4006EDef *MX25Lx)
 	
 //	SPI_DMA_Configuration(SPI1,&SPI_InitStructure,(u32*)SPI_TX_Buffer,(u32*)SPI_RX_Buffer,SPI_BUFFERSIZE);				//SPI_DMA配置
 	
-//	PWM_OUT(TIM2,PWM_OUTChannel2,1,500);	//PWM设定-20161127版本
+//	api_pwm_oc_configuration(TIM2,PWM_OUTChannel2,1,500);	//PWM设定-20161127版本
 	
 //	SPIT_Configuration(SPI1);							//SPI常规使用方式配置
 //	SPI_Cmd(SPI1, ENABLE);

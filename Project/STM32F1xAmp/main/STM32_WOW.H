@@ -99,6 +99,12 @@
 #ifdef AMPLCDV12
 	#include "AMPLCDV12.H"
 #endif
+
+//*********************************AMPLCDV12A2*********************************//
+#ifdef AMPLCDV12A2
+	#include "AMPLCDV12A2.H"
+#endif
+
 //*********************************AMPLED02V13*********************************//
 #ifdef AMPLED02V13
 	#include "AMPLED02V13.H"

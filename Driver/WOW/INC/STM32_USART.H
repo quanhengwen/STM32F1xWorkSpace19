@@ -102,11 +102,11 @@ unsigned short api_rs485_printf(RS485Def *pRS485,const char *format,...);
 
 
 //==============================================================================API-UART-configuration
-void api_usart_configuration_NR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);
-void api_usart_configuration_ST(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure,unsigned short BufferSize);
-void api_usart_configuration_even(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART--偶校验
-void api_usart_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);		//USART配置--奇校验
-void api_usart_configuration_NRRemap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射，不开中断
+void api_usart_configuration_NR(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);//USART_DMA配置
+void api_usart_configuration_ST(USART_TypeDef* USARTx,USART_InitTypeDef* USART_InitStructure,unsigned short BufferSize);//USART_DMA配置_结构休参数
+void api_usart_configuration_even(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--偶校验
+void api_usart_configuration_odd(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);		//USART_DMA配置--奇校验
+void api_usart_configuration_NRRemap(USART_TypeDef* USARTx,u32 USART_BaudRate,unsigned short BufferSize);	//USART_DMA配置--完全映射
 
 //==============================================================================API-RS485-configuration
 void api_rs485_configuration_NR(RS485Def *pRS485,u32 USART_BaudRate,unsigned short BufferSize);
@@ -154,15 +154,7 @@ static unsigned short get_tx_retry_count(USART_TypeDef* USARTx);
 static void set_usart_rx_status(USART_TypeDef* USARTx,unsigned char status);
 static void set_usart_tx_status(USART_TypeDef* USARTx,unsigned char status);
 static unsigned char get_usart_rx_status(USART_TypeDef* USARTx);
-static unsigned char get_usart_tx_status(USART_TypeDef* USARTx);
-
-
-
-
-
-
-
-
+unsigned char get_usart_tx_status(USART_TypeDef* USARTx);
 
 
 

@@ -33,8 +33,10 @@ typedef enum {
 
 typedef struct
 {
-    float temperature;	//湿度
-    float humidity;  		//湿度  
+	float temperature;		//温度--已转换
+	float humidity;  			//湿度--已转换
+	unsigned short SegTemperature;	//温度--未转换
+	unsigned short SegHumidity;  	//湿度--未转换
 }sht20data_def;
 
 typedef struct	_sht20flag
@@ -56,6 +58,9 @@ void api_sht20_server(void);
 
 float api_sht20_get_temperature(void);
 float api_sht20_get_humidity(void);
+
+unsigned short api_sht20_get_SegTemperature(void);
+unsigned short api_sht20_get_SegHumidity(void);
 
 
 

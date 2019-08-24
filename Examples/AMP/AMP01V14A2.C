@@ -21,24 +21,29 @@
 
 #include "SWITCHID.H"
 #include "IOT5302W.H"     //读卡器
+#include "SHT20.H"				//温湿度传感器
 
 #include 	"CRC.H"
 
 #include "string.h"				//串和内存操作函数头文件
 
-//------------------锁接口J10
+//------------------运行指示灯
 #define ampSYSLEDPort    						GPIOA
 #define ampSYSLEDPin     						GPIO_Pin_0
 //------------------通讯接口--PC
 #define ampCommPcPort        				USART2
 #define ampCommPcBaudRate        		19200
+#define ampCommPcDelayTime        	550			//每字节传输的时间us
 //------------------通讯接口--柜口
 #define ampCommCbPort       				USART1
 #define ampCommCbTxEnPort  					GPIOA
 #define ampCommCbTxEnPin   					GPIO_Pin_8
 #define ampCommCbRxEnPort 					GPIOC
 #define ampCommCbRxEnPin						GPIO_Pin_9
-#define ampCommCbBaudRate        		115200
+#define ampCommCbBaudRate        		19200
+#define ampCommCbDelayTime        	550			//每字节传输的时间us
+#define ampCommCbMaxAddr        		6				//最大地址
+
 //------------------通讯接口--层板接口
 #define ampCommLayPort     					UART4
 #define ampCommLayTxEnPort 					GPIOA
@@ -46,7 +51,11 @@
 #define ampCommLayRxEnPort 					GPIOA
 #define ampCommLayRxEnPin						GPIO_Pin_11
 #define ampCommLayBaudRate        	115200
-#define ampLayPowerOnTime        		50	//ms
+#define ampCommLayDelayTime        	550			//每字节传输的时间us
+#define ampCommLayMaxAddr        		6				//最大层地址
+#define ampCommSegMaxAddr        		6				//最大位地址
+#define ampLayPowerOnTime        		200	//ms
+
 //------------------层板电源控制J5、J6、J9共用一个控制电源
 #define ampLayPowerPort  						GPIOB
 #define ampLayPowerPin   						GPIO_Pin_2
@@ -85,19 +94,27 @@
 #define ampBackLightPort 						GPIOB
 #define ampBackLightPin  						GPIO_Pin_0
 #define ampBackLighSet(Ratio)				api_pwm_oc_set_ratio(TIM3,PWM_OUTChannel3,Ratio)
-#define	BackLightOnTime							2000
+#define	BackLightOnTime							310000		//5分钟+10秒
 //------------------透明屏背光接口J11的VCC和EN脚
 #define ampLcdLightPort 						GPIOB
 #define ampLcdLightPin  						GPIO_Pin_14
 #define ampLcdLightSet(Ratio)				api_pwm_oc_set_ratio(TIM1,PWM_OUTChannel2,Ratio)
-#define	LcdLightOnTime							2000
+#define	LcdLightOnTime							BackLightOnTime
+//------------------SHT20温湿度传感器
+#define ampShtSclPort 							GPIOB
+#define ampShtSclPin  							GPIO_Pin_12
+#define ampShtSdaPort 							GPIOB
+#define ampShtSdaPin  							GPIO_Pin_13
+#define	ampShtUpdataTime						1000		//更新时间ms
+
 
 /* Private variables ---------------------------------------------------------*/
 
 static RS485Def 	ampRS485Ly;   //uart4,PA15   		//层板接口
 static RS485Def 	ampRS485Cb;   //usart1,PA8    	//副柜接口
 static SwitchDef 	ampSwitchID;
-static spi_def stLed;
+static spi_def 		stLed;
+sht20def 	sht20;
 
 ampdef ampsys;
 
@@ -121,11 +138,9 @@ void API_AMP01V14A2_Configuration(void)
 {	
 	SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
 	
-	Hardware_Configuration();
-
-  
+	Hardware_Configuration();  
 	
-	IWDG_Configuration(3000);			//独立看门狗配置---参数单位ms
+	IWDG_Configuration(3000);		//独立看门狗配置---参数单位ms
   
   SysTick_Configuration(50);	//系统嘀嗒时钟配置72MHz,单位为uS
 }
@@ -139,12 +154,9 @@ void API_AMP01V14A2_Configuration(void)
 *注释				:	wegam@sina.com
 *******************************************************************************/
 void API_AMP01V14A2_Server(void)
-{ 
-	
+{ 	
 	AMP01V14A2_HIGH_Process();
-	AMP01V14A2_LOW_Process();
-	
-	
+	AMP01V14A2_LOW_Process();	
 }
 //------------------------------------------------------------------------------
 
@@ -182,22 +194,27 @@ static void AMP01V14A2_LOW_Process(void)
 	time=0;
 	
 	IWDG_Feed();														//独立看门狗喂狗
-	SysLed_server();
 	
+	SysLed_server();
+
 	test_cabinet_address_none_process();		//未拨码柜接口发LCD测试程序
 	set_time_sync_frame();									//未拨码柜接口发LCD测试程序
+	
 	Tim_Server();
   Lock_server();
 	Magnetic_Lock_server();		//磁吸锁
-  SwitchID_Server();
-
+	SwitchID_Server();
 	
   CommLed_Server();
+	
 	BackLight_Server();
 	LcdLight_Server();	
-	CardReader_Server();	
+	CardReader_Server();
+	sht20_server();
+	
 }
 //------------------------------------------------------------------------------
+
 
 /*******************************************************************************
 *函数名			:	function
@@ -211,10 +228,24 @@ static void AMP01V14A2_LOW_Process(void)
 static void SysLed_server(void)
 {
 	static unsigned short time = 0;
-	if(time++>1000)
+	//================================================有通讯，快速闪烁
+	if(0!=ampsys.sysdata.SysLedFastFlag)
 	{
-		time=0;
-		api_gpio_toggle(ampSYSLEDPort,ampSYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
+		if(time++>100)
+		{
+			time=0;
+			ampsys.sysdata.SysLedFastFlag=0;		//系统LED快速闪烁标志
+			api_gpio_toggle(ampSYSLEDPort,ampSYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
+		}
+	}
+	//================================================无通讯数据，1秒闪烁
+	else
+	{	
+		if(time++>1000)
+		{
+			time=0;
+			api_gpio_toggle(ampSYSLEDPort,ampSYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
+		}
 	}
 }
 //------------------------------------------------------------------------------
@@ -243,6 +274,7 @@ static ampCachedef* get_cache_addr(ampPortDef port)
 	else
 		return 0;
 }
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -316,6 +348,7 @@ static unsigned short set_cache_data(ampPortDef port,ampphydef* frame)
   }
 	return 0;
 }
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -342,6 +375,7 @@ static ampCachedef* get_cache_data(ampPortDef port)
 	}
 	return 0;
 }
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -413,6 +447,7 @@ static unsigned char get_ack_wait_flag(ampPortDef port)
 	else
 		return 0;
 }
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -534,7 +569,6 @@ static void CardReader_Server(void)
 		
 		//--------------------------LED指示灯
 		ampsys.CommLed.flag.rf_rx	=	1;
-		ampsys.CommLed.time.rf_rx	=	ampledtime;
 	}
 }
 //------------------------------------------------------------------------------
@@ -568,7 +602,6 @@ static void pc_receive_data_process(void)
 		{
 			//------------------------LED指示灯
 			ampsys.CommLed.flag.pc_rx	=	1;
-			ampsys.CommLed.time.pc_rx	=	ampledtime;
 			
 			cmd	=	frame->msg.cmd.cmd;
 			//------------------------应答帧
@@ -606,8 +639,7 @@ static void pc_receive_data_process(void)
 					//set_ackup_frame(PcPort);					//向上级应答
 				}
 			}
-		}
-		
+		}		
 	}
 }
 //------------------------------------------------------------------------------
@@ -636,7 +668,7 @@ static void pc_send_data_process(void)
 			if(sendnum)	//已将数据转移到缓存
 			{	
 				ampsys.Pc.AckFrame.flag	=	0;
-				ampsys.Pc.SendWaitTime	=	2;
+				ampsys.Pc.SendWaitTime	=	((sendnum+5)*ampCommPcDelayTime)/1000;
 			}
 			else
 			{
@@ -665,10 +697,9 @@ static void pc_send_data_process(void)
 				{	
 					//set_ack_wait_flag(PcPort);
 					ampsys.Pc.ReSendCount+=1;			
-					ampsys.Pc.SendWaitTime	=	ampReSendTime;					
+					ampsys.Pc.SendWaitTime	=	((sendnum+20)*ampCommPcDelayTime)/1000+2;					
 					//--------------------LED指示灯
 					ampsys.CommLed.flag.pc_tx	=	1;
-					ampsys.CommLed.time.pc_tx	=	ampledtime;
 				}
 			}
 		}
@@ -703,14 +734,11 @@ static void cab_receive_data_process(void)
 	//============================接收处理
 	if(0!=rxnum)
 	{
-		ampsys.Cab.SendWaitTime	=	0;
+		//ampsys.Cab.SendWaitTime	=	0;
 		frame	=	api_get_frame(rxd,rxnum);
 		if(0!=frame)
 		{
-			//--------------------------LED指示灯
-			ampsys.CommLed.flag.cb_rx	=	1;
-			ampsys.CommLed.time.cb_rx	=	ampledtime;
-			
+
 			cmd	=	frame->msg.cmd.cmd;
 			dir	=	frame->msg.cmd.dir;
 			//--------------------------检查是否为应答
@@ -730,11 +758,12 @@ static void cab_receive_data_process(void)
 					else			//向下
 					{
 						if(0==ampsys.sysdata.MB_Flag)		//辅柜
-						{							
+						{	
 							del_cache_data(CabPort);
 						}
 					}
 				}
+				ampsys.CommLed.flag.cb_rx	=	1;
 			}
 			//--------------------------通讯数据
 			else
@@ -753,12 +782,14 @@ static void cab_receive_data_process(void)
 					//----------------------广播
 					if(0xFF==frame->msg.addr.address1)
 					{
+						ampsys.CommLed.flag.cb_rx	=	1;		//LED指示灯
 						set_cache_data(LayPort,frame);
 						cmd_process(frame);
 					}
 					//----------------------本柜
 					else if(ampsys.sysdata.Cab_Addr==frame->msg.addr.address1)
 					{
+						ampsys.CommLed.flag.cb_rx	=	1;		//LED指示灯
 						//--------------------轮询消息
 						if(ampCmdCheckSleve==frame->msg.cmd.cmd)
 						{
@@ -775,7 +806,7 @@ static void cab_receive_data_process(void)
 						}
 						//--------------------其它消息
 						else
-						{
+						{							
 							set_cache_data(LayPort,frame);
 							cmd_process(frame);
 							set_ackup_frame(CabPort);
@@ -799,23 +830,23 @@ static void cab_receive_data_process(void)
 static void cab_send_data_process(void)
 {	
 	unsigned short sendnum=0;
-	ampCachedef*	Cache	=	get_cache_data(CabPort);
-	ampphydef* frame;
-	
+	ampCachedef*	Cache	=	get_cache_data(CabPort);	
 	//============================检查应答消息:立即应答
 	if(ampsys.Cab.AckFrame.flag)
 	{
 		unsigned char* addr	=	&ampsys.Cab.AckFrame.head;
 		sendnum	=	api_rs485_send_force(&ampRS485Cb,addr,ampAckSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 		if(sendnum)	//已将数据转移到缓存
-		{	
+		{
+			ampsys.CommLed.flag.cb_tx		=	1;		//LED指示灯			
 			ampsys.Cab.AckFrame.flag	=	0;
-			ampsys.Cab.SendWaitTime		=	ampReSendTime;
+			ampsys.Cab.SendWaitTime		=	2;
 		}
 	}
 	//============================缓存有数据待发送:主机立即发送，从机如果允许发送也立即发送
 	else if((0!=Cache)&&(((0!=ampsys.sysdata.MB_Flag)&&(0==ampsys.Cab.SendWaitTime))|(0!=ampsys.Cab.SlaveSendEnable)))
 	{
+		ampphydef* frame;
 		//------------------------检查有无超出重发次数
 		if(ampsys.Cab.ReSendCount>=ampMaxResendCount)
 		{
@@ -836,13 +867,13 @@ static void cab_send_data_process(void)
 			sendnum	=	api_rs485_send_force(&ampRS485Cb,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 			//----------------------已将数据转移到缓存
 			if(sendnum)
-			{						
+			{	
+				ampsys.sysdata.SysLedFastFlag=1;		//系统LED快速闪烁标志
 				ampsys.Cab.ReSendCount			+=1;			
-				ampsys.Cab.SendWaitTime			=	ampReSendTime;
+				ampsys.Cab.SendWaitTime			=	((sendnum+20)*ampCommCbDelayTime)/1000+2;
+				//ampsys.Cab.SendWaitTime			=	2;
 				
-				//--------------------------LED指示灯
-				ampsys.CommLed.flag.cb_tx		=	1;
-				ampsys.CommLed.time.cb_tx		=	ampledtime;
+				ampsys.CommLed.flag.cb_tx		=	1;		//LED指示灯
 				
 				frame	=	(ampphydef*)Cache->data;
 				//---------------------广播数据只发两次，不需要应答
@@ -870,7 +901,7 @@ static void cab_send_data_process(void)
 	else if(0==ampsys.Cab.SendWaitTime)
 	{
 		//==========================主柜需要发送轮询消息
-		if(ampsys.sysdata.MB_Flag)		//主柜
+		if((ampsys.sysdata.MB_Flag)&&(0!=ampsys.sysdata.Cab_Addr))		//主柜
 		{
 			{
 				ampphydef  ampframe;
@@ -879,9 +910,9 @@ static void cab_send_data_process(void)
 				{
 					ampsys.Cab.GetSlaveAddress++;
 				}
-				if(ampsys.Cab.GetSlaveAddress>5)
+				if(ampsys.Cab.GetSlaveAddress>ampCommCbMaxAddr)
 				{
-					ampsys.Cab.GetSlaveAddress=0;
+					ampsys.Cab.GetSlaveAddress=1;
 				}
 				ampframe.head	=	headcode;
 				ampframe.msg.length		=	5;
@@ -930,10 +961,9 @@ static void lay_receive_data_process(void)
 		//--------------------------有效数据
 		if(0!=frame)
 		{
+			ampsys.sysdata.SysLedFastFlag=1;		//系统LED快速闪烁标志
 			//------------------------LED指示灯
 			ampsys.CommLed.flag.ly_rx	=	1;
-			ampsys.CommLed.time.ly_rx	=	ampledtime;
-			
 			cmd	=	frame->msg.cmd.cmd;
 			dir	=	frame->msg.cmd.dir;
 			//------------------------检查数据传输方向，层接口只接收上传
@@ -980,33 +1010,35 @@ static void lay_receive_data_process(void)
 *******************************************************************************/
 static void lay_send_data_process(void)
 {	
-	unsigned short sendnum=0;
-	ampCachedef*	Cache;
-	ampphydef* frame;
+	unsigned short sendnum=0;	
+	
+	//============================等待层板上电
 	if(0==ampsys.sysdata.LayPowerOnFlag)
 		return ;
-	//============================等待发送时间已到
-	if(0==ampsys.Lay.SendWaitTime)
+	//============================检查应答消息:立即应答
+	if(ampsys.Lay.AckFrame.flag)
 	{
-		//==========================检查有无应答数据要发送
-		if(ampsys.Lay.AckFrame.flag)
-		{
-			unsigned char* addr	=	&ampsys.Lay.AckFrame.head;
-			sendnum	=	api_rs485_send_force(&ampRS485Ly,addr,ampAckSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
-			if(sendnum)	//已将数据转移到缓存
-			{	
-				ampsys.Lay.AckFrame.flag	=	0;
-				ampsys.Lay.SendWaitTime		=	10;
-			}
+		unsigned char* addr	=	&ampsys.Lay.AckFrame.head;
+		sendnum	=	api_rs485_send_force(&ampRS485Ly,addr,ampAckSize);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
+		if(sendnum)	//已将数据转移到缓存
+		{	
+			ampsys.sysdata.SysLedFastFlag=1;		//系统LED快速闪烁标志
+			ampsys.Lay.AckFrame.flag	=	0;
+			ampsys.Lay.SendWaitTime		=	2;
 		}
-		//==========================检查有无发送超时
-		else if(ampsys.Lay.ReSendCount>=ampMaxResendCount)
-		{			
-			Cache	=	get_cache_data(LayPort);
-			if(0!=Cache)	//有数据
+	}
+	//============================等待发送时间已到
+	else if(0==ampsys.Lay.SendWaitTime)
+	{
+		ampCachedef*	Cache	=	get_cache_data(LayPort);
+		ampphydef* frame;
+		//==========================有数据
+		if(0!=Cache)
+		{
+			//========================检查有无发送超时
+			if(ampsys.Lay.ReSendCount>=ampMaxResendCount)
 			{
-				frame	=	(ampphydef*)Cache->data;
-				if(ampsys.sysdata.MB_Flag)	//主柜
+				if(ampsys.sysdata.MB_Flag)				//主柜
 				{
 					set_comm_time_out_frame(PcPort,frame);
 				}
@@ -1016,29 +1048,20 @@ static void lay_send_data_process(void)
 				}
 				del_cache_data(LayPort);
 			}
-		}
-		//==========================检查有无待发送数据
-		else
-		{
-			//------------------------发送数据：广播数据只发两次
-			Cache	=	get_cache_data(LayPort);
-			if(0==Cache)	//无数据
-			{
-				ampsys.Lay.SendWaitTime		=	5;
-			}
+			//========================发送数据
 			else
 			{
 				//----------------------
 				sendnum	=	api_rs485_send_force(&ampRS485Ly,Cache->data,Cache->size);		//串口DMA发送程序，如果数据已经传入到DMA，返回Buffer大小，否则返回0
 				if(sendnum)	//已将数据转移到缓存
 				{	
+					ampsys.sysdata.SysLedFastFlag=1;		//系统LED快速闪烁标志
 					frame	=	(ampphydef*)Cache->data;		
 					ampsys.Lay.ReSendCount+=1;			
-					ampsys.Lay.SendWaitTime	=	ampReSendTime*10;
+					ampsys.Lay.SendWaitTime	=	((sendnum+20)*ampCommLayDelayTime)/1000+2;
 					
 					//----------------------LED指示灯
 					ampsys.CommLed.flag.ly_tx	=	1;
-					ampsys.CommLed.time.ly_tx	=	ampledtime;
 					
 					//----------------------广播数据只发两次，不需要应答
 					if((0xFF==frame->msg.addr.address2)||(0xFF==frame->msg.addr.address3))	//广播地址
@@ -1048,12 +1071,49 @@ static void lay_send_data_process(void)
 							del_cache_data(LayPort);
 						}
 					}
+					//---------------------查询从机命令只发一次，不需要应答
+					else if(ampCmdCheckSleve==frame->msg.cmd.cmd)
+					{
+						del_cache_data(LayPort);
+					}
+					//---------------------需要等待应答
 					else
 					{
-						set_ack_wait_flag(LayPort);				//0--无需等待应答，1--需等待应答
+						set_ack_wait_flag(LayPort);
 					}
 				}
 			}
+		}
+		//==========================无数据待发送，发送查询指令
+		else
+		{			
+			if(0!=ampsys.sysdata.Cab_Addr)
+			{
+				ampphydef  ampframe;
+				static unsigned char address2=0;
+				static unsigned char address3=0;
+				//------------------------位地址
+				if(address3++>=ampCommSegMaxAddr)
+				{
+					address3	=	1;
+					if(address2++>=ampCommLayMaxAddr)
+					{
+						address2	=	1;
+						address3	=	1;
+					}
+				}
+				ampframe.head								=	headcode;
+				ampframe.msg.length					=	5;
+				ampframe.msg.cmd.cmd				=	ampCmdCheckSleve;
+				ampframe.msg.cmd.rv					=	0;
+				ampframe.msg.cmd.dir				=	1;
+				ampframe.msg.addr.address1	=	ampsys.sysdata.Cab_Addr;
+				ampframe.msg.addr.address2	=	address2;
+				ampframe.msg.addr.address3	=	address3;
+				ampframe.msg.data[0]				=	0;
+				api_set_frame(&ampframe,ampCmdCheckSleve,0);    //补充消息的CRC和结束符，返回帧长度
+				set_cache_data(LayPort,&ampframe);		//发往其它柜
+			}			
 		}
 	}	
 }
@@ -1097,16 +1157,7 @@ static void cmd_process(ampphydef* frame)
 			//------------------------------与背光相关的命令
 			if((ampCmdBKligth==cmd))  //LED电源供电控制指令
 			{
-				if(parameter)
-				{
-					ampsys.BackLight.flag.SetLevel	=	3;
-					ampsys.LcdLight.flag.SetLevel		=	3;
-				}
-				else
-				{
-					ampsys.BackLight.flag.SetLevel	=	1;
-					ampsys.LcdLight.flag.SetLevel		=	1;
-				}
+				set_backlight(parameter);
 			}
 
 			//------------------------------与开门相关的命令
@@ -1175,12 +1226,46 @@ static void set_layer_power(unsigned char flag)
 	else
 	{
 		ampLayPowerOn;
-		ampsys.time.LayPowerOnTime		=	ampLayPowerOnTime;
+		if(0==ampsys.time.LayPowerOnTime)
+			ampsys.time.LayPowerOnTime		=	ampLayPowerOnTime;
 	}	
 }
 //------------------------------------------------------------------------------
 
-
+/*******************************************************************************
+*函数名			:	LockStatusUpdata
+*功能描述		:	上报锁状态
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void set_backlight(unsigned char flag)
+{
+	//============================柜门打开时不受指令控制
+	if(0==ampsys.Lock.flag.LockStatus)
+	{
+	}
+	//============================柜门关闭时可受控
+	else
+	{
+		//--------------------------亮背光
+		if(flag)
+		{
+			ampsys.BackLight.flag.SetLevel	=	3;
+			ampsys.LcdLight.flag.SetLevel		=	3;
+		}
+		//--------------------------关背光
+		else
+		{
+			ampsys.BackLight.flag.SetLevel	=	1;
+			ampsys.LcdLight.flag.SetLevel		=	1;
+		}
+	}
+	
+}
+//------------------------------------------------------------------------------
 
 
 
@@ -1436,6 +1521,7 @@ static void Lock_server(void)
 				ampResLock;
 			}
 		}
+		ampsys.sysdata.PowerOn_Flag=0;
 	}
 	//==========================正常驱动
 	else
@@ -1468,7 +1554,6 @@ static void Lock_server(void)
 				if(0==ampsys.Lock.flag.LockStatus)	//原来为开门状态
 				{
 					set_layer_power(0);				//关层板电源
-					set_lock_status_frame();	//上报关门消息
 					ampsys.Lock.flag.LockUpdata	=	1;
 				}
 				else
@@ -1482,7 +1567,6 @@ static void Lock_server(void)
 			{
 				if(0!=ampsys.Lock.flag.LockStatus)	//原来为关门状态
 				{
-					set_lock_status_frame();
 					ampsys.Lock.flag.LockUpdata	=	1;
 				}
 				else
@@ -1490,8 +1574,17 @@ static void Lock_server(void)
 					ampsys.Lock.flag.LockUpdata	=	0;
 				}
 				ampsys.Lock.flag.LockStatus	=	0;
-			}		
+			}
+			//--------------------------门状态更新:上报给PC
+			if(0!=ampsys.Lock.flag.LockUpdata)
+			{
+				if(ampsys.sysdata.PowerOn_Flag)
+				{
+					set_lock_status_frame();	//上报关门消息
+				}
+			}
 		}
+		ampsys.sysdata.PowerOn_Flag=1;
 	}
 }
 //------------------------------------------------------------------------------
@@ -1541,186 +1634,123 @@ static void Magnetic_Lock_server(void)
 static void CommLed_Server(void)
 {
 	unsigned char displaycode	=	0;
-  static unsigned short freshen_led_time=0;
-	//==========================
-	if(ampsys.CommLed.FlashTime++>100)
+
+	//==========================V3	
+	if(ampsys.CommLed.FlashTime++>50)
 	{
 		ampsys.CommLed.FlashTime=0;
+		//========================Setp1:根据标志初始化闪烁次数
+		//------------------------PC端口
+		if(ampsys.CommLed.flag.pc_tx)
+		{
+			ampsys.CommLed.flag.pc_tx	=	0;
+			ampsys.CommLed.time.pc_tx	=	ampledtime;
+		}
+		if(ampsys.CommLed.flag.pc_rx)
+		{
+			ampsys.CommLed.flag.pc_rx	=	0;
+			ampsys.CommLed.time.pc_rx	=	ampledtime;
+		}
+		//------------------------柜端口
+		if(ampsys.CommLed.flag.cb_tx)
+		{
+			ampsys.CommLed.flag.cb_tx	=	0;
+			ampsys.CommLed.time.cb_tx	=	ampledtime;
+		}
+		if(ampsys.CommLed.flag.cb_rx)
+		{
+			ampsys.CommLed.flag.cb_rx	=	0;
+			ampsys.CommLed.time.cb_rx	=	ampledtime;
+		}
+		//------------------------层端口
+		if(ampsys.CommLed.flag.ly_tx)
+		{
+			ampsys.CommLed.flag.ly_tx	=	0;
+			ampsys.CommLed.time.ly_tx	=	ampledtime;
+		}
+		if(ampsys.CommLed.flag.ly_rx)
+		{
+			ampsys.CommLed.flag.ly_rx	=	0;
+			ampsys.CommLed.time.ly_rx	=	ampledtime;
+		}
+		//------------------------读卡器端口
+		if(ampsys.CommLed.flag.rf_tx)
+		{
+			ampsys.CommLed.flag.rf_tx	=	0;
+			ampsys.CommLed.time.rf_tx	=	ampledtime;
+		}
+		if(ampsys.CommLed.flag.rf_rx)
+		{
+			ampsys.CommLed.flag.rf_rx	=	0;
+			ampsys.CommLed.time.rf_rx	=	ampledtime;
+		}
+		//========================Setp2:根据闪烁次数设置显示标志
 		//------------------------需要点亮
 		if(0==ampsys.CommLed.ClearFlag)
 		{
 			ampsys.CommLed.ClearFlag=1;
-			
-			ampsys.CommLed.displaycode.code	=	0;
-			//----------------------读卡器
-			if(ampsys.CommLed.time.rf_rx>0)
+			ampsys.CommLed.displaycode.code	=	0xFF;
+			//----------------------PC接口
+			if(ampsys.CommLed.time.pc_tx>0)
 			{
-				ampsys.CommLed.time.rf_rx-=1;
+				ampsys.CommLed.time.pc_tx-=1;
+				ampsys.CommLed.displaycode.seg.pc_tx=0;
 			}
-			else
+			//----------------------柜接口
+			if(ampsys.CommLed.time.cb_tx>0)
 			{
-				ampsys.CommLed.displaycode.flag.rf_rx	=	1;
-			}
-			if(ampsys.CommLed.time.rf_tx>0)
-			{
-				ampsys.CommLed.time.rf_tx-=1;
-			}
-			else
-			{
-				ampsys.CommLed.displaycode.flag.rf_tx	=	1;
+				ampsys.CommLed.time.cb_tx-=1;
+				ampsys.CommLed.displaycode.seg.cb_tx=0;
 			}
 			//----------------------层接口
-			if(ampsys.CommLed.time.ly_rx>0)
-			{
-				ampsys.CommLed.time.ly_rx-=1;
-			}
-			else
-			{
-				ampsys.CommLed.displaycode.flag.ly_rx	=	1;;
-			}
 			if(ampsys.CommLed.time.ly_tx>0)
 			{
 				ampsys.CommLed.time.ly_tx-=1;
+				ampsys.CommLed.displaycode.seg.ly_tx=0;
 			}
-			else
+			//----------------------读卡器
+			if(ampsys.CommLed.time.rf_tx>0)
 			{
-				ampsys.CommLed.displaycode.flag.ly_tx	=	1;
+				ampsys.CommLed.time.rf_tx-=1;
+				ampsys.CommLed.displaycode.seg.rf_tx=0;
+			}
+		}
+		else
+		{
+			ampsys.CommLed.ClearFlag=0;			
+			ampsys.CommLed.displaycode.code	=	0xFF;
+			//----------------------PC接口
+			if(ampsys.CommLed.time.pc_rx>0)
+			{
+				ampsys.CommLed.time.pc_rx-=1;
+				ampsys.CommLed.displaycode.seg.pc_rx=0;
 			}
 			//----------------------柜接口
 			if(ampsys.CommLed.time.cb_rx>0)
 			{
 				ampsys.CommLed.time.cb_rx-=1;
+				ampsys.CommLed.displaycode.seg.cb_rx=0;
 			}
-			else
+			//----------------------层接口
+			if(ampsys.CommLed.time.ly_rx>0)
 			{
-				ampsys.CommLed.displaycode.flag.cb_rx	=	1;
+				ampsys.CommLed.time.ly_rx-=1;
+				ampsys.CommLed.displaycode.seg.ly_rx=0;
 			}
-			if(ampsys.CommLed.time.cb_tx>0)
+			//----------------------读卡器
+			if(ampsys.CommLed.time.rf_rx>0)
 			{
-				ampsys.CommLed.time.cb_tx-=1;
+				ampsys.CommLed.time.rf_rx-=1;
+				ampsys.CommLed.displaycode.seg.rf_rx=0;
 			}
-			else
-			{
-				ampsys.CommLed.displaycode.flag.cb_tx	=	1;
-			}
-			//----------------------PC接口
-			if(ampsys.CommLed.time.pc_rx>0)
-			{
-				ampsys.CommLed.time.pc_rx-=1;
-			}
-			else
-			{
-				ampsys.CommLed.displaycode.flag.pc_rx	=	1;
-			}
-			if(ampsys.CommLed.time.pc_tx>0)
-			{
-				ampsys.CommLed.time.pc_tx-=1;
-			}
-			else
-			{
-				ampsys.CommLed.displaycode.flag.pc_tx	=	1;
-			}			
-			displaycode	=	ampsys.CommLed.displaycode.code;
-		}
-		else
-		{
-			ampsys.CommLed.ClearFlag=0;
-			displaycode	=	0xFF;
-		}
+		}		
 		//========================发送数据
+		displaycode	=	ampsys.CommLed.displaycode.code;
 		spi_set_nss_low(&stLed);
 		SPI_I2S_SendData(stLed.port.SPIx, displaycode);				//发送数据
 		spi_set_nss_high(&stLed);
-	}	
-	return ;
-	
-	
-	
-	
-	
-  if(freshen_led_time++>100)
-  {
-		freshen_led_time	=	0;
-		
-		displaycode	=	ampsys.CommLed.display;
-		displaycode	=	displaycode^0xFF;
-		
-		ampsys.CommLed.display	=	displaycode;
-		if(ampsys.CommLed.time.rf_rx>0)
-		{
-			ampsys.CommLed.time.rf_rx-=1;
-		}
-		else
-		{
-			displaycode|=0x80;
-		}
-		if(ampsys.CommLed.time.rf_tx>0)
-		{
-			ampsys.CommLed.time.rf_tx-=1;
-		}
-		else
-		{
-			displaycode|=0x40;
-		}
-		//--------------------------------
-		if(ampsys.CommLed.time.ly_rx>0)
-		{
-			ampsys.CommLed.time.ly_rx-=1;
-		}
-		else
-		{
-			displaycode|=0x20;
-		}
-		if(ampsys.CommLed.time.ly_tx>0)
-		{
-			ampsys.CommLed.time.ly_tx-=1;
-		}
-		else
-		{
-			displaycode|=0x10;
-		}
-		//--------------------------------
-		if(ampsys.CommLed.time.cb_rx>0)
-		{
-			ampsys.CommLed.time.cb_rx-=1;
-		}
-		else
-		{
-			displaycode|=0x08;
-		}
-		if(ampsys.CommLed.time.cb_tx>0)
-		{
-			ampsys.CommLed.time.cb_tx-=1;
-		}
-		else
-		{
-			displaycode|=0x04;
-		}
-		//--------------------------------
-		if(ampsys.CommLed.time.pc_rx>0)
-		{
-			ampsys.CommLed.time.pc_rx-=1;
-		}
-		else
-		{
-			displaycode|=0x02;
-		}
-		if(ampsys.CommLed.time.pc_tx>0)
-		{
-			ampsys.CommLed.time.pc_tx-=1;
-		}
-		else
-		{
-			displaycode|=0x01;
-		}
-		
-		//____________使能片选
-		spi_set_nss_low(&stLed);
-		SPI_I2S_SendData(stLed.port.SPIx, displaycode);				//发送数据
-//    SPI_ReadWriteByteSPI(&stLed,led_stata);
-		//____________取消片选	
-		spi_set_nss_high(&stLed);
-  }  
+	}
+
 }
 //------------------------------------------------------------------------------
 /*******************************************************************************
@@ -1762,20 +1792,40 @@ static void BackLight_Server(void)
 		{
 			if(2!=ampsys.BackLight.flag.WorkLevel)
 			{
-				ampBackLighSet(300);
+				//----------------主柜--保留一半亮度
+				if(ampsys.sysdata.MB_Flag)
+				{
+					ampBackLighSet(500);
+				}
+				//----------------副柜--全亮
+				else
+				{
+					ampBackLighSet(999);
+				}
 				ampsys.BackLight.flag.WorkLevel	=	2;
 				ampsys.BackLight.Time						=	0;
 			}			
 		}
-		//------------------------关门:先高亮后低亮
+		//------------------------关门:
 		else
 		{
-			if(3!=ampsys.BackLight.flag.WorkLevel)
+			//----------------主柜--先高亮后低亮
+			if(ampsys.sysdata.MB_Flag)
 			{
-				ampBackLighSet(999);
-				ampsys.BackLight.flag.WorkLevel	=	3;
+				if(3!=ampsys.BackLight.flag.WorkLevel)
+				{
+					ampBackLighSet(999);
+					ampsys.BackLight.flag.WorkLevel	=	3;
+				}
+				ampsys.BackLight.Time							=	BackLightOnTime;
 			}
-			ampsys.BackLight.Time							=	BackLightOnTime;
+			//----------------副柜--关灯
+			else
+			{
+				ampBackLighSet(0);
+				ampsys.BackLight.flag.WorkLevel	=	1;
+				ampsys.BackLight.Time	=	0;
+			}
 		}
 	}
 	//==========================控制命令或者计时器
@@ -1786,7 +1836,7 @@ static void BackLight_Server(void)
 		{
 			if(1!=ampsys.BackLight.flag.WorkLevel)
 			{
-				ampBackLighSet(1);
+				ampBackLighSet(100);
 				ampsys.BackLight.flag.WorkLevel	=	1;				
 			}
 			ampsys.BackLight.Time						=	0;
@@ -1834,8 +1884,17 @@ static void BackLight_Server(void)
 				{
 					//------------------最低亮度/灭灯，计时或者需要灭灯时请求，开门时LCD背光亮度
 					if(1!=ampsys.BackLight.flag.WorkLevel)
-					{					
-						ampBackLighSet(100);
+					{	
+						//----------------主柜--保留一点亮度
+						if(ampsys.sysdata.MB_Flag)
+						{
+							ampBackLighSet(100);
+						}
+						//----------------副柜--关闭背光
+						else
+						{
+							ampBackLighSet(0);
+						}
 						ampsys.BackLight.flag.WorkLevel		=	1;
 					}
 				}
@@ -1871,7 +1930,7 @@ static void LcdLight_Server(void)
 		else if(ampsys.LcdLight.Time>=1000)
 		{
 			ampsys.LcdLight.Time	=	0;
-			ampLcdLightSet(900);
+			ampLcdLightSet(999);
 		}
 		ampsys.LcdLight.flag.WorkLevel=0;
 		ampsys.LcdLight.flag.SetLevel =0;
@@ -1894,7 +1953,7 @@ static void LcdLight_Server(void)
 		{
 			if(3!=ampsys.LcdLight.flag.WorkLevel)
 			{
-				ampLcdLightSet(900);
+				ampLcdLightSet(999);
 				ampsys.LcdLight.flag.WorkLevel		=	3;
 			}			
 			ampsys.LcdLight.Time							=	LcdLightOnTime;
@@ -1908,7 +1967,7 @@ static void LcdLight_Server(void)
 		{
 			if(1!=ampsys.LcdLight.flag.WorkLevel)
 			{
-				ampLcdLightSet(100);
+				ampLcdLightSet(0);
 				ampsys.LcdLight.flag.WorkLevel	=	1;
 			}
 			ampsys.LcdLight.Time						=	0;
@@ -1928,7 +1987,7 @@ static void LcdLight_Server(void)
 		{
 			if(3!=ampsys.LcdLight.flag.WorkLevel)
 			{
-				ampLcdLightSet(900);
+				ampLcdLightSet(999);
 				ampsys.LcdLight.flag.WorkLevel		=	3;
 			}
 			ampsys.LcdLight.Time							=	LcdLightOnTime;
@@ -1998,22 +2057,74 @@ static void Tim_Server(void)
   {
     ampsys.time.swicthidtime--;
   }
-  //----------------运行指示灯
-  if(ampsys.time.SYSLEDTime>0)
-  {
-    ampsys.time.SYSLEDTime--;
-  }
+	//----------------温湿度传感器更新时间
+	if(ampsys.SHT20.Time>0)
+	{
+		ampsys.SHT20.Time--;
+	}
 	//----------------层板供电等待时间
   if(ampsys.time.LayPowerOnTime>0)
   {
     ampsys.time.LayPowerOnTime--;
-		if(0==ampsys.time.LayPowerOnTime)
+		if(ampsys.time.LayPowerOnTime<10)
 		{
 			ampsys.sysdata.LayPowerOnFlag	=	1;
 		}
   }
+	
 }
 //------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void sht20_server(void)
+{
+	api_sht20_server();
+	if(0==ampsys.SHT20.Time)
+	{
+		ampphydef	frame;
+		
+		ampsys.SHT20.Time	=	ampShtUpdataTime;
+		
+		ampsys.SHT20.temperature		=	api_sht20_get_temperature();
+		ampsys.SHT20.humidity				=	api_sht20_get_humidity();		
+		
+		ampsys.SHT20.SegTemperature	=	api_sht20_get_SegTemperature();
+		ampsys.SHT20.SegHumidity		=	api_sht20_get_SegHumidity();
+		
+		if((0!=ampsys.SHT20.SegTemperature)&&(0!=ampsys.SHT20.SegHumidity))
+		{
+			frame.head							=	headcode;
+			frame.msg.length				=	8;		//cmd,addr1,addr2,addr3,data0,data1,data2,data3
+			frame.msg.cmd.cmd				=	ampCmdTHdata;
+			frame.msg.cmd.rv				=	0;
+			frame.msg.cmd.dir				=	1;
+			frame.msg.addr.address1	=	ampsys.sysdata.Cab_Addr;
+			frame.msg.addr.address2	=	0;
+			frame.msg.addr.address3	=	0;
+			frame.msg.data[0]				=	ampsys.SHT20.SegTemperature&0xFF;
+			frame.msg.data[1]				=	(ampsys.SHT20.SegTemperature>>8)&0xFF;
+			
+			frame.msg.data[2]				=	ampsys.SHT20.SegHumidity&0xFF;
+			frame.msg.data[3]				=	(ampsys.SHT20.SegHumidity>>8)&0xFF;			
+			
+			api_set_frame(&frame,ampCmdTHdata,ampDirUp);		//设置消息帧
+			
+			if(ampsys.sysdata.MB_Flag)	//主板
+				set_cache_data(PcPort,&frame);
+			else
+				set_cache_data(CabPort,&frame);
+		}		
+	}
+}
+//------------------------------------------------------------------------------
+
 
 
 
@@ -2039,6 +2150,7 @@ static void Hardware_Configuration(void)
   SwitchID_Configuration();
   Led_Configuration();
   Communication_Configuration();
+	sht20_configuration();
 	GPIO_Configuration_OPP50(ampSYSLEDPort,ampSYSLEDPin);
 }
 //------------------------------------------------------------------------------
@@ -2065,8 +2177,8 @@ static void Communication_Configuration(void)
   ampIOT5302W.Conf.IOT5302WPort.RS485_TxEn_Pin	= ampCommCardTxEnPin;
 	ampIOT5302W.Conf.IOT5302WPort.RS485_RxEn_PORT	= ampCommCardRxEnPort;
   ampIOT5302W.Conf.IOT5302WPort.RS485_RxEn_Pin	= ampCommCardRxEnPin;
-	ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT	=	ampCommCardRxEnPort;
-	ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin		=	ampCommCardRxEnPin;
+	//ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_PORT	=	ampCommCardRxEnPort;
+	//ampIOT5302W.Conf.IOT5302WPort.RS485_CTL_Pin		=	ampCommCardRxEnPin;
   ampIOT5302W.Conf.USART_BaudRate  = ampCommCardBaudRate;
   api_iot5302w_configuration(&ampIOT5302W);
 	
@@ -2233,6 +2345,25 @@ static void Led_Configuration(void)
   stLed.port.SPI_BaudRatePrescaler_x  = SPI_BaudRatePrescaler_64;
 	api_spi_configurationNR(&stLed);		//SPI接口配置
   //SPI_InitializeSPI(&stLed);			//SPI-DMA通讯方式配置
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void sht20_configuration(void)
+{
+	
+	sht20.iic.port.SCL_Port	=	ampShtSclPort;
+	sht20.iic.port.SCL_Pin	=	ampShtSclPin;
+	sht20.iic.port.SDA_Port	=	ampShtSdaPort;
+	sht20.iic.port.SDA_Pin	=	ampShtSdaPin;
+	api_sht20_configuration(&sht20);
 }
 //------------------------------------------------------------------------------
 

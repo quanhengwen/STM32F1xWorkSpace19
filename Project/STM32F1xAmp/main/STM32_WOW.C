@@ -310,6 +310,12 @@ void WOW_Configuration(void)
 #ifdef AMPLCDV12
 	AMPLCDV12_Configuration();
 #endif
+
+//*********************************AMPLCDV12A2*********************************//
+#ifdef AMPLCDV12A2
+	AMPLCDV12A2_Configuration();
+#endif
+
 //*********************************AMPLED02V13*********************************//
 #ifdef AMPLED02V13
 	AMPLED02_Configuration();
@@ -651,6 +657,12 @@ void WOW_Server(void)
 #ifdef AMPLCDV12
 	AMPLCDV12_Server();
 #endif
+
+//*********************************AMPLCDV12A2*********************************//
+#ifdef AMPLCDV12A2
+	AMPLCDV12A2_Server();
+#endif
+
 //*********************************AMPLED02V13*********************************//
 #ifdef AMPLED02V13
 	AMPLED02_Server();

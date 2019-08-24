@@ -43,8 +43,8 @@ void ADC_TEST_Configuration(void)
   u8 i  = 0;
 	SYS_Configuration();			//系统配置---打开系统时钟 STM32_SYS.H
 //	TIM_Configuration(TIM3,7200,10000);		//定时时间设定
-//	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
-//	api_usart_dma_configurationNR(USART1,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置	
+//	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);	//PWM设定-20161127版本	占空比1/1000
+//	api_usart_configuration_NR(USART1,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置	
 	
 //	ADC1_DiscConfigurationNR((u32*)&ADCD,1,ADC_Channel_9,1,1,ADC_SampleTime_1Cycles5);				//ADC1规则通道组配置
 //  ADC1_DiscConfigurationNR((u32*)&ADCD2,1,ADC_Channel_9,2,2,ADC_SampleTime_1Cycles5);				//ADC1规则通道组配置
@@ -76,7 +76,7 @@ void ADC_TEST_Configuration(void)
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	
 	
-//	api_usart_dma_configurationNR(USART2,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置
+//	api_usart_configuration_NR(USART2,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置
 
   
 }

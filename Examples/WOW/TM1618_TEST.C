@@ -76,7 +76,7 @@ void TM1618_Configuration(void)
 	
 	IWDG_Configuration(1000);			//独立看门狗配置---参数单位ms	
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,5000,20);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,5000,20);						//PWM设定-20161127版本
 	
 //	TM1618_WriteByte(&TM1618_1,5);
 	

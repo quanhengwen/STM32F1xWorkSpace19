@@ -4,7 +4,7 @@
  *      *** Do not modify ! ***
  *
  * Project: 'STM32F1xAmp' 
- * Target:  'AMPLCDV12' 
+ * Target:  'AMPLCDV12A2' 
  */
 
 #ifndef RTE_COMPONENTS_H

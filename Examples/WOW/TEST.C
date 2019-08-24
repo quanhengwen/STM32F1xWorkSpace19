@@ -23,14 +23,14 @@ void TEST_Configuration(void)
 //	GPIO_Configuration0();
 //	TIM_Configuration(TIM1,7200,3000);	//定时时间设定
 //	PWM_Configuration(TIM2,7200,10000,51);
-//	PWM_OUT(TIM1,PWM_OUTChannel1,20000,50);		//PWM设定
-//	PWM_OUT(TIM2,PWM_OUTChannel1,20000,500);	//PWM设定
-//	PWM_OUT(TIM3,PWM_OUTChannel1,5000,30);		//PWM设定
-//	PWM_OUT(TIM3,PWM_OUTChannel2,5000,30);		//PWM设定
-//	PWM_OUT(TIM3,PWM_OUTChannel3,1000,500);		//PWM设定
-//	PWM_OUT(TIM4,PWM_OUTChannel1,20000,40);		//PWM设定
+//	api_pwm_oc_configuration(TIM1,PWM_OUTChannel1,20000,50);		//PWM设定
+//	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,20000,500);	//PWM设定
+//	api_pwm_oc_configuration(TIM3,PWM_OUTChannel1,5000,30);		//PWM设定
+//	api_pwm_oc_configuration(TIM3,PWM_OUTChannel2,5000,30);		//PWM设定
+//	api_pwm_oc_configuration(TIM3,PWM_OUTChannel3,1000,500);		//PWM设定
+//	api_pwm_oc_configuration(TIM4,PWM_OUTChannel1,20000,40);		//PWM设定
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,5000,500);		//PWM设定--SYS-LED
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,5000,500);		//PWM设定--SYS-LED
 //	GPIO_Configuration_OPP50(GPIOB,	GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_Configuration_OPP50(GPIOB,	GPIO_Pin_1);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_Configuration_IPU(GPIOB,	GPIO_Pin_4);			//将GPIO相应管脚配置为上拉输入模式----V20170605
@@ -38,7 +38,7 @@ void TEST_Configuration(void)
 	GPIO_Configuration_IPU(GPIOB,	GPIO_Pin_6);			//将GPIO相应管脚配置为上拉输入模式----V20170605
 	GPIO_Configuration_IPU(GPIOB,	GPIO_Pin_7);			//将GPIO相应管脚配置为上拉输入模式----V20170605
 	PB1	=	0;
-//	PWM_OUT(TIM2,PWM_OUTChannel2,20000,500);	//PWM设定
+//	api_pwm_oc_configuration(TIM2,PWM_OUTChannel2,20000,500);	//PWM设定
 
 	PWM_OUT_COUNT(TIM3,PWM_OUTChannel3,1000,500);		//电机脉冲频率
 //	SetPWM_Num(TIM3,100);		//设置计数值

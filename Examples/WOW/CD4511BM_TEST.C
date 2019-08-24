@@ -35,7 +35,7 @@ void SEG_DISPALY(u8 wei,u16 num);
 void CD4511BM_TEST_Configuration(void)
 {
 	SYS_Configuration();											//系统配置 STM32_SYS.H	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);
 	SysTick_Configuration(1000);							//系统嘀嗒时钟配置72MHz,单位为uS
 	
 	CD4511BM_PinSet();		//CD4511驱动管脚及数码管位选管脚配置

@@ -41,7 +41,7 @@
 #include "STM32_USART.H"
 
 #include "STM32_SYSTICK.H"
-#include "STM32_PWM.H"
+#include "STM32_TIM.H"
 
 #include "BQ26100Master.H"
 #include "BQ26100DATA.H"
@@ -341,7 +341,7 @@ unsigned char api_BqApp_Work_As_Smt_Server(void)
 	unsigned char sample[20]={0xB8,0xD3,0xAA,0x20,0x82,0xFE,0xD1,0xF0,0x7C,0x0A,0x07,0x8E,0x26,0xC7,0xDE,0x10,0xCA,0xA3,0x2C,0xC8};
 	
 	//st1----------获取状态
-	len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+	len	=	api_usart_receive(ComPortOut,rxbuffer);
 	//----空闲状态
 	if(2==len)
 	{
@@ -381,7 +381,7 @@ unsigned char api_BqApp_Work_As_Smt_Server(void)
 	else
 	{
 		//=================先检测飞达返回数据
-		len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+		len	=	api_usart_receive(ComPortOut,rxbuffer);
 		//----空闲状态
 		if(2==len)
 		{
@@ -409,7 +409,7 @@ unsigned char api_BqApp_Work_As_Smt_Server(void)
 			}
 		}
 		//=================根据step状态发送相应的数据
-		if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
+		if(0!=get_usart_tx_status(ComPortOut))		//串口状态检查
 		{
 			return 0;
 		}
@@ -428,14 +428,14 @@ unsigned char api_BqApp_Work_As_Smt_Server(void)
 			txbuffer[0]=0x00;
 			txbuffer[1]=0x00;
 			txbuffer[2]=0xFF;
-			api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+			api_usart_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
 		}
 		else if(1==step)
 		{
 			txbuffer[0]=0xCA;
 			txbuffer[1]=0x00;
 			txbuffer[2]=0x35;
-			api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+			api_usart_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
 		}
 		//-----------------发送校验数据
 		else if(2==step)
@@ -452,7 +452,7 @@ unsigned char api_BqApp_Work_As_Smt_Server(void)
 			{
 				txbuffer[len+2]=sample[19-len];
 			}
-			api_usart_dma_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
+			api_usart_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
 			api_BqApp_set_sys_led(0);
 		}
 		//-----------------流程完成，等待下次连接
@@ -489,7 +489,7 @@ unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
 	unsigned char sample[20]={0xB8,0xD3,0xAA,0x20,0x82,0xFE,0xD1,0xF0,0x7C,0x0A,0x07,0x8E,0x26,0xC7,0xDE,0x10,0xCA,0xA3,0x2C,0xC8};
 	
 	//st1----------获取状态
-	len	=	api_usart_dma_receive(ComPortOut,rxbuffer);
+	len	=	api_usart_receive(ComPortOut,rxbuffer);
 	//----空闲状态
 	if(2==len)
 	{
@@ -532,7 +532,7 @@ unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
 	}
 	
 
-	if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
+	if(0!=get_usart_tx_status(ComPortOut))		//串口状态检查
 	{
 		return 0;
 	}
@@ -547,14 +547,14 @@ unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
 		txbuffer[0]=0x00;
 		txbuffer[1]=0x00;
 		txbuffer[2]=0xFF;
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+		api_usart_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
 	}
 	else if(1==step)
 	{
 		txbuffer[0]=0xCA;
 		txbuffer[1]=0x00;
 		txbuffer[2]=0x35;
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+		api_usart_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
 	}
 	else if(2==step)
 	{
@@ -570,7 +570,7 @@ unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
 		{
 			txbuffer[len+2]=sample[19-len];
 		}
-		api_usart_dma_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
+		api_usart_send(ComPortOut,txbuffer,(u16)23);		//自定义printf串口DMA发送程序
 		api_BqApp_set_sys_led(0);
 	}
 	else if(3==step)
@@ -579,7 +579,7 @@ unsigned char api_BqApp_Work_As_Smt_ServerBAC(void)
 		txbuffer[0]=0x00;
 		txbuffer[1]=0x00;
 		txbuffer[2]=0xFF;
-		//api_usart_dma_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
+		//api_usart_send(ComPortOut,txbuffer,(u16)3);		//自定义printf串口DMA发送程序
 	}
 	return 1;
 	//time2++;
@@ -630,7 +630,7 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 		//api_BqApp_set_sys_led(0);
 	}
 	
-	len	=	api_usart_dma_receive(ComPortIn,rxbuffer);	
+	len	=	api_usart_receive(ComPortIn,rxbuffer);	
 	if(0==len)			//无数据
 	{
 		return 0;
@@ -645,7 +645,7 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 		txbuffer[0]=0x01;
 		txbuffer[1]=0xFE;
 		//connecttime=0;
-		api_usart_dma_send(ComPortIn,txbuffer,2);
+		api_usart_send(ComPortIn,txbuffer,2);
 	}
 	//----------------------------------0xCA,0x00,0x35连接指令,返回0xCA,0x02,0x01,0x01,0x31
 	else if((3==len)&&(0xCA==rxbuffer[0]))
@@ -655,7 +655,7 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 		txbuffer[2]=0x01;
 		txbuffer[3]=0x01;
 		txbuffer[4]=0x31;
-		api_usart_dma_send(ComPortIn,txbuffer,5);
+		api_usart_send(ComPortIn,txbuffer,5);
 		
 		//connecttime=0;
 	}
@@ -667,7 +667,7 @@ unsigned char api_BqApp_Work_As_Feeder_Server(void)
 		txbuffer[2]=0x03;
 		txbuffer[3]=0x00;
 		txbuffer[4]=0xAE;
-		api_usart_dma_send(ComPortIn,txbuffer,5);
+		api_usart_send(ComPortIn,txbuffer,5);
 		
 		//connecttime=0;
 		
@@ -875,7 +875,7 @@ static void api_BqApp_usb_to_feeder(void)
   {
 		return;
 	}
-	if(0==get_usart_tx_idle(ComPortOut))		//串口状态检查
+	if(0!=get_usart_tx_status(ComPortOut))		//串口状态检查
 	{
 		return ;
 	}
@@ -891,7 +891,7 @@ static void api_BqApp_usb_to_feeder(void)
 	len	=	api_usb_out_get_data(buffer);
 	if(len)
 	{
-		api_usart_dma_send(ComPortOut,buffer,(u16)len);		//自定义printf串口DMA发送程序
+		api_usart_send(ComPortOut,buffer,(u16)len);		//自定义printf串口DMA发送程序
 	}
 }
 //------------------------------------------------------------------------------
@@ -935,9 +935,9 @@ static void api_BqApp_set_usart_connect(void)
 	//#define bq26100SampleVerify 		0		//校验样品数据
 	//#define bq26100GetSampleDigest 	0		//对样品数据重新认证--
 #if bq26100WorkAsSMT					//模拟SMT发送认证数据
-	api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);	
+	api_usart_configuration_NR(ComPortOut,625000,bqusartsize);	
 #elif bq26100WorkAsFeeder			//模拟飞达接收认证数据并认证
-	api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
+	api_usart_configuration_NR(ComPortIn,625000,bqusartsize);
 #elif bq26100SampleVerify			//校验样品数据
 	
 #elif bq26100GetSampleDigest	//对样品数据重新认证--
@@ -947,11 +947,11 @@ static void api_BqApp_set_usart_connect(void)
 //		GPIO_ResetBits(TxEnConnectPort,TxEnConnectPin);
 //		GPIO_ResetBits(RxEnConnectPort,RxEnConnectPin);
 //#if bq26100Master		
-//		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
-//		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
+//		api_usart_configuration_NR(ComPortIn,625000,bqusartsize);
+//		api_usart_configuration_NR(ComPortOut,625000,bqusartsize);
 //#else
-//		api_usart_dma_configurationNR(ComPortIn,625000,bqusartsize);
-//		api_usart_dma_configurationNR(ComPortOut,625000,bqusartsize);
+//		api_usart_configuration_NR(ComPortIn,625000,bqusartsize);
+//		api_usart_configuration_NR(ComPortOut,625000,bqusartsize);
 //#endif
 
 //		GPIO_Configuration_INF(TxEnConnectPort,	TxEnConnectPin);			//将GPIO相应管脚配置为浮空输入模式----V20170605
@@ -1016,7 +1016,7 @@ void api_BqApp_gpio_configuration(void)
 	GPIO_ResetBits(MrxPort,MrxPin);	
 #elif bq26100V2
 	
-	//api_usart_dma_configurationNR(ComPortIn,625000,128);
+	//api_usart_configuration_NR(ComPortIn,625000,128);
 	//-------------------串口连接使能
 	GPIO_Configuration_OPP50(TxEnConnectPort,TxEnConnectPin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	//GPIO_SetBits(TxEnConnectPort,TxEnConnectPin);

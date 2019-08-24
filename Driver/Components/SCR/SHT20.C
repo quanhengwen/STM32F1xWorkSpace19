@@ -46,9 +46,13 @@ void api_sht20_server(void)
 		return;
 	time = 0;
 	if(pSHT20->flag.t)
+	{
 		sht20_get_temperature_poll();
+	}		
 	else
+	{
 		sht20_get_humidity_poll();
+	}
 }
 //------------------------------------------------------------------------------
 
@@ -78,6 +82,33 @@ float api_sht20_get_temperature(void)
 float api_sht20_get_humidity(void)
 {
 	return pSHT20->data.humidity;
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_sht20_get_SegTemperature(void)
+{
+	return pSHT20->data.SegTemperature;
+}
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned short api_sht20_get_SegHumidity(void)
+{
+	return pSHT20->data.SegHumidity;
 }
 //------------------------------------------------------------------------------
 
@@ -147,7 +178,10 @@ void sht20_get_temperature_poll(void)
 	unsigned char dsht[10]={0};	
 	iicAck_def	iicAck	=	iic_nack;
 	
-	iicAck	=	 (iicAck_def)api_iic_read_start(sht20iic,0x81);
+	pSHT20->data.SegTemperature	=	0;
+	pSHT20->data.temperature		=	0;
+	
+	iicAck	=	 (iicAck_def)api_iic_read_start(sht20iic,0x81);	
 	if(iicAck	==	iic_ack)
 	{
 			
@@ -155,7 +189,8 @@ void sht20_get_temperature_poll(void)
 	
 		//---------------------------转换湿度数据
 		temp	=	dsht[0]<<8|dsht[1];
-		temp	=	temp&~0x0003;
+		temp	=	temp&~0x0003;		//低2位为状态位
+		pSHT20->data.SegTemperature	=	temp;
 		pSHT20->data.temperature	=	(temp*175.72)/65536.0 - 46.85;
 	}	
 	sht20_set_mode_slave_humidity();			//启动下次读转换
@@ -187,15 +222,18 @@ void sht20_get_humidity_poll(void)
 	unsigned char dsht[10]={0};	
 	iicAck_def	iicAck	=	iic_nack;
 	
-	iicAck	=	 (iicAck_def)api_iic_read_start(sht20iic,0x81);
+	pSHT20->data.SegHumidity	=	0;
+	pSHT20->data.humidity			=	0;
+	
+	iicAck	=	 (iicAck_def)api_iic_read_start(sht20iic,0x81);	
 	if(iicAck	==	iic_ack)
-	{
-			
+	{			
 		api_iic_read_buffer(sht20iic,0x81,dsht,3);
 	
 		//---------------------------转换湿度数据
 		temp	=	dsht[0]<<8|dsht[1];
 		temp	=	temp&~0x000F;
+		pSHT20->data.SegHumidity	=	temp;
 		pSHT20->data.humidity	=	(temp*125.0)/65536.0 - 6;
 	}	
 	sht20_set_mode_slave_temperature();			//启动下次读转换

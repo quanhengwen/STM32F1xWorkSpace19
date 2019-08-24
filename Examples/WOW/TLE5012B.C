@@ -76,7 +76,7 @@ void TLE5012B_Configuration(void)
 	GPIO_Configuration_IPU(CWtargePort,CWtargePin);			//将GPIO相应管脚配置为上拉输入模式----V20170605
 	GPIO_Configuration_IPU(CCWtargePort,CCWtargePin);		//将GPIO相应管脚配置为上拉输入模式----V20170605
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,2,300);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,2,300);						//PWM设定-20161127版本
 	
 //  IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
 	SysTick_DeleymS(1000);				//SysTick延时nmS
@@ -359,7 +359,7 @@ void hw_configuration(void)
 void COMM_Configuration(void)
 {
   unsigned short RxNum  = 0;
-  api_usart_dma_configurationNR	(USART1,115200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART1,115200,ussize);	//USART_DMA配置--查询方式，不开中断
 
   //-----------------------------总线接口485
   stRS485BS.USARTx  = USART2;

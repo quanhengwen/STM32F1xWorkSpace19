@@ -58,7 +58,7 @@ void EepromTest_Configuration(void)
 	api_iic_configuration_gpio(&At24c02);	//启用锁--配置
 	
 	SysTick_Configuration(1000);	//系统嘀嗒时钟配置72MHz,单位为uS
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,990);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,990);						//PWM设定-20161127版本
 	
 	strsize=strlen(teststr);
 	memcpy(WriteBuffer,teststr,strsize);
@@ -94,7 +94,7 @@ void EepromTest_Server(void)
 		//I2C_ReadPage(&At24c02,6,ReadBuffer);
 		if(0!=memcmp(WriteBuffer,ReadBuffer,128))
 		{
-			PWM_OUT(TIM2,PWM_OUTChannel1,8,500);						//PWM设定-20161127版本
+			api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,8,500);						//PWM设定-20161127版本
 			//STM32_FLASH_Write(STARTADDR,(unsigned short*)&WriteCount,2);						//从指定地址写入指定长度的数据
 			//EEPROMReadERROR();
 		}

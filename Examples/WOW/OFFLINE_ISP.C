@@ -71,7 +71,7 @@ void OFFLINE_ISP_Configuration(void)
 {
 	SYS_Configuration();											//系统配置 STM32_SYS.H	
 	GPIO_DeInitAll();													//将所有的GPIO关闭----V20170605
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,900);			//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,900);			//PWM设定-20161127版本
 	
 	OFFLINE_ISP_Conf();
 	

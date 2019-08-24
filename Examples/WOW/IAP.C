@@ -144,11 +144,11 @@ void MAIN_Configuration(void)
 {
 	SYS_Configuration();											//系统配置 STM32_SYS.H	
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);
 		
 	SysTick_Configuration(500);							//系统嘀嗒时钟配置72MHz,单位为uS
 	
-	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer,BufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_NR(USART1,115200,(u32*)RxdBuffer,BufferSize);	//USART_DMA配置--查询方式，不开中断
 	
 	CRC_SetEnable();
 }

@@ -76,7 +76,7 @@ void EP3_OUT_Callback(void)
 		}
 		else
 		{
-			SetEPRxStatus(ENDP3, EP_RX_NAK);			//端点以STALL分组响应所有的发送请求。
+			SetEPRxStatus(ENDP3, EP_RX_NAK);			//端点以NACK分组响应所有的发送请求。
 			return ;
 		}
 	}
@@ -90,7 +90,7 @@ void EP3_OUT_Callback(void)
 		if(usb_out_count)
 			SetEPRxValid(ENDP3);																				//使能端点3			
 		else
-			SetEPRxStatus(ENDP3, EP_RX_NAK);			//端点以STALL分组响应所有的发送请求。
+			SetEPRxStatus(ENDP3, EP_RX_NAK);			//端点以NACK分组响应所有的发送请求。
 			usbsavenum+=usb_out_count;
 	}
 	return;

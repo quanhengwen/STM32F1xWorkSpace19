@@ -47,7 +47,6 @@ void api_iot5302w_configuration(IOT5302Wdef* pIOT5302W)
 *******************************************************************************/
 void api_iot5302w_server(void)
 {
-	//static unsigned short time=0;
 	//先处理数据，再执行初始化，更改初始化参数后发现数据验证已通过
   //==================================检查参数
   if(0==IOT5302W.Conf.IOT5302WPort.USARTx)  //参数错误--未配置串口
@@ -410,7 +409,7 @@ static void hw_port_configuration(unsigned long USART_BaudRate)
 static unsigned short iot5302w_send_msg(unsigned char* TxdBuffer,unsigned short length)
 {
   unsigned short TxdLen = 0;
-  TxdLen = api_rs485_send(&IOT5302W.Conf.IOT5302WPort,TxdBuffer,length);	//RS485-DMA发送程序
+  TxdLen = api_rs485_send_force(&IOT5302W.Conf.IOT5302WPort,TxdBuffer,length);	//RS485-DMA发送程序
   return TxdLen;
 }
 /*******************************************************************************

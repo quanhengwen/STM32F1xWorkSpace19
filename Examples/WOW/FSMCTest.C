@@ -116,14 +116,14 @@ void FSMCTest_Configuration(void)
   LCD_ShowBattery(780,2,2,LCD565_GRED);   //显示12x12电池
   LCD_ShowAntenna(760,2,3,LCD565_GRED);   //显示12x12天线
   
-//  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+//  api_usart_configuration_NR(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
   
   LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
     year,month,day,hour,minute,second);  //后边的省略号就是可变参数
-	PWM_OUT(TIM2,PWM_OUTChannel1,500,300);						//PWM设定-20161127版本
-//	PWM_OUT(TIM4,PWM_OUTChannel1,2000,0);						//PWM设定-20161127版本
-//	PWM_OUT(TIM4,PWM_OUTChannel2,500,500);						//PWM设定-20161127版本
-//	PWM_OUT(TIM4,PWM_OUTChannel3,2000,0);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,500,300);						//PWM设定-20161127版本
+//	api_pwm_oc_configuration(TIM4,PWM_OUTChannel1,2000,0);						//PWM设定-20161127版本
+//	api_pwm_oc_configuration(TIM4,PWM_OUTChannel2,500,500);						//PWM设定-20161127版本
+//	api_pwm_oc_configuration(TIM4,PWM_OUTChannel3,2000,0);						//PWM设定-20161127版本
 	
   
 //	GPIO_Configuration_OPP50	(GPIOA,GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
@@ -187,7 +187,7 @@ void SYSLED(void)
 				sysledflag	=	0;
 			}
 		}
-		PWM_OUT(TIM2,PWM_OUTChannel1,2000,Ratio*Ratio);						//PWM设定-20161127版本
+		api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,2000,Ratio*Ratio);						//PWM设定-20161127版本
 //		SetPWM_Ratio(Ratio*Ratio);		//设置占空比---LED
 	}	
 }
@@ -345,7 +345,7 @@ void Power_Server(void)
       {
         Key = 0;
         PF10  = 0;
-        PWM_OUT(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
+        api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
         while(0  ==  PB4in);
         NVIC_GenerateCoreReset();
       }

@@ -161,7 +161,7 @@ unsigned char api_iic_read_buffer(iic_def *sIIC,const unsigned short device_addr
 			iic_set_nack(sIIC);
 	}
 	//---------------------------ֹͣI2C
-	stopI2C:
+	//stopI2C:
 	iic_set_stop(sIIC);
 	return i;
 }
@@ -292,7 +292,7 @@ static unsigned char iic_set_WordAddress(iic_def *sIIC,unsigned char device_addr
 static void iic_write_byte(iic_def *sIIC,unsigned char ucByte)
 {
 	unsigned char i	=	0;
-	unsigned char time	=	5;
+	//unsigned char time	=	5;
 	for(i=0;i<8;i++)
 	{		
 		if(ucByte & 0x80)

@@ -113,7 +113,7 @@ void PCM2707_TEST_Configuration(void)
 {
   SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
 	PCM2707_SPI_Configuration();
-	PWM_OUT(TIM2,PWM_OUTChannel1,0.5,500);	//PWM设定-20161127版本	占空比1/1000
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,0.5,500);	//PWM设定-20161127版本	占空比1/1000
 	EC11_Configuration();
 	PCM2707_PORT_Configuration();
 	PCM2707_RGB_Configuration();

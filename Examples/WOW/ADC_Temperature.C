@@ -34,9 +34,9 @@ void ADC_Temperature_Configuration(void)
 	GPIO_DeInitAll();													//将所有的GPIO关闭----V20170605
 	SysTick_Configuration(1000);						//系统嘀嗒时钟配置72MHz,单位为uS
 
-	api_usart_dma_configurationNR	(USART2,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_NR(USART2,115200,ADC_TEST_BUFFERSIZE);	//USART_DMA配置--查询方式，不开中断
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);			//PWM设定-20161127版本	占空比1/1000
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);			//PWM设定-20161127版本	占空比1/1000
 
 	ADC_TempSensorConfiguration((u32*)&ADCBuffer);																									//STM32内部温度传感器配置
 }

@@ -37,7 +37,7 @@ void A3987_TEST_Configuration(void)
 	A3987_SETUP();
 	
 //	PWM_Configuration(TIM2,7200,10000,50);		//运行指示灯配置
-	PWM_OUT(TIM2,PWM_OUTChannel1,5,500);
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,5,500);
 		
 	SysTick_Configuration(500);							//系统嘀嗒时钟配置72MHz,单位为uS
 }

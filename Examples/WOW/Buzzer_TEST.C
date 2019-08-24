@@ -39,8 +39,8 @@ void Buzzer_TEST_Configuration(void)
 	SYS_Configuration();				//系统配置
 //	SysTick_Configuration(1000000);	//系统嘀嗒时钟配置72MHz,单位为uS
 	
-	PWM_OUT(TIM1,PWM_OUTChannel1,10,200);		//PWM设定
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,500);		//sys_led
+	api_pwm_oc_configuration(TIM1,PWM_OUTChannel1,10,200);		//PWM设定
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,500);		//sys_led
 }
 /*******************************************************************************
 * 函数名		:	
@@ -75,7 +75,7 @@ void buzzerSound(unsigned short usFreq)
 		ulVal = TheSysClock / usFreq; 
 //		TimerLoadSet(TIM1, TIMER_B, ulVal); // 设置TimerB初值 
 //		TimerMatchSet(TIM1, TIMER_B, ulVal / 2); // 设置TimerB匹配值 
-		PWM_OUT(TIM1,PWM_OUTChannel1,ulVal,ulVal/2);		//PWM设定
+		api_pwm_oc_configuration(TIM1,PWM_OUTChannel1,ulVal,ulVal/2);		//PWM设定
 		TIM_Cmd(TIM1, ENABLE); // 使能TimerB计数 
 	} 
 }

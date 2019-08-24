@@ -61,7 +61,7 @@ void PwrTest_Configuration(void)
 	
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 	
-//	PWM_OUT(TIM1,PWM_OUTChannel3,1,500);	//PWM设定-20161127版本	占空比1/1000
+//	api_pwm_oc_configuration(TIM1,PWM_OUTChannel3,1,500);	//PWM设定-20161127版本	占空比1/1000
 	
 	GPIO_Configuration_OPP50	(GPIOA,	GPIO_Pin_8);			//SYSLED//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	GPIO_Configuration_OPP50	(GPIOB,	GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);			//SYSLED//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605

@@ -696,11 +696,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -724,11 +719,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -1694,11 +1684,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -1722,11 +1707,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -2756,11 +2736,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -2784,11 +2759,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -3754,11 +3724,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -3782,11 +3747,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -4816,11 +4776,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -4844,11 +4799,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -5814,11 +5764,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -5842,11 +5787,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -6813,11 +6753,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -6841,11 +6776,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>
@@ -8000,11 +7930,6 @@
               <FilePath>..\..\Driver\WOW\SCR\STM32_NVIC.C</FilePath>
             </File>
             <File>
-              <FileName>STM32_PWM.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_PWM.C</FilePath>
-            </File>
-            <File>
               <FileName>STM32_RCC.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_RCC.C</FilePath>
@@ -8028,11 +7953,6 @@
               <FileName>STM32_SYS.C</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Driver\WOW\SCR\STM32_SYS.C</FilePath>
-            </File>
-            <File>
-              <FileName>STM32_SYSLED.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Driver\WOW\SCR\STM32_SYSLED.C</FilePath>
             </File>
             <File>
               <FileName>STM32_SYSTICK.C</FileName>

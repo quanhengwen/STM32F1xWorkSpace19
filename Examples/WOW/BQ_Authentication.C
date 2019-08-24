@@ -88,7 +88,7 @@ void BQ_Authentication_Configuration(void)
 {
   SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
 
-	//PWM_OUT(TIM2,PWM_OUTChannel1,1000000,500);	//PWM设定-20161127版本	占空比1/1000
+	//api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1000000,500);	//PWM设定-20161127版本	占空比1/1000
 	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	
 	BQ_Authentication_SYS_Configuration();
@@ -357,7 +357,7 @@ static void BQ_Authentication_Test_Model_OnLine(void)
 //		GPIO_Configuration_INF(GPIOA,	GPIO_Pin_2);												//将GPIO相应管脚配置为浮空输入模式----V20170605
 //		//---------------------关闭接收--USART2-RX
 //		GPIO_Configuration_INF(GPIOA,	GPIO_Pin_3);												//将GPIO相应管脚配置为浮空输入模式----V20170605
-//		//api_usart_dma_configurationNR(ComPortOut,625000,128);
+//		//api_usart_configuration_NR(ComPortOut,625000,128);
 //		api_bq26100slave_configuration(&SDQ_SLAVE);												//SDQ从机设备配置
 	}
 	//=======================认证消息，对比摘要，及认证消息循环
@@ -566,7 +566,7 @@ static void BQ_Authentication_Running_Model_OnLine(void)
 	{
 		usart_cof_flag	=	1;
 		//---------------------配置串口
-		//api_usart_dma_configurationNR(ComPortOut,625000,128);
+		//api_usart_configuration_NR(ComPortOut,625000,128);
 		//---------------------关闭发送--USART3-TX
 		//GPIO_Configuration_INF(GPIOB,	GPIO_Pin_10);			//将GPIO相应管脚配置为浮空输入模式----V20170605
 	}

@@ -392,37 +392,41 @@ static void set_rs485_ctl_tx(RS485Def *pRS485,FunctionalState NewState)
 {
 	//----------------txen脚高为发送
 	//----------------rxen脚低为接收
-	
+	unsigned char time=0;
+	//while(time++<1000);
+	//----------------------------发送使能
 	if (NewState != DISABLE)
 	{	
-		if(pRS485->RS485_CTL_PORT)
-		{
-			pRS485->RS485_CTL_PORT->BSRR		= pRS485->RS485_CTL_Pin;
-		}
 		if(pRS485->RS485_TxEn_PORT)
 		{
 			pRS485->RS485_TxEn_PORT->BSRR		= pRS485->RS485_TxEn_Pin;
-		}		
+		}
+		if(pRS485->RS485_CTL_PORT)
+		{
+			pRS485->RS485_CTL_PORT->BSRR		= pRS485->RS485_CTL_Pin;
+		}				
 		if(pRS485->RS485_RxEn_PORT)		//关闭读
 		{
 			pRS485->RS485_RxEn_PORT->BSRR		= pRS485->RS485_RxEn_Pin;
 		}		
 	}
+	//----------------------------接收使能
 	else
 	{	
+		if(pRS485->RS485_TxEn_PORT)
+		{
+			pRS485->RS485_TxEn_PORT->BRR		= pRS485->RS485_TxEn_Pin;
+		}
+		while(time++<1);
 		if(pRS485->RS485_RxEn_PORT)			//开启读
 		{
 			pRS485->RS485_RxEn_PORT->BRR		= pRS485->RS485_RxEn_Pin;
 		}
+		while(time++<2);
 		if(pRS485->RS485_CTL_PORT)
 		{
 			pRS485->RS485_CTL_PORT->BRR		= pRS485->RS485_CTL_Pin;
-		}		
-		if(pRS485->RS485_TxEn_PORT)
-		{
-			pRS485->RS485_TxEn_PORT->BRR		= pRS485->RS485_TxEn_Pin;
-		}		
-				
+		}				
 	}
 }
 //-----------------------------------------------------------------------------
@@ -1119,7 +1123,7 @@ static unsigned char get_usart_rx_status(USART_TypeDef* USARTx)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static unsigned char get_usart_tx_status(USART_TypeDef* USARTx)
+unsigned char get_usart_tx_status(USART_TypeDef* USARTx)
 {
 	//===================空闲标志0---空闲,1---忙，在发送中
 	//-----------------发送空闲检测：TC发送完成标志,TXE缓存空,，DMA缓存空，DMA未开启
@@ -1704,7 +1708,8 @@ static void usart_it_initialize(USART_TypeDef* USARTx)
           USARTx_IRQChannel=USART2_IRQChannel;	//中断	
 					break;
 		case 	USART3_BASE:
-          USARTx_IRQChannel=USART3_IRQChannel;	//中断					break;
+          USARTx_IRQChannel=USART3_IRQChannel;	//中断					
+					break;
 		case 	UART4_BASE:
           USARTx_IRQChannel=UART4_IRQChannel;		//中断
 					break;

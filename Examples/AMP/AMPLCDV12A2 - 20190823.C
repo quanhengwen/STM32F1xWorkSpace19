@@ -1,13 +1,12 @@
-#ifdef AMPLCDV12
+#ifdef AMPLCDV12A2
 
 //===========波特率9600
-#include "AMPLCDV12.H"
+//===========A2波特率115200
+#include "AMPLCDV12A2.H"
 
 #include	"AMP_Protocol.H"
 
-//#include	"AMP_PHY.H"
-//#include "AMP_LAY.H"
-//#include "AMP_CABV11.H"
+
 
 #include "STM32_SYS.H"
 #include "STM32_GPIO.H"
@@ -23,42 +22,28 @@
 #include "font.h"
 
 
+//------------------运行指示灯
+#define ampLcdSYSLEDPort    				GPIOA
+#define ampLcdSYSLEDPin     				GPIO_Pin_0
+//------------------通讯接口--层接口
+#define ampLcdCommPort       				USART1
+#define ampLcdCommTxEnPort  				GPIOA
+#define ampLcdCommTxEnPin   				GPIO_Pin_12
+#define ampLcdCommRxEnPort 					GPIOA
+#define ampLcdCommRxEnPin						GPIO_Pin_11
+#define ampLcdCommBaudRate        	115200
+#define ampLcdCommDelayTime        	90			//每字节传输的时间us
+#define ampLcdCommMaxAddr        		6				//最大地址
+
 
 /* Private variables ---------------------------------------------------------*/
 sAmpLcdDef	sAmpLcd;
 
 
 
-//unsigned	short FlashTime	=0;
 unsigned	char	DaulFlag	=	0;
 /* Private function prototypes -----------------------------------------------*/
-static void HW_Configuration(void);
-static void DataInitialize(void);		//数据初始化
 
-static void DisplayString(void);
-static void DisplayGui(void);				//显示界面
-static void DisplayName(const ListDef Node);				//显示别名和名称
-static void DisplayByName(const ListDef Node);			//显示别名
-static void DisplayVender(const ListDef Node);			//显示厂家名称
-static void DisplaySpec(const ListDef Node);				//显示规格
-static void DisplayCode(const ListDef Node);				//显示编码
-static void DisplayNumber(const ListDef Node);			//显示数量和单位
-static void DisplayTitle(unsigned char DualFlag);			//显示标题
-static unsigned short GetYVLen(const ListDef Node);//获取节点数据占用Y轴的点数
-
-static void GetManaData(const unsigned char* Databuffer,unsigned short datalen);
-static void SetManaData(ListDef* pNode);		//设置显示参数---数据获取成功后设置相关的显示参数
-
-static void ReceiveData(void);
-static void SendData(void);
-static void AckData(void);
-static void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen);
-
-static void Lcd_Process(void);
-static void AddressNoneProcess(void); 
-static void NoDataProcess(void);
-static void Read_switchid(void);
-static void SYSLED(void);
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -68,29 +53,17 @@ static void SYSLED(void);
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void AMPLCDV12_Configuration(void)
+void AMPLCDV12A2_Configuration(void)
 {	
 	
 	SYS_Configuration();				//系统配置
 	
-  
-  
-//  PWM_OUT(TIM2,PWM_OUTChannel1,2,500);	//PWM设定-20161127版本	占空比1/1000
-	
-	//SysTick_DeleymS(500);				//SysTick延时nmS
-	
   HW_Configuration(); 
 
-	DataInitialize();	
-  
-	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_0);
+	DataInitialize();		
 	
-  IWDG_Configuration(2000);													//独立看门狗配置---参数单位ms
-	
-	//SetBackColor(LCD565_DARKBLUE);
-  ST7789V_Clean(0xFFFF);
-	ST7789V_Clean(LCD565_DARKBLUE);
-	//AMPLCDV11GUI();
+  //IWDG_Configuration(2000);													//独立看门狗配置---参数单位ms
+
   SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS  
   while(1)
   {
@@ -98,6 +71,7 @@ void AMPLCDV12_Configuration(void)
 		SendData();
   }
 }
+//------------------------------------------------------------------------------
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -107,15 +81,19 @@ void AMPLCDV12_Configuration(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void AMPLCDV12_Server(void)
+void AMPLCDV12A2_Server(void)
 {  
 	IWDG_Feed();								//独立看门狗喂狗
-  SYSLED();
+  SysLed_server();
 	AddressNoneProcess();
 	Lcd_Process();
-	Read_switchid();
+	SwitchID_Server();
 	NoDataProcess();	 
 }
+//------------------------------------------------------------------------------
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -125,16 +103,21 @@ void AMPLCDV12_Server(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void SYSLED(void)
+static void SysLed_server(void)
 {
 	static unsigned short time=0;
 	if(time++>100)
 	{
 		time=	0;
-		api_gpio_toggle(GPIOA,GPIO_Pin_0);		//将GPIO相应管脚输出翻转----V20170605
+		api_gpio_toggle(ampLcdSYSLEDPort,ampLcdSYSLEDPin);		//将GPIO相应管脚输出翻转----V20170605
 	}
 	
 }
+//------------------------------------------------------------------------------
+
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -151,14 +134,14 @@ static void Lcd_Process(void)
 //	static unsigned char color=0;
 	unsigned char i=0;
 	unsigned char dataflag=0;
-	ListDef*		List;
+	ampLcdListDef*		List;
 	
-	List	=	sAmpLcd.Windows.ManaData.List;
-	if(0==sAmpLcd.Sys.AddrLay||0==sAmpLcd.Sys.AddrSeg)
+	List	=	sAmpLcd.Data.Display.List;
+	if(0==sAmpLcd.Data.SysData.AddrLay||0==sAmpLcd.Data.SysData.AddrSeg)
 	{
 		return;
 	}
-	for(i=0;i<DspMaxNameTypeCount;i++)
+	for(i=0;i<ampLcdListSize;i++)
 	{
 		if(0!=List[i].ListNum)
 		{
@@ -166,26 +149,20 @@ static void Lcd_Process(void)
 			break;
 		}
 	}
-	if(Type_Count_bac!=sAmpLcd.Windows.ManaData.ReceivedManaCount)
+	if(Type_Count_bac!=sAmpLcd.Data.Display.Count)
 	{
 		time	=	0;
-		sAmpLcd.Windows.ManaData.Serial	=	0;
-		Type_Count_bac=sAmpLcd.Windows.ManaData.ReceivedManaCount;
+		sAmpLcd.Data.Display.Serial	=	0;
+		Type_Count_bac=sAmpLcd.Data.Display.Count;
 	}
 	
 	if(0==dataflag)
 		return;
 	if(time==0)
   {
-//		if(sAmpLcd.Windows.ManaData.ReceivedManaCount==0)
-//		{
-//			DisplayGui();				//显示界面
-//			DisplayTitle(0);			//显示标题
-//			goto FlashTimeCon;
-//		}
-		if(sAmpLcd.Windows.ManaData.ReceivedManaCount<=2)
+		if(sAmpLcd.Data.Display.Count<=2)
 		{
-			if((sAmpLcd.Windows.ManaData.Serial==DaulFlag)&&(sAmpLcd.Windows.ManaData.Serial==sAmpLcd.Windows.ManaData.ReceivedManaCount))
+			if((sAmpLcd.Data.Display.Serial==DaulFlag)&&(sAmpLcd.Data.Display.Serial==sAmpLcd.Data.Display.Count))
 			goto FlashTimeCon;
 		}
 			DisplayString();
@@ -194,6 +171,8 @@ static void Lcd_Process(void)
 	if(time++>3000)
 		time=0; 
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -203,18 +182,53 @@ static void Lcd_Process(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-static void Read_switchid(void)
+static void Lcd_Processbac(void)
 {
 	static unsigned short time=0;
-	if(time++>1000)
+	static unsigned char	Type_Count_bac=0;
+//	static unsigned char color=0;
+	unsigned char i=0;
+	unsigned char dataflag=0;
+	ampLcdListDef*		List;
+	
+	List	=	sAmpLcd.Data.Display.List;
+	if(0==sAmpLcd.Data.SysData.AddrLay||0==sAmpLcd.Data.SysData.AddrSeg)
 	{
-		unsigned char temp	=	0;
-		time	=	0;
-		temp	=	api_get_SwitchId_data_left(&sAmpLcd.sSwitch);
-		sAmpLcd.Sys.AddrLay=(temp>>4)&0X0F;  	//层地址
-		sAmpLcd.Sys.AddrSeg=temp&0x0F;      	//位地址
+		return;
 	}
+	for(i=0;i<ampLcdListSize;i++)
+	{
+		if(0!=List[i].ListNum)
+		{
+			dataflag	=	1;
+			break;
+		}
+	}
+	if(Type_Count_bac!=sAmpLcd.Data.Display.Count)
+	{
+		time	=	0;
+		sAmpLcd.Data.Display.Serial	=	0;
+		Type_Count_bac=sAmpLcd.Data.Display.Count;
+	}
+	
+	if(0==dataflag)
+		return;
+	if(time==0)
+  {
+		if(sAmpLcd.Data.Display.Count<=2)
+		{
+			if((sAmpLcd.Data.Display.Serial==DaulFlag)&&(sAmpLcd.Data.Display.Serial==sAmpLcd.Data.Display.Count))
+			goto FlashTimeCon;
+		}
+			DisplayString();
+  }
+	FlashTimeCon:
+	if(time++>3000)
+		time=0; 
 }
+//------------------------------------------------------------------------------
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -229,7 +243,7 @@ static void AddressNoneProcess(void)
 	static unsigned short time=0;
 	static unsigned char flag=0;
 	unsigned short color	=	0;
-	if(0==sAmpLcd.Sys.AddrLay||0==sAmpLcd.Sys.AddrSeg)
+	if(0==sAmpLcd.Data.SysData.AddrLay||0==sAmpLcd.Data.SysData.AddrSeg)
 	{
 		if(time++>1000)
 		{
@@ -269,6 +283,8 @@ static void AddressNoneProcess(void)
 		}
 	}
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -287,18 +303,18 @@ static void NoDataProcess(void)
 	
 	unsigned char i=0;
 	unsigned char dataflag=0;
-	ListDef*		List;
+	ampLcdListDef*		List;
 	
-	List	=	sAmpLcd.Windows.ManaData.List;
+	List	=	sAmpLcd.Data.Display.List;
 	
 	if(time++<100)
 	{
 		return;
 	}
 	time	=	0;
-	if((0!=sAmpLcd.Sys.AddrLay)&&(0!=sAmpLcd.Sys.AddrSeg))
+	if((0!=sAmpLcd.Data.SysData.AddrLay)&&(0!=sAmpLcd.Data.SysData.AddrSeg))
 	{
-		for(i=0;i<DspMaxNameTypeCount;i++)
+		for(i=0;i<ampLcdListSize;i++)
 		{
 			if(0!=List[i].ListNum)
 			{
@@ -314,25 +330,12 @@ static void NoDataProcess(void)
 		}
 		else
 		{
-//			if(0==power_up_flag)
-//			{
-//				power_up_flag	=	1;
-//				ST7789V_Clean(LCD565_BLACK);	//清除屏幕函数;
-//				ST7789V_Printf(5,100,32,LCD565_LIGHTGREEN,"层号:%0.2d  位号:%0.2d",sAmpLcd.Sys.AddrLay,sAmpLcd.Sys.AddrSeg);				//后边的省略号就是可变参数
-//				ST7789V_BL_ON;
-//			}
-//			else if(power_up_flag<50)
-//			{
-//				power_up_flag+=1;
-//			}
-//			else
-//			{
-//				ST7789V_BL_OFF;
-//			}
 			ST7789V_BL_OFF;
 		}		
 	}
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -346,43 +349,43 @@ void DisplayString(void)
 {
 	unsigned char i	=	0;
 	unsigned char Serial	=	0;	
-	unsigned char MaxNameList=0;
+	//unsigned char MaxNameList=0;
 	unsigned short StartPixelY	=	0;
 	unsigned short	YVLen	=	0;
 	
-	ListDef 		Node;
-	ListDef*		List;
+	ampLcdListDef 		Node;
+	ampLcdListDef*		List;
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
 	
-	MaxNameList	=	sAmpLcd.Windows.ManaData.MaxNameList;
-	List	=	sAmpLcd.Windows.ManaData.List;	
+	//MaxNameList	=	sAmpLcd.Data.DisplayData.MaxNameList;
+	List	=	sAmpLcd.Data.Display.List;	
 	
 	DisplayGui();				//显示界面
 	
-	if(0==sAmpLcd.Windows.ManaData.ReceivedManaCount)	//无数据
+	if(0==sAmpLcd.Data.Display.Count)	//无数据
 	{
 		goto DisplayTitleStart;
 	}
-	else if(0==sAmpLcd.Windows.ManaData.Serial)
+	else if(0==sAmpLcd.Data.Display.Serial)
 	{
-		sAmpLcd.Windows.ManaData.Serial	=	1;
+		sAmpLcd.Data.Display.Serial	=	1;
 	}
-	else if(sAmpLcd.Windows.ManaData.Serial>sAmpLcd.Windows.ManaData.ReceivedManaCount)
+	else if(sAmpLcd.Data.Display.Serial>sAmpLcd.Data.Display.Count)
 	{
-		sAmpLcd.Windows.ManaData.Serial	=	1;
+		sAmpLcd.Data.Display.Serial	=	1;
 	}
 	//------------------------------------------设置Y起始点
-	WinInfo->StartPixelY	=WinInfo->TopDisplayStartY;
+	sAmpLcd.Data.RunData.StartPixelY	=sAmpLcd.Data.RunData.TopDisplayStartY;
 	
 	
 	CheckDataStart:
 	
-	Serial=sAmpLcd.Windows.ManaData.Serial;	
-	for(i=0;i<MaxNameList;i++)
+	Serial=sAmpLcd.Data.Display.Serial;	
+	for(i=0;i<ampLcdListSize;i++)
 	{
 		if(Serial==List[i].ListNum)
 		{
@@ -390,9 +393,9 @@ void DisplayString(void)
 			break;
 		}		
 	}
-	if(i>=MaxNameList)
+	if(i>=ampLcdListSize)
 	{
-		sAmpLcd.Windows.ManaData.Serial=1;
+		sAmpLcd.Data.Display.Serial=1;
 		return;
 	}
 	DisplayName(Node);			
@@ -403,34 +406,34 @@ void DisplayString(void)
 	DisplayNumber(Node);
 	DaulFlag	=	1;
 		//--------------------------------------------------
-	if(WinInfo->StartPixelY>WinInfo->BotDisplayStartY)	//下半页没有足够空间显示
+	if(sAmpLcd.Data.RunData.StartPixelY>sAmpLcd.Data.RunData.BotDisplayStartY)	//下半页没有足够空间显示
 	{
 		DisplayTitle(1);			//显示标题
-		if(sAmpLcd.Windows.ManaData.Serial<sAmpLcd.Windows.ManaData.ReceivedManaCount)
+		if(sAmpLcd.Data.Display.Serial<sAmpLcd.Data.Display.Count)
 		{
-			sAmpLcd.Windows.ManaData.Serial+=1;
+			sAmpLcd.Data.Display.Serial+=1;
 		}
 		else
 		{
-			sAmpLcd.Windows.ManaData.Serial=1;
+			sAmpLcd.Data.Display.Serial=1;
 		}
 		return;
 	}
 	//----------------------------------------------------还有内容待显示
-	if(sAmpLcd.Windows.ManaData.Serial<sAmpLcd.Windows.ManaData.ReceivedManaCount)
+	if(sAmpLcd.Data.Display.Serial<sAmpLcd.Data.Display.Count)
 	{
-		sAmpLcd.Windows.ManaData.Serial+=1;
+		sAmpLcd.Data.Display.Serial+=1;
 	}
 	else
 	{
 		DisplayTitle(1);			//显示标题
-		sAmpLcd.Windows.ManaData.Serial=1;		
+		sAmpLcd.Data.Display.Serial=1;
 		return;		
 	}
 	//=================================下半页显示
-	WinInfo->StartPixelY	=	WinInfo->BotDisplayStartY;			//下半页显示
-	Serial=sAmpLcd.Windows.ManaData.Serial;	
-	for(i=0;i<MaxNameList;i++)
+	sAmpLcd.Data.RunData.StartPixelY	=	sAmpLcd.Data.RunData.BotDisplayStartY;			//下半页显示
+	Serial=sAmpLcd.Data.Display.Serial;	
+	for(i=0;i<ampLcdListSize;i++)
 	{
 		if(Serial==List[i].ListNum)
 		{
@@ -438,18 +441,19 @@ void DisplayString(void)
 			break;
 		}		
 	}
-	if(i>=MaxNameList)
+	if(i>=ampLcdListSize)
 	{
-		sAmpLcd.Windows.ManaData.Serial=1;
+		sAmpLcd.Data.Display.Serial=1;
 		return;
 	}
 	
 	YVLen	=	GetYVLen(Node);//获取节点数据占用Y轴的点数
-	if(YVLen>(WinInfo->BotDisplayStartY-WinInfo->TopDisplayStartY))
+	
+	if(YVLen>(sAmpLcd.Data.RunData.BotDisplayStartY-sAmpLcd.Data.RunData.TopDisplayStartY))
 	{
-		sAmpLcd.Windows.ManaData.Serial-=1;		//恢复上次成功显示序号
+		sAmpLcd.Data.Display.Serial-=1;		//恢复上次成功显示序号
 		DisplayTitle(1);			//显示标题
-		sAmpLcd.Windows.ManaData.Serial+=1;		//恢复下次显示序号
+		sAmpLcd.Data.Display.Serial+=1;		//恢复下次显示序号
 		return;
 	}
 	DisplayName(Node);			
@@ -461,18 +465,18 @@ void DisplayString(void)
 	
 	DisplayTitle(2);			//显示标题
 	DaulFlag	=	2;
-	if(sAmpLcd.Windows.ManaData.ReceivedManaCount<=2)
+	if(sAmpLcd.Data.Display.Count<=2)
 	{
 	}
 	else
 	{
-		if(sAmpLcd.Windows.ManaData.Serial<sAmpLcd.Windows.ManaData.ReceivedManaCount)
+		if(sAmpLcd.Data.Display.Serial<sAmpLcd.Data.Display.Count)
 		{
-			sAmpLcd.Windows.ManaData.Serial+=1;		//下次显示序号
+			sAmpLcd.Data.Display.Serial+=1;		//下次显示序号
 		}
 		else
 		{
-			sAmpLcd.Windows.ManaData.Serial=1;		//下次显示序号
+			sAmpLcd.Data.Display.Serial=1;		//下次显示序号
 		}
 	}	
 	return;
@@ -480,6 +484,8 @@ void DisplayString(void)
 	DisplayTitleStart:
 	DisplayTitle(0);			//显示标题
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -498,46 +504,47 @@ void DisplayGui(void)
 
 	unsigned short BackColor;	//背景色
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
 	//-----------------------------------------------------顶端边框
 	xs	=	0;
-	xe	=	WinInfo->PxyPixel.XH-1;
+	xe	=	sAmpLcd.Data.Cof.PxyPixel.XH-1;
 	ys	=	0;
-	ye	=	WinInfo->PxyTopFill.YV-1;
-	BackColor	=	WinInfo->FtTitle.BackColor;
+	ye	=	sAmpLcd.Data.Cof.PxyTopFill.YV-1;
+	BackColor	=	sAmpLcd.Data.Cof.FtTitle.BackColor;
 	ST7789V_Fill(xs,ys,xe,ye,0x0000);	//纯黑填充
 	//-----------------------------------------------------底部边框
 	xs	=	0;
-	xe	=	WinInfo->PxyPixel.XH-1;
-	ys	=	WinInfo->PxyPixel.YV-WinInfo->PxyBotFill.YV-1;
-	ye	=	WinInfo->PxyPixel.YV-1;
-	BackColor	=	WinInfo->FtTitle.BackColor;
+	xe	=	sAmpLcd.Data.Cof.PxyPixel.XH-1;
+	ys	=	sAmpLcd.Data.Cof.PxyPixel.YV-sAmpLcd.Data.Cof.PxyBotFill.YV-1;
+	ye	=	sAmpLcd.Data.Cof.PxyPixel.YV-1;
+	BackColor	=	sAmpLcd.Data.Cof.FtTitle.BackColor;
 	ST7789V_Fill(xs,ys,xe,ye,0x0000);	//纯黑填充
 	//-----------------------------------------------------左边边框
 	xs	=	0;
-	xe	=	WinInfo->PxyLeftFill.XH-1;
+	xe	=	sAmpLcd.Data.Cof.PxyLeftFill.XH-1;
 	ys	=	0;
-	ye	=	WinInfo->PxyPixel.YV-1;
-	BackColor	=	WinInfo->FtTitle.BackColor;
+	ye	=	sAmpLcd.Data.Cof.PxyPixel.YV-1;
+	BackColor	=	sAmpLcd.Data.Cof.FtTitle.BackColor;
 	ST7789V_Fill(xs,ys,xe,ye,0x0000);	//纯黑填充
 	//-----------------------------------------------------右边边框
 	xs	=	319-ST7789V_V;
 	xe	=	319;
 	ys	=	0;
-	ye	=	WinInfo->PxyPixel.YV-1;
-	BackColor	=	WinInfo->FtTitle.BackColor;
+	ye	=	sAmpLcd.Data.Cof.PxyPixel.YV-1;
+	BackColor	=	sAmpLcd.Data.Cof.FtTitle.BackColor;
 	ST7789V_Fill(xs,ys,xe,ye,0x0000);	//纯黑填充
 	//-----------------------------------------------------清空显示区
-	xs	=	WinInfo->PxyLeftFill.XH;
-	xe	=	WinInfo->PxyPixel.XH;
-	ys	=	WinInfo->PxyTopFill.YV;
-	ye	=	WinInfo->PxyPixel.YV-WinInfo->PxyBotFill.YV-2;
-	BackColor	=	sAmpLcd.Windows.WinInfo.FtDefault.BackColor;
+	xs	=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	xe	=	sAmpLcd.Data.Cof.PxyPixel.XH;
+	ys	=	sAmpLcd.Data.Cof.PxyTopFill.YV;
+	ye	=	sAmpLcd.Data.Cof.PxyPixel.YV-sAmpLcd.Data.Cof.PxyBotFill.YV-2;
+	BackColor	=	sAmpLcd.Data.Cof.FtDefault.BackColor;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//默认背景色填充
 	
 }
+//------------------------------------------------------------------------------
 
 /*******************************************************************************
 *函数名			:	function
@@ -548,7 +555,7 @@ void DisplayGui(void)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplayName(const ListDef Node)
+void DisplayName(const ampLcdListDef Node)
 {
 	unsigned char		strLen		=	0;		//字符串长度
 	unsigned char 	offset=0;
@@ -563,17 +570,17 @@ void DisplayName(const ListDef Node)
 	unsigned short Fys=0;
 	unsigned short Fxe=0;
 	unsigned short Fye=0;
-//	
+	
 	unsigned short BackColor;	//背景色
 	unsigned short PenColor;	//画笔色
 	unsigned short FontSize;	//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtName;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtName;
 	Para		=	Node.ParaName;
 	//=================================数据内容检查
 	strLen		=	Para.len;
@@ -589,42 +596,44 @@ void DisplayName(const ListDef Node)
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	//=================================清除显示区域
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH;
-	WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY+1;
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+Para.XH;
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
-	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
+	sAmpLcd.Data.RunData.PxyFillStart.XH		=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	sAmpLcd.Data.RunData.PxyFillStart.YV		=	sAmpLcd.Data.RunData.StartPixelY+1;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyFillEnd.YV	=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
 	
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
+	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除
 	//=================================设定显示区域
-	if(Para.YV	==	FontSize)	//单行剧中显示
+	if(Para.YV	==	FontSize)			//单行居中显示
 	{
 		unsigned short tempx=0;
 		tempx	=	strLen*(FontSize/2);				//实际显示占用的点数
 		tempx	=	Para.XH	-	tempx;	//剩余空闲点数
 		
-		WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH+tempx/2;
-		WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+strLen*(FontSize/2);
+		sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH+tempx/2;
+		sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+strLen*(FontSize/2);
 	}
 	else
 	{
-		WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-		WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
+		sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+		sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+Para.XH;
 	}
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV			=	sAmpLcd.Data.RunData.PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
-	WinInfo->StartPixelY	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.StartPixelY					=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -634,7 +643,7 @@ void DisplayName(const ListDef Node)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplayByName(const ListDef Node)
+void DisplayByName(const ampLcdListDef Node)
 {
 	unsigned char		strLen		=	0;		//字符串长度
 	unsigned char 	offset=0;
@@ -656,12 +665,12 @@ void DisplayByName(const ListDef Node)
 	unsigned short PenColor;	//画笔色
 	unsigned short FontSize;	//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtByName;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtByName;
 	Para		=	Node.ParaByName;
 	//=================================数据内容检查
 	strLen		=	Para.len;
@@ -679,30 +688,31 @@ void DisplayByName(const ListDef Node)
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	//=================================清除显示区域
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH;
-	WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY+1;
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+Para.XH;
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyFillStart.XH			=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	sAmpLcd.Data.RunData.PxyFillStart.YV			=	sAmpLcd.Data.RunData.StartPixelY+1;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyFillEnd.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
-	
 	//=================================设定显示区域
-	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.XH			=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV			=	sAmpLcd.Data.RunData.PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
-	WinInfo->StartPixelY	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.StartPixelY	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -712,7 +722,7 @@ void DisplayByName(const ListDef Node)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplayVender(const ListDef Node)
+void DisplayVender(const ampLcdListDef Node)
 {
 	unsigned char		strLen	=	0;		//字符串长度
 	unsigned char 	offset=0;
@@ -734,12 +744,12 @@ void DisplayVender(const ListDef Node)
 	unsigned short PenColor;	//画笔色
 	unsigned short FontSize;	//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtVender;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtVender;
 	Para		=	Node.ParaVender;
 	//=================================数据内容检查
 	strLen		=	Para.len;
@@ -757,32 +767,34 @@ void DisplayVender(const ListDef Node)
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	//=================================清除显示区域
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH;
-	WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY+1;
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+Para.XH;
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyFillStart.XH	=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	sAmpLcd.Data.RunData.PxyFillStart.YV	=	sAmpLcd.Data.RunData.StartPixelY+1;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyFillEnd.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
 	
 	//=================================设定显示区域
 
-	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+Para.XH;
 
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV			=	sAmpLcd.Data.RunData.PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
-	WinInfo->StartPixelY	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.StartPixelY	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -792,7 +804,7 @@ void DisplayVender(const ListDef Node)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplaySpec(const ListDef Node)
+void DisplaySpec(const ampLcdListDef Node)
 {
 	unsigned char		strLen	=	0;		//字符串长度
 	unsigned char 	offset=0;
@@ -814,12 +826,12 @@ void DisplaySpec(const ListDef Node)
 	unsigned short PenColor;	//画笔色
 	unsigned short FontSize;	//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtSpec;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtSpec;
 	Para		=	Node.ParaSpec;
 	//=================================数据内容检查
 	strLen		=	Para.len;
@@ -837,32 +849,34 @@ void DisplaySpec(const ListDef Node)
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	//=================================清除显示区域
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH;
-	WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY+1;
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+Para.XH;
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyFillStart.XH	=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	sAmpLcd.Data.RunData.PxyFillStart.YV	=	sAmpLcd.Data.RunData.StartPixelY+1;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyFillEnd.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
 	
 	//=================================设定显示区域
 
-	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+Para.XH;
 
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV			=	sAmpLcd.Data.RunData.PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
-	WinInfo->StartPixelY	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.StartPixelY	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -872,7 +886,7 @@ void DisplaySpec(const ListDef Node)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplayCode(const ListDef Node)
+void DisplayCode(const ampLcdListDef Node)
 {
 	unsigned char		strLen	=	0;		//字符串长度
 	unsigned char 	offset=0;
@@ -894,12 +908,12 @@ void DisplayCode(const ListDef Node)
 	unsigned short PenColor;	//画笔色
 	unsigned short FontSize;	//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtCode;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtCode;
 	Para		=	Node.ParaCode;
 	//=================================数据内容检查
 	strLen		=	Para.len;
@@ -917,32 +931,34 @@ void DisplayCode(const ListDef Node)
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	//=================================清除显示区域
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH;
-	WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY+1;
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+Para.XH;
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyFillStart.XH	=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	sAmpLcd.Data.RunData.PxyFillStart.YV	=	sAmpLcd.Data.RunData.StartPixelY+1;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyFillEnd.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
 	
 	//=================================设定显示区域
 
-	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyDisplayStart.XH+Para.XH;
+	sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyDisplayStart.XH+Para.XH;
 
-	WinInfo->PxyDisplayStart.YV	=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV		=	WinInfo->PxyDisplayStart.YV+Para.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV		=	sAmpLcd.Data.RunData.PxyDisplayStart.YV+Para.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
-	WinInfo->StartPixelY	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.StartPixelY	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -952,7 +968,7 @@ void DisplayCode(const ListDef Node)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void DisplayNumber(const ListDef Node)
+void DisplayNumber(const ampLcdListDef Node)
 {
 	unsigned char		strLen	=	0;		//字符串长度
 	unsigned char		numLen	=	0;		//数值长度
@@ -973,12 +989,12 @@ void DisplayNumber(const ListDef Node)
 	unsigned short 	PenColor;		//画笔色
 	unsigned short 	FontSize;		//字体大小
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtNum;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtNum;
 	Para		=	Node.ParaNum;
 	//=================================数据内容检查
 	numLen		=	Para.len;
@@ -1003,37 +1019,39 @@ void DisplayNumber(const ListDef Node)
 	//=================================清除显示区域
 	if(Node.ParaByName.YV+Node.ParaCode.YV+Node.ParaSpec.YV+Node.ParaVender.YV>=FontSize)
 	{
-		WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY-FontSize;
+		sAmpLcd.Data.RunData.PxyFillStart.YV	=	sAmpLcd.Data.RunData.StartPixelY-FontSize;
 	}
 	else
 	{
-		WinInfo->PxyFillStart.YV	=	WinInfo->StartPixelY;
+		sAmpLcd.Data.RunData.PxyFillStart.YV	=	sAmpLcd.Data.RunData.StartPixelY;
 	}
-	WinInfo->PxyFillStart.XH	=	WinInfo->PxyLeftFill.XH+(WinInfo->PxyValid.XH	-	(Node.ParaNum.XH+Node.ParaUnit.XH));
+	sAmpLcd.Data.RunData.PxyFillStart.XH	=	sAmpLcd.Data.Cof.PxyLeftFill.XH+(sAmpLcd.Data.Cof.PxyValid.XH	-	(Node.ParaNum.XH+Node.ParaUnit.XH));
 	
-	WinInfo->PxyFillEnd.XH		=	WinInfo->PxyFillStart.XH+(Node.ParaNum.XH+Node.ParaUnit.XH);
-	WinInfo->PxyFillEnd.YV		=	WinInfo->PxyFillStart.YV+Para.YV;
-	xs	=	WinInfo->PxyFillStart.XH;
-	ys	=	WinInfo->PxyFillStart.YV;
-	xe	=	WinInfo->PxyFillEnd.XH;
-	ye	=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyFillEnd.XH		=	sAmpLcd.Data.RunData.PxyFillStart.XH+(Node.ParaNum.XH+Node.ParaUnit.XH);
+	sAmpLcd.Data.RunData.PxyFillEnd.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV+Para.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	ST7789V_Fill(xs,ys,xe,ye,BackColor);	//背景色填充/擦除/清除	
 	
 	//=================================设定显示区域
 
-	WinInfo->PxyDisplayStart.XH	=	WinInfo->PxyFillStart.XH;
-	WinInfo->PxyDisplayEnd.XH		=	WinInfo->PxyFillEnd.XH;
+	sAmpLcd.Data.RunData.PxyDisplayStart.XH	=	sAmpLcd.Data.RunData.PxyFillStart.XH;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.XH		=	sAmpLcd.Data.RunData.PxyFillEnd.XH;
 
-	WinInfo->PxyDisplayStart.YV		=	WinInfo->PxyFillStart.YV;
-	WinInfo->PxyDisplayEnd.YV			=	WinInfo->PxyFillEnd.YV;
+	sAmpLcd.Data.RunData.PxyDisplayStart.YV		=	sAmpLcd.Data.RunData.PxyFillStart.YV;
+	sAmpLcd.Data.RunData.PxyDisplayEnd.YV			=	sAmpLcd.Data.RunData.PxyFillEnd.YV;
 	//=================================显示数据
-	xs	=	WinInfo->PxyDisplayStart.XH;
-	ys	=	WinInfo->PxyDisplayStart.YV;
-	xe	=	WinInfo->PxyDisplayEnd.XH;
-	ye	=	WinInfo->PxyDisplayEnd.YV;
+	xs	=	sAmpLcd.Data.RunData.PxyDisplayStart.XH;
+	ys	=	sAmpLcd.Data.RunData.PxyDisplayStart.YV;
+	xe	=	sAmpLcd.Data.RunData.PxyDisplayEnd.XH;
+	ye	=	sAmpLcd.Data.RunData.PxyDisplayEnd.YV;
 	ST7789V_ShowStringBKAre(xs,ys,xe,ye,FontSize,BackColor,PenColor,strLen,str);	//带背景色限定区域显示
 	//-------------------------------------准备下一项内容显示参数
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1071,41 +1089,43 @@ void DisplayTitle(unsigned char DualFlag)
 	unsigned char 	page2	=	0;		//
 	unsigned char 	total	=	0;		//
 	
-	WinInfoDef*	WinInfo;			//显示字体信息
+//	WinInfoDef*	WinInfo;			//显示字体信息
 	ParaDef			Para;
 	FontDef			Font;
 	
 	//=================================初始化数据
-	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
-	Font		=	WinInfo->FtCode;
+//	WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;							//显示参数信息
+	Font		=	sAmpLcd.Data.Cof.FtCode;
 	
 	BackColor	=	Font.BackColor;
 	PenColor	=	Font.PenColor;
 	FontSize	=	Font.Size;
 	
-	AddrLay	=	sAmpLcd.Sys.AddrLay;
-	AddrSeg	=	sAmpLcd.Sys.AddrSeg;
+	AddrLay	=	sAmpLcd.Data.SysData.AddrLay;
+	AddrSeg	=	sAmpLcd.Data.SysData.AddrSeg;
 	
-	page1		=	sAmpLcd.Windows.ManaData.Serial;
-	total		=	sAmpLcd.Windows.ManaData.ReceivedManaCount;
+	page1		=	sAmpLcd.Data.Display.Serial;
+	total		=	sAmpLcd.Data.Display.Count;
 	
-	xs	=	WinInfo->PxyLeftFill.XH;
-	ys	=	WinInfo->PxyTopFill.YV;
+	xs	=	sAmpLcd.Data.Cof.PxyLeftFill.XH;
+	ys	=	sAmpLcd.Data.Cof.PxyTopFill.YV;
 	
 	
 	ST7789V_PrintfBK(xs,ys,FontSize,BackColor,PenColor,"层:%d 位:%d",AddrLay,AddrSeg);				//后边的省略号就是可变参数
 	
 	if(1==DualFlag)
 	{
-		xs	=	WinInfo->PxyPixel.XH-FontSize*4;
+		xs	=	sAmpLcd.Data.Cof.PxyPixel.XH-FontSize*4;
 		ST7789V_PrintfBK(xs,ys,FontSize,BackColor,PenColor,"%0.2d/%0.2d页",page1,total);				//后边的省略号就是可变参数
 	}
 	else	if(2==DualFlag)
 	{
-		xs	=	WinInfo->PxyPixel.XH-FontSize*8;
+		xs	=	sAmpLcd.Data.Cof.PxyPixel.XH-FontSize*8;
 		ST7789V_PrintfBK(xs,ys,FontSize,BackColor,PenColor,"%0.2d/%0.2d页/%0.2d/%0.2d页",page1-1,total,page1,total);				//后边的省略号就是可变参数
 	}
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1115,7 +1135,7 @@ void DisplayTitle(unsigned char DualFlag)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-unsigned short GetYVLen(const ListDef Node)
+unsigned short GetYVLen(const ampLcdListDef Node)
 {
 	unsigned short YVLen=0;	//Y占用点数
 	YVLen=0;	//Y占用点数
@@ -1126,6 +1146,8 @@ unsigned short GetYVLen(const ListDef Node)
 	YVLen	+=	Node.ParaCode.YV;
 	return YVLen;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1145,6 +1167,8 @@ void SetBackColor(unsigned short BKColor)
 //	}	
 //	ST7789V_Clean(BKColor);	//清除屏幕函数
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1160,125 +1184,7 @@ unsigned short GetBackColor(void)
 	STM32_FLASH_Read(BackColorStartAddr,(unsigned short*)&BKColor,1);							//从指定地址开始读出指定长度的数据
 	return	BKColor;
 }
-/*******************************************************************************
-* 函数名			:	function
-* 功能描述		:	函数功能说明 
-* 输入			: void
-* 返回值			: void
-* 修改时间		: 无
-* 修改内容		: 无
-* 其它			: wegam@sina.com
-*******************************************************************************/
-void HW_Configuration(void)
-{
-//	spi_def	*SPI	=	&sAmpLcd.SpiPort;
-	sST7789VDef	sST7789V;
-	GT32L32Def	sGT32L32;
-	RS485Def		sRS485Port;   //层板接口
-	SwitchDef 	sSwitch;			//拔码开关
-	
-	unsigned short temp;
-	
-	//-------------------------------------------LCD参数初始化
-	sST7789V.HWPort.sBL_PORT				=	GPIOA;
-	sST7789V.HWPort.sBL_Pin					=	GPIO_Pin_1;
-	
-	sST7789V.HWPort.sRD_PORT				=	GPIOD;
-	sST7789V.HWPort.sRD_Pin					=	GPIO_Pin_2;	
-	
-	sST7789V.HWPort.sREST_PORT			=	GPIOA;
-	sST7789V.HWPort.sREST_Pin				=	GPIO_Pin_15;
-	
-	sST7789V.HWPort.sDC_PORT				=	GPIOC;
-	sST7789V.HWPort.sDC_Pin					=	GPIO_Pin_11;
-	
-	sST7789V.HWPort.sWR_PORT				=	GPIOC;
-	sST7789V.HWPort.sWR_Pin					=	GPIO_Pin_12;	
-	
-	sST7789V.HWPort.sCS_PORT				=	GPIOC;
-	sST7789V.HWPort.sCS_Pin					=	GPIO_Pin_10;
-	
-	sST7789V.HWPort.sDATABUS_PORT		=	GPIOB;
-	sST7789V.HWPort.sDATABUS_Pin		=	GPIO_Pin_All;	
-	
-	sST7789V.ST7789VRotate	=	ST7789V_Rotate_90D;		//使用旋转角度
-	
-	
-	//temp	=	 GetBackColor();			//背景色
-	
-	//sST7789V.ST7789VBColor=	temp;
-	
-	sAmpLcd.Windows.LcdPort	=	sST7789V;
-	
-	ST7789V_Initialize(&sAmpLcd.Windows.LcdPort);
-	
-	//-------------------------------------------字库参数初始化
-	sGT32L32.SPI.port.SPIx			=	SPI1;
-	sGT32L32.SPI.port.nss_port		=	GPIOA;
-	sGT32L32.SPI.port.nss_pin		=	GPIO_Pin_4;
-	
-	sGT32L32.SPI.port.clk_port	=	GPIOA;
-	sGT32L32.SPI.port.clk_pin		=	GPIO_Pin_5;
-	
-	sGT32L32.SPI.port.miso_port	=	GPIOA;
-	sGT32L32.SPI.port.miso_pin	=	GPIO_Pin_6;
-	
-	sGT32L32.SPI.port.mosi_port	=	GPIOA;
-	sGT32L32.SPI.port.mosi_pin	=	GPIO_Pin_7;	
-	sGT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
-	
-	sAmpLcd.Windows.GT32L32	=	sGT32L32;	
-  
-  api_gt32l32_configuration(&sAmpLcd.Windows.GT32L32);				//普通SPI通讯方式配置
-//	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_4);								//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	//-------------------------------------------层板接口USART1 PA11-RE,PA12-TE
-  sRS485Port.USARTx  					= USART1;
-  sRS485Port.RS485_CTL_PORT  	= GPIOA;
-  sRS485Port.RS485_CTL_Pin   	= GPIO_Pin_12;
-	
-	sAmpLcd.Comm.RS485Port			=	sRS485Port;
-	
-  api_rs485_configuration_NR(&sAmpLcd.Comm.RS485Port,115200,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
-	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_11);															//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-	GPIO_ResetBits(GPIOA,GPIO_Pin_11);
-//  GPIO_Configuration_OPP50	(sRS485Port.RS485_CTL_PORT,sRS485Port.RS485_CTL_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
-//  GPIO_ResetBits(sRS485Port.RS485_CTL_PORT,sRS485Port.RS485_CTL_Pin);
-	
-	//-------------------------------------------拨码开关
-	sSwitch.NumOfSW	=	8;
-  
-  sSwitch.SW1_PORT	=	GPIOC;
-  sSwitch.SW1_Pin		=	GPIO_Pin_7;
-  
-  sSwitch.SW2_PORT	=	GPIOC;
-  sSwitch.SW2_Pin		=	GPIO_Pin_6;
-  
-  sSwitch.SW3_PORT	=	GPIOC;
-  sSwitch.SW3_Pin		=	GPIO_Pin_5;
-  
-  sSwitch.SW4_PORT	=	GPIOC;
-  sSwitch.SW4_Pin		=	GPIO_Pin_4;
-  
-  sSwitch.SW5_PORT	=	GPIOC;
-  sSwitch.SW5_Pin		=	GPIO_Pin_3;
-  
-  sSwitch.SW6_PORT	=	GPIOC;
-  sSwitch.SW6_Pin		=	GPIO_Pin_2;
-  
-  sSwitch.SW7_PORT	=	GPIOC;
-  sSwitch.SW7_Pin		=	GPIO_Pin_1;
-  
-  sSwitch.SW8_PORT	=	GPIOC;
-  sSwitch.SW8_Pin		=	GPIO_Pin_0;
-
-	sAmpLcd.sSwitch		=	sSwitch;
-	
-	api_SwitchId_initialize(&sAmpLcd.sSwitch);	
-	
-	temp	=	api_get_SwitchId_data_left(&sAmpLcd.sSwitch);
-  sAmpLcd.Sys.AddrLay=(temp>>4)&0X0F;  	//层地址
-  sAmpLcd.Sys.AddrSeg=temp&0x0F;      	//位地址
-}
+//------------------------------------------------------------------------------
 
 
 /*******************************************************************************
@@ -1292,16 +1198,18 @@ void HW_Configuration(void)
 *******************************************************************************/
 void SendData(void)
 { 
-  unsigned  short   sendedlen = sAmpLcd.Comm.TxLen;
+  unsigned  short   sendedlen = sAmpLcd.Data.CommData.TxLen;
 	if(sendedlen)
 	{
-		sendedlen	=	api_rs485_send(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Txd,sendedlen);	//RS485-DMA发送程序
-		if(sAmpLcd.Comm.TxLen	==	sendedlen)
+		sendedlen	=	api_rs485_send_force(&sAmpLcd.Hal.RS485Port,sAmpLcd.Data.CommData.Txd,sendedlen);	//RS485-DMA发送程序
+		if(sendedlen)
 		{
-			sAmpLcd.Comm.TxLen	=	0;
+			sAmpLcd.Data.CommData.TxLen	=	0;
 		}
 	}
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1315,7 +1223,30 @@ void AckData(void)
 {
 //	memcpy(sAmpLcd.Comm.Txd,ackupfarme,AmpMinFrameSize);
 //	sAmpLcd.Comm.TxLen	=	AmpMinFrameSize;
+	unsigned short len=0;
+	ampAckDef	AckFrame;
+	ampphydef* frame;
+
+
+	AckFrame.head	=	headcode;
+	AckFrame.length	=	5;
+	AckFrame.cmd.cmd	=	ampCmdAck;
+	AckFrame.cmd.rv		=	0;
+	AckFrame.cmd.dir	=	1;
+	AckFrame.address1	=	0;
+	AckFrame.address2	=	sAmpLcd.Data.SysData.AddrLay;	//层地址
+	AckFrame.address3	=	sAmpLcd.Data.SysData.AddrSeg;	//位地址
+	AckFrame.status=0;
+	
+	frame	=	(ampphydef*)&AckFrame;
+	len	=	api_set_frame(frame,ampCmdAck,1);    //补充消息的CRC和结束符，返回帧长度
+	
+	memcpy(sAmpLcd.Data.CommData.Txd,&AckFrame,len);
+	sAmpLcd.Data.CommData.TxLen	=	len;
+
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1330,12 +1261,14 @@ void ReceiveData(void)
   unsigned short RxNum  = 0;
   //==========================================================接收查询
   //---------------------层板接口 USART2
-  RxNum = api_rs485_receive(&sAmpLcd.Comm.RS485Port,sAmpLcd.Comm.Rxd);
+  RxNum = api_rs485_receive(&sAmpLcd.Hal.RS485Port,sAmpLcd.Data.CommData.Rxd);
   if(RxNum)
   {	
-    ProcessData(sAmpLcd.Comm.Rxd,RxNum);              //柜消息处理
+    ProcessData(sAmpLcd.Data.CommData.Rxd,RxNum);              //柜消息处理
   }
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	function
@@ -1348,12 +1281,10 @@ void ReceiveData(void)
 void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 {
   unsigned  short framlength  = datalen; 
-  unsigned  char* StartAddr    = ReceDatabuffer;         //备份数据缓存起始地址
-	
-	
-	unsigned char	i=0;
-	unsigned char DataLen	=0;		//数据段长度
-//	ManaDef*	ManaData;
+  unsigned  char* StartAddr    = ReceDatabuffer;         //备份数据缓存起始地址	
+	unsigned 	char	i=0;
+	unsigned 	char	DataLen	=0;		//数据段长度
+
   
   ampphydef* ampframe=NULL;
   //-------------------------检查端口是否为层接口及缓存地址是否为空
@@ -1374,12 +1305,12 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 		goto ReCheckData;		//重新检测剩余的数据
 	}
   //-------------------------层地址检查
-	if((sAmpLcd.Sys.AddrLay!=ampframe->msg.addr.address2)&&(0xFF!=ampframe->msg.addr.address2))
+	if((sAmpLcd.Data.SysData.AddrLay!=ampframe->msg.addr.address2)&&(0xFF!=ampframe->msg.addr.address2))
 	{
 		goto ReCheckData;		//重新检测剩余的数据
 	}
 	//-------------------------位地址检查
-	if((sAmpLcd.Sys.AddrSeg	!=	ampframe->msg.addr.address3)&&(0xFF	!=	ampframe->msg.addr.address3))
+	if((sAmpLcd.Data.SysData.AddrSeg	!=	ampframe->msg.addr.address3)&&(0xFF	!=	ampframe->msg.addr.address3))
 	{
 		goto ReCheckData;		//重新检测剩余的数据
 	} 
@@ -1390,7 +1321,7 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
     if(ampCmdLcdData ==  ampframe->msg.cmd.cmd) 
     {	
 			unsigned char* buffer=NULL;
-			DataLen	=	ampframe->msg.length-4;		//数据段长度			
+			DataLen	=	ampframe->msg.length-4;		//数据段长度:删除命令和地址数据
 			buffer=(unsigned char*)ampframe->msg.data;
 			
 			PackManaData:
@@ -1407,6 +1338,11 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 			if((0xFF	!=	ampframe->msg.addr.address2)&&(0xFF	!=	ampframe->msg.addr.address3))
 				AckData();			
 		}
+		else
+		{
+			if((0xFF	!=	ampframe->msg.addr.address2)&&(0xFF	!=	ampframe->msg.addr.address3))
+				AckData();	
+		}
 		goto ReCheckData;		//重新检测剩余的数据
   }
 	//------------------------------继续检查剩余数据，直到检查失败
@@ -1415,6 +1351,8 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 	framlength-=1;	//去掉一字节长度
 	goto ReceiveDataCheckStart;
 }
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	GetManaData
 *功能描述		:	从消息中获取药品信息，存储在药品列表中
@@ -1427,39 +1365,34 @@ void ProcessData(unsigned char* ReceDatabuffer,unsigned short datalen)
 void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 {
 	unsigned char		i=0;
-	unsigned char 	strtype		=0;		//字符串类型
-	unsigned char 	strLen		=0;		//字符串长度
-//	unsigned char 	strCount	=0;		//已处理的字符串个数计数
+	unsigned char 	strtype		=0;					//字符串类型
+	unsigned char 	strLen		=0;					//字符串长度
 	unsigned char 	FinishedDataLen	=	0;	//已处理数据个数
-	unsigned char		Offset			=	0;	//下一个类型字符串的偏移地址
-	unsigned char*	ParaOffsetAddr;		//字符串地址偏移指针
-	unsigned char*	ParalenAddr;			//字符串长度指针
-	
-	unsigned char		MaxList		=	0;
-//	unsigned char		ListCount	=	0;
-	
-	unsigned char* 	pSource;		//源字符串地址---源自串口接收到的数据
-	unsigned char* 	pTarget;		//目标符串地址---存储
+	unsigned char		Offset			=	0;			//下一个类型字符串的偏移地址
+	unsigned char*	ParaOffsetAddr;				//字符串地址偏移指针
+	unsigned char*	ParalenAddr;					//字符串长度指针	
+	//unsigned char		MaxList		=	0;
+	unsigned char* 	pSource;							//源字符串地址---源自串口接收到的数据
+	unsigned char* 	pTarget;							//目标符串地址---存储
 	
 	ManaDef*	ManaData;
-	ListDef*	List;		//
-//	ListDef*	pNode;
-	ListDef		Node;
+	ampLcdListDef*	List;
+	ampLcdListDef		Node;
 	
 	//=================================初始化数据
-	List			=	sAmpLcd.Windows.ManaData.List;
-	MaxList		=	sAmpLcd.Windows.ManaData.MaxNameList;	//可接收的最大条目限制
-	memset(&Node,0x00,sizeof(ListDef));
+	List			=	sAmpLcd.Data.Display.List;
+	//MaxList		=	sAmpLcd.Data.DisplayData.MaxNameList;	//可接收的最大条目限制
+	memset(&Node,0x00,sizeof(ampLcdListDef));
 	//=================================查找空缓存
-	for(i=0;i<MaxList;i++)
+	for(i=0;i<ampLcdListSize;i++)
 	{
-		if(0==List[i].ListNum)		//缓存为空，可以拷贝数据
+		if(0==List[i].ListNum)						//缓存为空，可以拷贝数据
 		{
 			break;
 		}
-	}	
+	}
 	//=================================未查找到空缓存，缓存满
-	if(i>=DspMaxNameTypeCount)
+	if(i>=ampLcdListSize)
 	{
 		return;
 	}
@@ -1471,7 +1404,12 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 	//---------------------------------01名称参数
 	strtype		=	ManaData->type;
 	strLen		=	ManaData->len;
-	if(strLen+2>AMPLcdMaxStringLen)	//字符个数超限(字符串+type和len)
+	if(0!=ampLcd_get_type_data_address(Databuffer,datalen,ampLcdParaName))
+	{
+		ampLcd_SetManaDataInfo(Databuffer,datalen);
+	}
+
+	if(strLen+2>AMPLcdMaxStringLen)		//字符个数超限(字符串+type和len)
 		return;
 	
 	GetDataStart:
@@ -1534,26 +1472,24 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 			ParaOffsetAddr	=	&Node.ParaUnit.Offset;
 			ParalenAddr			=	&Node.ParaUnit.len;
 		break;
-		default:return;	//未找到类型数据
+		default:return;
 	}
-	*ParalenAddr		=	strLen;		//字符串长度
-	*ParaOffsetAddr	=	Offset;		//当前字符串偏移地址
+	*ParalenAddr		=	strLen;					//字符串长度
+	*ParaOffsetAddr	=	Offset;					//当前字符串偏移地址
 
 	//-------------------------------复制数据
-	memcpy(pTarget,pSource,strLen);		//复制字符串
+	memcpy(pTarget,pSource,strLen);
 	
 	//-------------------------------统计已处理字节数
 	Offset		=	Offset+strLen;				//下一个类型字符串的偏移地址
 	FinishedDataLen+=strLen+2;							//已处理数据个数(字符串+type和len)
 	//-------------------------------指向下一类型
-	if(FinishedDataLen>=datalen)	//已处理完
+	if(FinishedDataLen>=datalen)
 	{
 		//-------------------------------正确获取到数据
 		if(0!=Node.ParaName.len||0!=Node.ParaByName.len)	//商品名称或者别名是必需数据
 		{
 			SetManaData(&Node);															//设置显示参数---数据获取成功后设置相关的显示参数
-//			sAmpLcd.Windows.ManaData.ReceivedManaCount+=1;
-//			pNode->ListNum	=	i+1;
 		}
 		return;
 	}
@@ -1569,6 +1505,10 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 	goto GetDataStart;
 	
 }
+//------------------------------------------------------------------------------
+
+
+
 /*******************************************************************************
 *函数名			:	function
 *功能描述		:	设置显示参数---数据获取成功后设置相关的显示参数
@@ -1578,7 +1518,7 @@ void GetManaData(const unsigned char* Databuffer,unsigned short datalen)
 *修改说明		:	无
 *注释				:	wegam@sina.com
 *******************************************************************************/
-void SetManaData(ListDef* pNode)
+void SetManaData(ampLcdListDef* pNode)
 {
 	unsigned char		i=0;
 	unsigned char 	strtype		=	0;		//字符串类型
@@ -1591,7 +1531,7 @@ void SetManaData(ListDef* pNode)
 //	unsigned char*	ParaOffsetAddr;		//字符串地址偏移指针
 //	unsigned char*	ParalenAddr;			//字符串长度指针
 	
-	unsigned char		MaxList		=	0;
+	//unsigned char		MaxList		=	0;
 //	unsigned char		ListCount	=	0;
 	
 	unsigned char* 	pSource;		//源字符串地址---源自串口接收到的数据
@@ -1607,10 +1547,10 @@ void SetManaData(ListDef* pNode)
 	unsigned short	ValidXH;			//X--水平有效点数
 	unsigned short	ValidYV;			//Y--垂直有效点数
 	
-	ParaDef*		Para;
-	ListDef*		List;
-	ListDef			Node;
-	WinInfoDef	WinInfo;			//显示字体信息
+	ampLcdParaTyeDef*		Para;
+	ampLcdListDef*		List;
+	ampLcdListDef			Node;
+//	WinInfoDef	WinInfo;			//显示字体信息
 	//---------------------------------输入数据地址有效性
 	if(NULL==pNode)
 	{
@@ -1622,16 +1562,16 @@ void SetManaData(ListDef* pNode)
 		return;
 	}
 	//=================================初始化数据
-	List		=	sAmpLcd.Windows.ManaData.List;
-	MaxList	=	sAmpLcd.Windows.ManaData.MaxNameList;	//可接收的最大条目限制
-	WinInfo	=	sAmpLcd.Windows.WinInfo;							//字体信息
-	ValidXH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH;
-	ValidYV	=	sAmpLcd.Windows.WinInfo.PxyValid.YV;
+	List		=	sAmpLcd.Data.Display.List;
+	//MaxList	=	sAmpLcd.Data.DisplayData.MaxNameList;	//可接收的最大条目限制
+//	WinInfo	=	sAmpLcd.Windows.WinInfo;							//字体信息
+	ValidXH	=	sAmpLcd.Data.Cof.PxyValid.XH;
+	ValidYV	=	sAmpLcd.Data.Cof.PxyValid.YV;
 	
 	Node	=	*pNode;
 	//=================================先计算数量和单位占用X点数(除名称外，右缩进需要根据数量和单位占用的X点数来调整)
 	//---------------------------------获取数量和单位数据
-	FontSize	=	WinInfo.FtNum.Size;
+	FontSize	=	sAmpLcd.Data.Cof.FtNum.Size;
 	strLen		=	Node.ParaNum.len+Node.ParaUnit.len;		//数量和单位的字节点
 	//---------------------------------计算数量占用水平点数
 	Node.ParaNum.XH	=	Node.ParaNum.len*(FontSize/2);	//字符宽度为高度的一半
@@ -1644,64 +1584,64 @@ void SetManaData(ListDef* pNode)
 	
 	//=================================分类拆装数据
 	//---------------------------------初始化指针地址和数据
-	Para	=	(ParaDef*)&Node.ParaName;
+	Para	=	(ampLcdParaTyeDef*)&Node.ParaName;
 
 	//---------------------------------01名称参数
 	strtype		=	0x01;		//从第一个参数开始
 	SetDataStart:
 	switch(strtype)
 	{
-		case	0x01:	//商品名类型
-			Line	=	4;		//名称最大可显示4行
+		case	0x01:				//商品名类型
+			Line	=	4;			//名称最大可显示4行
 			strLen		=	Node.ParaName.len;			
-			FontSize	=	WinInfo.FtName.Size;		
-			Node.ParaName.XH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH;
+			FontSize	=	sAmpLcd.Data.Cof.FtName.Size;		
+			Node.ParaName.XH	=	sAmpLcd.Data.Cof.PxyValid.XH;
 			
 			pTargetXH	=	&Node.ParaName.XH;
 			pTargetYV	=	&Node.ParaName.YV;
 		break;
-		case	0x02:	//规格参数
-			Line	=	2;		//名称最大可显示2行
+		case	0x02:				//规格参数
+			Line	=	2;			//名称最大可显示2行
 			strLen		=	Node.ParaSpec.len;			
-			FontSize	=	WinInfo.FtSpec.Size;		
-			Node.ParaSpec.XH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH-OffsetXH;
+			FontSize	=	sAmpLcd.Data.Cof.FtSpec.Size;		
+			Node.ParaSpec.XH	=	sAmpLcd.Data.Cof.PxyValid.XH-OffsetXH;
 		
 			pTargetXH	=	&Node.ParaSpec.XH;
 			pTargetYV	=	&Node.ParaSpec.YV;
 		break;
-		case	0x03:	//数量参数
+		case	0x03:			//数量参数
 			strtype+=1;
 			goto SetDataStart;	
 		break;
 		
-		case	0x04:	//别名
+		case	0x04:			//别名
 			Line	=	2;		//名称最大可显示2行
 			strLen		=	Node.ParaByName.len;			
-			FontSize	=	WinInfo.FtByName.Size;		
-			Node.ParaByName.XH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH-OffsetXH;
+			FontSize	=	sAmpLcd.Data.Cof.FtByName.Size;		
+			Node.ParaByName.XH	=	sAmpLcd.Data.Cof.PxyValid.XH-OffsetXH;
 		
 			pTargetXH	=	&Node.ParaByName.XH;
 			pTargetYV	=	&Node.ParaByName.YV;			
 		break;
-		case	0x05:	//厂商名称
+		case	0x05:			//厂商名称
 			Line	=	2;		//名称最大可显示2行
 			strLen		=	Node.ParaVender.len;			
-			FontSize	=	WinInfo.FtVender.Size;		
-			Node.ParaVender.XH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH-OffsetXH;
+			FontSize	=	sAmpLcd.Data.Cof.FtVender.Size;		
+			Node.ParaVender.XH	=	sAmpLcd.Data.Cof.PxyValid.XH-OffsetXH;
 		
 			pTargetXH	=	&Node.ParaVender.XH;
 			pTargetYV	=	&Node.ParaVender.YV;
 		break;
-		case	0x06:	//商品编码
+		case	0x06:			//商品编码
 			Line	=	2;		//名称最大可显示2行
 			strLen		=	Node.ParaCode.len;			
-			FontSize	=	WinInfo.FtCode.Size;		
-			Node.ParaCode.XH	=	sAmpLcd.Windows.WinInfo.PxyValid.XH-OffsetXH;
+			FontSize	=	sAmpLcd.Data.Cof.FtCode.Size;		
+			Node.ParaCode.XH	=	sAmpLcd.Data.Cof.PxyValid.XH-OffsetXH;
 		
 			pTargetXH	=	&Node.ParaCode.XH;
 			pTargetYV	=	&Node.ParaCode.YV;
 		break;
-		case	0x07:	//数量单位
+		case	0x07:			//数量单位
 			strtype+=1;
 			goto SetDataStart;
 		break;
@@ -1714,7 +1654,7 @@ void SetManaData(ListDef* pNode)
 	//---------------------------------计算需要多少行才能显示完
 	if(0==i)
 		return;
-	if(0==strLen%i)	//整数行
+	if(0==strLen%i)		//整数行
 	{
 		i	=	strLen/i;
 	}
@@ -1737,27 +1677,178 @@ void SetManaData(ListDef* pNode)
 	}
 	//---------------------------------添加数据：添加数据前比较缓存有无相同的数据，有则不添加
 	AddNode:
-	for(i=0;i<MaxList;i++)
+	for(i=0;i<ampLcdListSize;i++)
 	{
-		if(0==memcmp((unsigned char*)&List[i].ParaName,&Node.ParaName,sizeof(ListDef)-2))	//检查数据内容(减2是因为List[i].ListNum，16字节对齐)
+		if(0==memcmp((unsigned char*)&List[i].ParaName,&Node.ParaName,sizeof(ampLcdListDef)-2))	//检查数据内容(减2是因为List[i].ListNum，16字节对齐)
 		{
 			if(0!=List[i].ListNum)	//序号存在
 				return;
 		}
 	}
 //---------------------------------无相同数据，往空缓存内添加数据	
-	for(i=0;i<MaxList;i++)
+	for(i=0;i<ampLcdListSize;i++)
 	{
 		if(0==List[i].ListNum)		//缓存为空，可以拷贝数据
 		{
 			//List	=	List[i];
-			memcpy((unsigned char*)&List[i],&Node,sizeof(ListDef));
-			sAmpLcd.Windows.ManaData.ReceivedManaCount+=1;
+			memcpy((unsigned char*)&List[i],&Node,sizeof(ampLcdListDef));
+			sAmpLcd.Data.Display.Count+=1;
 			List[i].ListNum	=	i+1;
 			break;
 		}
 	}	
 }
+//------------------------------------------------------------------------------
+
+/*******************************************************************************
+*函数名			:	SetManaDataInfo
+*功能描述		:	设置显示参数---数据获取成功后设置相关的显示参数
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+void ampLcd_SetManaDataInfo(const unsigned char* String,unsigned short datalen)
+{
+	unsigned char		step	=	0;			//获取类型步骤，总共7种类型
+	unsigned char		i	=	0,j=0;
+	unsigned char		GotNameFlag=0;	//获取到药品名称：数据必须要有药品名称
+	unsigned short	Ycount	=	0;		//Y点数
+	unsigned short 	ParaLen	=	0;		//参数长度
+	unsigned short	Bufflen	=	0;
+	
+	ManaDef*	Mana	=	(ManaDef*)String;
+	
+	
+	if(0!=Mana)
+	{
+		unsigned char			i	=	0;
+		unsigned short		len=0;
+		ampLcdParaTyeDef	ampLcdParaTye;	//参数类型
+		ManaDef		ManaA[7];		//按照:0x01-耗材名称,0x04-别名,0x05-厂家名称,0x02-耗材规格,0x06-耗材编码,0x03-耗材数量,0x07-数量单位>提取数据排序
+		ManaDef*	ManaB;
+		ManaDef*	ManaC;
+		//=======================分类提取数据
+		for(i=0;i<7;i++)
+		{
+			switch(Mana->type)
+			{
+				case	ampLcdParaName:			//0x01-耗材名称
+							ManaB	=	&ManaA[0];
+				break;
+				case	ampLcdParaByName:		//0x04-别名
+							ManaB	=	&ManaA[1];
+				break;
+				case	ampLcdParaVender:		//0x05-厂家名称
+							ManaB	=	&ManaA[2];
+				break;
+				case	ampLcdParaSpec:			//0x02-耗材规格
+							ManaB	=	&ManaA[3];
+				break;
+				case	ampLcdParaCode:			//0x06-耗材编码
+							ManaB	=	&ManaA[4];
+				break;
+				case	ampLcdParaNum:			//0x03-耗材数量
+							ManaB	=	&ManaA[5];
+				break;
+				case	ampLcdParaUnit:			//0x07-数量单位
+							ManaB	=	&ManaA[6];
+				break;
+				
+				default:
+				break;
+					
+			}
+			len+=Mana->len+2;		//+2为类型和长度位
+			memcpy(ManaB,Mana,Mana->len+2);
+			
+			if(len<datalen)
+				Mana	=	(ManaDef*)&String[Mana->len+2];
+		}
+		//=======================合并和对比数据:必须得有耗材名称
+		if((len<=datalen)&&(ManaA[0].len))
+		{	
+			unsigned char unlen	=	0;		//不需要参与对比的字符串:数量和单位
+			unsigned char buffer[AMPLcdMaxStringLen];
+			ampLcdListDef*	List	=	sAmpLcd.Data.Display.List;
+			len	=	0;
+			unlen	=	ManaA[5].len+ManaA[6].len;
+			//---------------------合并数据:必须得有耗材名称
+			for(i=0;i<7;i++)
+			{
+				memcpy(&buffer[len],ManaA[i].String,ManaA[i].len);
+				len	+=	ManaA[i].len;
+			}
+			//---------------------对比数据，排除重复，如果数量更新，更新数量，否则添加数据
+			for(i=0;i<sAmpLcd.Data.Display.Count;i++)
+			{
+				//-------------------对比除数量和单位之外的数据
+				if(0==memcpy(buffer,List[i].String,len-unlen))
+				{
+					//-----------------对比数量和单位
+					if(len	==	List[i].len)
+					{
+						if(0==memcpy(buffer,List[i].String,len))
+						{
+							break;
+						}
+						//---------------更新数据
+						else
+						{
+						}
+					}
+				}
+			}
+			//=====================
+	
+		}
+	}		
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+unsigned char* ampLcd_get_type_data_address(const unsigned char* String,unsigned short datalen,ampLcdParaTyeDef	ampLcdParaTye)
+{
+	unsigned char			i	=	0;
+	unsigned short 		ParaLen	=	0;		//参数长度
+	unsigned short 		Len	=	0;				//消息长度
+	unsigned char*		address	=	(unsigned char*)String;
+	unsigned char*		address2	=	0;
+	
+	ampLcdParaTyeDef	ampLcdParaTyeCmp;
+	//=================================
+	for(i=0;i<datalen;i++)
+	{
+		ampLcdParaTyeCmp	=	(ampLcdParaTyeDef)address[i];
+		//-------------------------------耗材类型标识		
+		if(ampLcdParaTye	==	ampLcdParaTyeCmp)
+		{
+			ParaLen		=	address[1];
+			Len				=	(address-String)+ParaLen+1;		//+1为长度标识位
+			if(Len<=datalen)
+			{
+				address2	=	&address[i];
+				break;
+			}
+		}
+		//-------------------------------
+		else
+		{
+		}
+	}
+	//=================================
+	return address2;
+}
+//------------------------------------------------------------------------------
+
 /*******************************************************************************
 *函数名			:	DataInitialize
 *功能描述		:	数据初始化
@@ -1770,71 +1861,300 @@ void SetManaData(ListDef* pNode)
 void DataInitialize(void)
 {
 	unsigned	char*	addr;
+	ampLcdCofDef*	Cof	=	(ampLcdCofDef*)&sAmpLcd.Data.Cof;
 	//==========================================显示参数初始化
-	WinInfoDef* WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;
+//	WinInfoDef* WinInfo	=	(WinInfoDef*)&sAmpLcd.Windows.WinInfo;
 	//==========================================WinFont
-	WinInfo->FtDefault.BackColor	=	DisplayBackColor;
-	WinInfo->FtDefault.PenColor		=	DisplayFontColor;
-	WinInfo->FtDefault.Size				=	DisplayFontSize;
+	Cof->FtDefault.BackColor	=	DisplayBackColor;
+	Cof->FtDefault.PenColor		=	DisplayFontColor;
+	Cof->FtDefault.Size				=	DisplayFontSize;
 	
-	WinInfo->FtName.BackColor			=	DisplayNameBkColor;
-	WinInfo->FtName.PenColor			=	DisplayNameFtColor;
-	WinInfo->FtName.Size					=	DisplayNameFtSize;
+	Cof->FtName.BackColor			=	DisplayNameBkColor;
+	Cof->FtName.PenColor			=	DisplayNameFtColor;
+	Cof->FtName.Size					=	DisplayNameFtSize;
 	
-	WinInfo->FtByName.BackColor		=	DisplayByNameBkColor;
-	WinInfo->FtByName.PenColor		=	DisplayByNameFtColor;
-	WinInfo->FtByName.Size				=	DisplayByNameFtSize;
+	Cof->FtByName.BackColor		=	DisplayByNameBkColor;
+	Cof->FtByName.PenColor		=	DisplayByNameFtColor;
+	Cof->FtByName.Size				=	DisplayByNameFtSize;
 	
-	WinInfo->FtSpec.BackColor			=	DisplaySpecBkColor;
-	WinInfo->FtSpec.PenColor			=	DisplaySpecFtColor;
-	WinInfo->FtSpec.Size					=	DisplaySpecFtSize;
+	Cof->FtSpec.BackColor			=	DisplaySpecBkColor;
+	Cof->FtSpec.PenColor			=	DisplaySpecFtColor;
+	Cof->FtSpec.Size					=	DisplaySpecFtSize;
 	
-	WinInfo->FtNum.BackColor			=	DisplayNumBkColor;
-	WinInfo->FtNum.PenColor				=	DisplayNumFtColor;
-	WinInfo->FtNum.Size						=	DisplayNumFtSize;
+	Cof->FtNum.BackColor			=	DisplayNumBkColor;
+	Cof->FtNum.PenColor				=	DisplayNumFtColor;
+	Cof->FtNum.Size						=	DisplayNumFtSize;
 	
-	WinInfo->FtSeril.BackColor		=	DisplaySerialBkColor;
-	WinInfo->FtSeril.PenColor			=	DisplaySerialFtColor;
-	WinInfo->FtSeril.Size					=	DisplaySerialFtSize;
+	Cof->FtSeril.BackColor		=	DisplaySerialBkColor;
+	Cof->FtSeril.PenColor			=	DisplaySerialFtColor;
+	Cof->FtSeril.Size					=	DisplaySerialFtSize;
 	
-	WinInfo->FtCode.BackColor			=	DisplayCodeBkColor;
-	WinInfo->FtCode.PenColor			=	DisplayCodeFtColor;
-	WinInfo->FtCode.Size					=	DisplayCodeFtSize;
+	Cof->FtCode.BackColor			=	DisplayCodeBkColor;
+	Cof->FtCode.PenColor			=	DisplayCodeFtColor;
+	Cof->FtCode.Size					=	DisplayCodeFtSize;
 	
-	WinInfo->FtVender.BackColor		=	DisplayVenderBkColor;
-	WinInfo->FtVender.PenColor		=	DisplayVenderFtColor;
-	WinInfo->FtVender.Size				=	DisplayVenderFtSize;
+	Cof->FtVender.BackColor		=	DisplayVenderBkColor;
+	Cof->FtVender.PenColor		=	DisplayVenderFtColor;
+	Cof->FtVender.Size				=	DisplayVenderFtSize;
 	
-	WinInfo->FtTitle.BackColor		=	DisplayTitleBkColor;
-	WinInfo->FtTitle.PenColor			=	DisplayTitleFtColor;
-	WinInfo->FtTitle.Size					=	DisplayTitleSize;
+	Cof->FtTitle.BackColor		=	DisplayTitleBkColor;
+	Cof->FtTitle.PenColor			=	DisplayTitleFtColor;
+	Cof->FtTitle.Size					=	DisplayTitleSize;
 	
-	WinInfo->FtSepar.BackColor		=	DisplaySeparBkColor;
-	WinInfo->FtSepar.Size					=	DisplaySeparWidth;
+	Cof->FtSepar.BackColor		=	DisplaySeparBkColor;
+	Cof->FtSepar.Size					=	DisplaySeparWidth;
 	
 	//==========================================WinInfo
 	//------------------------------------------整屏像素点
-	WinInfo->PxyPixel.XH					=	ST7789V_V;		//水平点个数
-	WinInfo->PxyPixel.YV					=	ST7789V_H;		//垂直点个数
+	Cof->PxyPixel.XH					=	ST7789V_V;		//水平点个数
+	Cof->PxyPixel.YV					=	ST7789V_H;		//垂直点个数
 	
 	//------------------------------------------顶端垂直起始/填充点
-	WinInfo->PxyTopFill.XH				=	0;
-	WinInfo->PxyTopFill.YV				=	DisplayTopFillWidth;	
+	Cof->PxyTopFill.XH				=	0;
+	Cof->PxyTopFill.YV				=	DisplayTopFillWidth;	
 	//------------------------------------------底部垂直起始/填充点
-	WinInfo->PxyBotFill.XH				=	0;
-	WinInfo->PxyBotFill.YV				=	DisplayBotFillWidth;
+	Cof->PxyBotFill.XH				=	0;
+	Cof->PxyBotFill.YV				=	DisplayBotFillWidth;
 	//------------------------------------------左边起始/填充点
-	WinInfo->PxyLeftFill.XH				=	DisplayLeftFillWidth;
-	WinInfo->PxyLeftFill.YV				=	0;
+	Cof->PxyLeftFill.XH				=	DisplayLeftFillWidth;
+	Cof->PxyLeftFill.YV				=	0;
 	//------------------------------------------剩余有效使用点数
-	WinInfo->PxyValid.XH					=	WinInfo->PxyPixel.XH-WinInfo->PxyLeftFill.XH-1;
-	WinInfo->PxyValid.YV					=	WinInfo->PxyPixel.YV-(WinInfo->PxyBotFill.YV+WinInfo->PxyTopFill.YV);
+	Cof->PxyValid.XH					=	Cof->PxyPixel.XH	-	Cof->PxyLeftFill.XH-1;
+	Cof->PxyValid.YV					=	Cof->PxyPixel.YV	-	(Cof->PxyBotFill.YV+Cof->PxyTopFill.YV);
 	
-	WinInfo->TopDisplayStartY			=	WinInfo->PxyTopFill.YV+WinInfo->FtTitle.Size;
-	WinInfo->BotDisplayStartY			=	WinInfo->TopDisplayStartY+(WinInfo->PxyValid.YV-WinInfo->FtTitle.Size)/2;
+	sAmpLcd.Data.RunData.TopDisplayStartY			=	Cof->PxyTopFill.YV+Cof->FtTitle.Size;
+	sAmpLcd.Data.RunData.BotDisplayStartY			=	sAmpLcd.Data.RunData.TopDisplayStartY+(Cof->PxyValid.YV-Cof->FtTitle.Size)/2;
 	//------------------------------------------最大可以接收商品个数
 //	addr=(unsigned char*)&sAmpLcd.Windows.ManaData.MaxNameList;		//const类型
-	sAmpLcd.Windows.ManaData.MaxNameList	=	DspMaxNameTypeCount;		//const类型
+	//sAmpLcd.Data.DisplayData.MaxNameList	=	ampLcdListSize;		//const类型
 //	*addr	=	DspMaxNameTypeCount;
 }
+//------------------------------------------------------------------------------
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void SwitchID_Server(void)
+{
+	static unsigned short time=0;
+	if(time++>1000)
+	{
+		unsigned char temp	=	0;
+		time	=	0;
+		temp	=	api_get_SwitchId_data_left(&sAmpLcd.Hal.sSwitch);
+		sAmpLcd.Data.SysData.AddrLay=(temp>>4)&0X0F;  	//层地址
+		sAmpLcd.Data.SysData.AddrSeg=temp&0x0F;      	//位地址
+	}
+}
+//------------------------------------------------------------------------------
+
+
+
+
+
+
+/*******************************************************************************
+* 函数名			:	function
+* 功能描述		:	函数功能说明 
+* 输入			: void
+* 返回值			: void
+* 修改时间		: 无
+* 修改内容		: 无
+* 其它			: wegam@sina.com
+*******************************************************************************/
+void HW_Configuration(void)
+{
+//	spi_def	*SPI	=	&sAmpLcd.SpiPort;
+	sST7789VDef	sST7789V;
+	GT32L32Def	sGT32L32;
+	SwitchDef 	sSwitch;			//拔码开关
+	
+	unsigned short temp;
+	
+	//-------------------------------------------层板接口USART1 PA11-RE,PA12-TE
+  sAmpLcd.Hal.RS485Port.USARTx  					= ampLcdCommPort;
+	sAmpLcd.Hal.RS485Port.RS485_TxEn_PORT		=	ampLcdCommTxEnPort;
+	sAmpLcd.Hal.RS485Port.RS485_TxEn_Pin		=	ampLcdCommTxEnPin;
+	
+	sAmpLcd.Hal.RS485Port.RS485_RxEn_PORT		=	ampLcdCommRxEnPort;
+	sAmpLcd.Hal.RS485Port.RS485_RxEn_Pin		=	ampLcdCommRxEnPin;	
+  api_rs485_configuration_NR(&sAmpLcd.Hal.RS485Port,ampLcdCommBaudRate,maxFramesize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	
+	//-------------------------------------------拨码开关
+	sSwitch.NumOfSW	=	8;
+  
+  sSwitch.SW1_PORT	=	GPIOC;
+  sSwitch.SW1_Pin		=	GPIO_Pin_7;
+  
+  sSwitch.SW2_PORT	=	GPIOC;
+  sSwitch.SW2_Pin		=	GPIO_Pin_6;
+  
+  sSwitch.SW3_PORT	=	GPIOC;
+  sSwitch.SW3_Pin		=	GPIO_Pin_5;
+  
+  sSwitch.SW4_PORT	=	GPIOC;
+  sSwitch.SW4_Pin		=	GPIO_Pin_4;
+  
+  sSwitch.SW5_PORT	=	GPIOC;
+  sSwitch.SW5_Pin		=	GPIO_Pin_3;
+  
+  sSwitch.SW6_PORT	=	GPIOC;
+  sSwitch.SW6_Pin		=	GPIO_Pin_2;
+  
+  sSwitch.SW7_PORT	=	GPIOC;
+  sSwitch.SW7_Pin		=	GPIO_Pin_1;
+  
+  sSwitch.SW8_PORT	=	GPIOC;
+  sSwitch.SW8_Pin		=	GPIO_Pin_0;
+
+	sAmpLcd.Hal.sSwitch		=	sSwitch;
+	
+	api_SwitchId_initialize(&sAmpLcd.Hal.sSwitch);	
+	
+	temp	=	api_get_SwitchId_data_left(&sAmpLcd.Hal.sSwitch);
+  sAmpLcd.Data.SysData.AddrLay=(temp>>4)&0X0F;  	//层地址
+  sAmpLcd.Data.SysData.AddrSeg=temp&0x0F;      	//位地址
+	
+	
+	//-------------------------------------------拨码开关
+	GPIO_Configuration_OPP50(ampLcdSYSLEDPort,ampLcdSYSLEDPin);
+	
+	//-------------------------------------------LCD参数初始化
+	sST7789V.HWPort.sBL_PORT				=	GPIOA;
+	sST7789V.HWPort.sBL_Pin					=	GPIO_Pin_1;
+	
+	sST7789V.HWPort.sRD_PORT				=	GPIOD;
+	sST7789V.HWPort.sRD_Pin					=	GPIO_Pin_2;	
+	
+	sST7789V.HWPort.sREST_PORT			=	GPIOA;
+	sST7789V.HWPort.sREST_Pin				=	GPIO_Pin_15;
+	
+	sST7789V.HWPort.sDC_PORT				=	GPIOC;
+	sST7789V.HWPort.sDC_Pin					=	GPIO_Pin_11;
+	
+	sST7789V.HWPort.sWR_PORT				=	GPIOC;
+	sST7789V.HWPort.sWR_Pin					=	GPIO_Pin_12;	
+	
+	sST7789V.HWPort.sCS_PORT				=	GPIOC;
+	sST7789V.HWPort.sCS_Pin					=	GPIO_Pin_10;
+	
+	sST7789V.HWPort.sDATABUS_PORT		=	GPIOB;
+	sST7789V.HWPort.sDATABUS_Pin		=	GPIO_Pin_All;	
+	
+	sST7789V.ST7789VRotate	=	ST7789V_Rotate_90D;		//使用旋转角度
+	
+	sAmpLcd.Hal.LcdPort	=	sST7789V;
+	
+	ST7789V_Initialize(&sAmpLcd.Hal.LcdPort);
+	
+	ST7789V_Clean(0xFFFF);
+	ST7789V_Clean(LCD565_DARKBLUE);
+	
+	//-------------------------------------------字库参数初始化
+	sGT32L32.SPI.port.SPIx			=	SPI1;
+	sGT32L32.SPI.port.nss_port	=	GPIOA;
+	sGT32L32.SPI.port.nss_pin		=	GPIO_Pin_4;
+	
+	sGT32L32.SPI.port.clk_port	=	GPIOA;
+	sGT32L32.SPI.port.clk_pin		=	GPIO_Pin_5;
+	
+	sGT32L32.SPI.port.miso_port	=	GPIOA;
+	sGT32L32.SPI.port.miso_pin	=	GPIO_Pin_6;
+	
+	sGT32L32.SPI.port.mosi_port	=	GPIOA;
+	sGT32L32.SPI.port.mosi_pin	=	GPIO_Pin_7;	
+	sGT32L32.SPI.port.SPI_BaudRatePrescaler_x=SPI_BaudRatePrescaler_2;
+	
+	sAmpLcd.Hal.GT32L32	=	sGT32L32;	
+  
+  api_gt32l32_configuration(&sAmpLcd.Hal.GT32L32);				//普通SPI通讯方式配置
+	
+	
+}
+//------------------------------------------------------------------------------
+
+
+
+
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void ampLcd_Display_Server(void)
+{
+	ampLcdDisplayDataDef*	ampLcdDisplayData=&sAmpLcd.Data.Display;
+	//============================检查有无缓存
+	if((0==ampLcdDisplayData->Count)||(0==ampLcdDisplayData->Sync))
+	{
+		//ampLcdDisplayData->Serial	=	0;		
+	}
+	//============================有数据
+	else
+	{
+		unsigned char i = 0;
+		unsigned char* String=0;
+		//--------------------------更新显示序列
+		if(ampLcdDisplayData->Serial<ampLcdDisplayData->Count)
+		{
+			ampLcdDisplayData->Serial++;
+		}
+		else
+		{
+			ampLcdDisplayData->Serial=1;
+		}
+		//--------------------------获取当前应该显示缓存
+		for(i=0;i<ampLcdListSize;i++)
+		{
+			if(ampLcdDisplayData->Serial	==	ampLcdDisplayData->List[i].ListNum)
+			{
+				String	=	ampLcdDisplayData->List[i].String;
+				break;
+			}
+		}
+		//--------------------------已经获取到缓存地址
+		if(0!=String)
+		{
+			ampLcd_Display_String(String);
+		}
+	}
+}
+//------------------------------------------------------------------------------
+/*******************************************************************************
+*函数名			:	function
+*功能描述		:	function
+*输入				: 
+*返回值			:	无
+*修改时间		:	无
+*修改说明		:	无
+*注释				:	wegam@sina.com
+*******************************************************************************/
+static void ampLcd_Display_String(const unsigned char* String)
+{
+	if(0!=String)
+	{
+		unsigned short i = 0;
+
+	}
+}
+//------------------------------------------------------------------------------
+
+
+
+
+
+
+
 #endif

@@ -88,7 +88,7 @@ void SDQ_TEST_Configuration(void)
 {
   SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
 
-	//PWM_OUT(TIM2,PWM_OUTChannel1,1000000,500);	//PWM设定-20161127版本	占空比1/1000
+	//api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1000000,500);	//PWM设定-20161127版本	占空比1/1000
 	GPIO_Configuration_OPP50(GPIOA,GPIO_Pin_0);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605
 	
 	SDQ_TEST_SYS_Configuration();
@@ -228,7 +228,7 @@ static void AuthTest(void)
 	if(usart_cof_flag==0)
 	{
 		usart_cof_flag	=	1;
-		api_usart_dma_configurationNR(ComPortOut,625000,128);
+		api_usart_configuration_NR(ComPortOut,625000,128);
 	}
 	else
 	{

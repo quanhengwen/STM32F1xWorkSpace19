@@ -31,7 +31,7 @@ unsigned long retestdata=0;
 void BQ26100_TEST_Configuration(void)
 {
   SYS_Configuration();					//系统配置---打开系统时钟 STM32_SYS.H	
-	PWM_OUT(TIM2,PWM_OUTChannel1,0.5,500);	//PWM设定-20161127版本	占空比1/1000
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,0.5,500);	//PWM设定-20161127版本	占空比1/1000
 	
 	api_bq26100_configuration();
 	

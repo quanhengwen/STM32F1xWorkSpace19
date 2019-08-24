@@ -173,10 +173,10 @@ void AMPTest_Configuration(void)
 //    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
   
   
-  api_usart_dma_configurationNR	(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
-  api_usart_dma_configurationNR	(USART3,19200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART1,19200,ussize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART3,19200,ussize);	//USART_DMA配置--查询方式，不开中断
   RS485Configuration();
-	PWM_OUT(TIM2,PWM_OUTChannel1,100,900);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,100,900);						//PWM设定-20161127版本
 	
 	
 //  IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
@@ -281,7 +281,7 @@ static void SHT20TEST(void)
 	Temperature	=	api_sht20_get_temperature();
 	humidity	=	api_sht20_get_humidity();
 	//LCD_Printf(500,u1dsp,16,LCD565_BLACK,"SHT20:温度%0.2f℃  湿度%0.2f%%",Temperature,humidity);
-	LCD_Printf(500,32,16,LCD565_BLACK,"SHT20:温度%0.2f℃  湿度%0.2f%%",Temperature,humidity);
+	LCD_Printf(500,16,16,LCD565_BLACK,"SHT20:温度%0.2f℃  湿度%0.2f%%",Temperature,humidity);
 
 }
 /*******************************************************************************
@@ -416,7 +416,7 @@ void RS485Configuration(void)
 	RS485B.RS485_RxEn_PORT	=	GPIOA;
 	RS485B.RS485_RxEn_Pin		=	GPIO_Pin_1;
 	
-	api_rs485_dma_configurationNR(&RS485B,19200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
+	api_rs485_configuration_NR(&RS485B,115200,ussize);	//USART_DMA配置--查询方式，不开中断,配置完默认为接收状态
 }
 /*******************************************************************************
 *函数名			:	function
@@ -562,6 +562,10 @@ void USART_Server(void)
 	{
 		memcpy(u1txbuffer,u2rxbuffer,RxNum);
     api_usart_send(USART1,u1txbuffer,RxNum);
+		if(u1dsp+(RxNum/33+1)*16>=479)
+		{
+			RxNum=0;
+		}
     LCD_ShowHex(0,u1dsp,16,u1dspcolr,RxNum,8,u1txbuffer);
 		u1dsp+=(RxNum/33+1)*16;
 		if(LCD565_RED==u1dspcolr)
@@ -610,7 +614,7 @@ void SYSLED(void)
 				sysledflag	=	0;
 			}
 		}
-		PWM_OUT(TIM2,PWM_OUTChannel1,2000,Ratio*Ratio);						//PWM设定-20161127版本
+		api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,2000,Ratio*Ratio);						//PWM设定-20161127版本
 //		SetPWM_Ratio(Ratio*Ratio);		//设置占空比---LED
 	}	
 }
@@ -770,7 +774,7 @@ void Power_Server(void)
       {
         Power_Flag = 0;
         PF10  = 0;
-        PWM_OUT(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
+        api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
         while(0  ==  PB4in);
         NVIC_GenerateCoreReset();
       }

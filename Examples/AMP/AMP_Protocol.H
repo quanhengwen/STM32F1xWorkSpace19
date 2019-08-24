@@ -72,6 +72,7 @@ typedef enum _ampecmd
 	ampCmdLcdConf  		= (unsigned char)0x0A,			//LCD配置命令，修改背景色命令,字体色,字体大小
 	ampCmdLcdPwr  		= (unsigned char)0x0B,			//LCD电源供电控制指令
 	ampCmdTimeSync		=	(unsigned char)0x0C,			//LCD显示同步时间
+	ampCmdTHdata			=	(unsigned char)0x0D,			//温湿度数据temperature and humidity
 	ampCmdCheckSleve	=	(unsigned char)0x3F,			//主机查询从机数据命令
 }ampecmddef;
 typedef enum _ampedir

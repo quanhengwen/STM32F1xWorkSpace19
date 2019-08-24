@@ -70,7 +70,7 @@ void USBTEST_RS485TOUSART_Configuration(void)
 	
 	IWDG_Configuration(1000);					//独立看门狗配置---参数单位ms	
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,900);						//PWM设定-20161127版本--SYS-LED
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,900);						//PWM设定-20161127版本--SYS-LED
 
 }
 /*******************************************************************************
@@ -122,8 +122,8 @@ void USBTEST_RS485TOUSART_Conf(void)
 	RS4851.RS485_CTL_PORT=GPIOA;
 	RS4851.RS485_CTL_Pin=GPIO_Pin_15;
 	
-	api_rs485_dma_configurationNR	(&RS4851,19200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
-	api_usart_dma_configurationNR	(USART1,115200,(u32*)RxdBuffer2,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_rs485_configuration_NR(&RS4851,19200,(u32*)RxdBuffer,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_NR(USART1,115200,(u32*)RxdBuffer2,RxBufferSize);	//USART_DMA配置--查询方式，不开中断
 }
 
 

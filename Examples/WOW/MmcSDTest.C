@@ -87,7 +87,7 @@ void MmcSDTest_Configuration(void)
 	GPIO_DeInitAll();							//将所有的GPIO关闭----V20170605	
   LCD_Configuration();
   SD_Configuration();
-  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
 //  TM1618_PinSet();
 
 //  res = f_open(&fsrc, "1:srcfile.dat", FA_OPEN_EXISTING | FA_READ);
@@ -101,7 +101,7 @@ void MmcSDTest_Configuration(void)
 	
 	IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,10);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,10);						//PWM设定-20161127版本
 	
 }
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>

@@ -85,7 +85,7 @@ void TLE5012BV2_Configuration(void)
 	//-----------------------TLE5012 SPI配置
 	SPI5012B_Init();	
 	//-----------------------TLE5012 CLK脚
-	PWM_OUT(TIM2,PWM_OUTChannel4,80000,500);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel4,80000,500);						//PWM设定-20161127版本
 	
 	//-----------------------SYSLED脚
 	GPIO_Configuration_OPP50(SYSLED_Port,SYSLED_Pin);			//将GPIO相应管脚配置为PP(推挽)输出模式，最大速度50MHz----V20170605	

@@ -57,7 +57,7 @@ void VirtualCom_Configuration(void)
 	USB_Init();						//usb_lib.h->usb_init.h			//用于端点数据输入输入中断处理
 	
 //	PWM_Configuration(TIM2,7200,5000,50);
-	PWM_OUT(TIM2,PWM_OUTChannel1,200000,2);	//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,200000,2);	//PWM设定-20161127版本
 	
 	SysTick_Configuration(100);	//系统嘀嗒时钟配置72MHz,单位为uS
 

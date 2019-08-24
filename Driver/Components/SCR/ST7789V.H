@@ -24,7 +24,7 @@
 
  //定义LCD的尺寸	
 #define ST7789V_H 240		//水平
-#define ST7789V_V 310		//垂直
+#define ST7789V_V 320		//垂直	//#define ST7789V_V 310		//垂直
 
 
 #define ST7789V_BL_ON		api_pwm_oc_configuration((TIM_TypeDef*) TIM2_BASE,PWM_OUTChannel2,1000,1)	//(R61509V_BL_PORT->BSRR = R61509V_BL_PIN)

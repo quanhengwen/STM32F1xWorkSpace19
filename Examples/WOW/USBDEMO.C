@@ -114,7 +114,7 @@ void USBDEMO_Configuration(void)
 //	GPIO_SetBits(GPIOB,GPIO_Pin_7);
 //	GPIO_SetBits(GPIOB,GPIO_Pin_8);
 //	GPIO_ResetBits(GPIOB,GPIO_Pin_6);
-	PWM_OUT(TIM2,PWM_OUTChannel1,5,700);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,5,700);						//PWM设定-20161127版本
 	SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
 //	return;
   Power_Configuration();
@@ -132,7 +132,7 @@ void USBDEMO_Configuration(void)
 //  
 //  LCD_Printf(10,10,32,LCD565_BRED,"FSMC液晶屏驱动测试：%0.4d年%0.2d月%0.2d日%0.2d时%0.2d分%0.2d秒",
 //    year,month,day,hour,minute,second);  //后边的省略号就是可变参数
-//	PWM_OUT(TIM2,PWM_OUTChannel1,200,300);						//PWM设定-20161127版本
+//	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,200,300);						//PWM设定-20161127版本
 //  
 ////  IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
 //  SysTick_Configuration(1000);    //系统嘀嗒时钟配置72MHz,单位为uS
@@ -341,7 +341,7 @@ void Power_Server(void)
       {
         Key = 0;
         PF10  = 0;
-        PWM_OUT(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
+        api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1000,110);						//PWM设定-20161127版本
         while(0  ==  PB4in);
         NVIC_GenerateCoreReset();
       }

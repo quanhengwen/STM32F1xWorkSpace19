@@ -292,7 +292,7 @@ void USART_Config_Default(void)
 //	USART_DMA_Configuration(USART1,115200,0,0,(u32*)buffer_rx,(u32*)buffer_tx,VIRTUAL_COM_PORT_DATA_SIZE);
 //	DMA_ITConfig(DMA1_Channel4,DMA_IT_TC, DISABLE);
 //	USART_ITConfig(USART1,USART_IT_IDLE, DISABLE);					//使用空闲中断，DMA自动接收，检测到总线空闲表示发送端已经发送完成，数据保存在DMA缓冲器中
-	api_usart_dma_configurationNR	(USART1,115200,VIRTUAL_COM_PORT_DATA_SIZE);	//USART_DMA配置--查询方式，不开中断
+	api_usart_configuration_NR(USART1,115200,VIRTUAL_COM_PORT_DATA_SIZE);	//USART_DMA配置--查询方式，不开中断
 }
 
 /*******************************************************************************

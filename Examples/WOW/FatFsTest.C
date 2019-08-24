@@ -73,7 +73,7 @@ void FatFsTest_Configuration(void)
 	
   LCD_Configuration();
 //  TM1618_PinSet();
-  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
   
   LCD_Printf (0,0,16,0,"为逻辑驱动器注册工作区......");					//自定义printf串口DMA发送程序,后边的省略号就是可变参数
   /* 为逻辑驱动器注册工作区 */
@@ -96,7 +96,7 @@ void FatFsTest_Configuration(void)
 	
 
 
-  api_usart_dma_configurationNR	(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(USART1,115200,128);	//USART_DMA配置--查询方式，不开中断
 //  
   ADC_TempSensorConfiguration(&ADCDATA);								//STM32内部温度传感器配置
 //  LCD_ShowBattery(780,2,2,0);   //显示12x12电池
@@ -106,7 +106,7 @@ void FatFsTest_Configuration(void)
 	
 //	IWDG_Configuration(1000);													//独立看门狗配置---参数单位ms
 	
-	PWM_OUT(TIM2,PWM_OUTChannel1,1,10);						//PWM设定-20161127版本
+	api_pwm_oc_configuration(TIM2,PWM_OUTChannel1,1,10);						//PWM设定-20161127版本
 	
 }
 //=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>=>

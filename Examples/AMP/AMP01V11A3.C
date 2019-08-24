@@ -1558,7 +1558,7 @@ static void Communication_Configuration(void)
 {
 	IOT5302Wdef ampIOT5302W;
   //-----------------------------PC接口USART1
-  api_usart_dma_configurationNR(ampCommPcPort,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断
+  api_usart_configuration_NR(ampCommPcPort,19200,maxFramesize);	//USART_DMA配置--查询方式，不开中断
   
   //-----------------------------读卡器接口USART3
   ampIOT5302W.Conf.IOT5302WPort.USARTx  = ampCommCardPort;
